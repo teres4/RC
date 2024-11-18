@@ -1,33 +1,16 @@
-#include <unistd.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netdb.h>
-#include <string.h>
-#include <stdio.h>
+#include "player.hpp"
+#include "common/utils.hpp"
 
-#include "../common/constants.hpp"
-#include "../common/utils.hpp"
+
+extern bool is_exiting; // flag to indicate whether the application is exiting
+
+
 
 int main(int argc, char *argv[])
 {
-    // char* IP = DEFAULT_HOSTNAME;
-    // char* port = DEFAULT_PORT;
+    setup_signal_handlers();  // change the signal handlers to our own
+    ClientConfig config(argc, argv); // parse command-line arguments
 
-    // if (argc == 3){ // check if -n or -p
-    //     if (strcmp(argv[1], "-n") == 0)
-    //         IP = argv[2];
-
-    //     else if (strcmp(argv[1], "-p") == 0)
-    //         port = argv[2];
-    // }
-
-    // if (argc == 5){
-    //     IP = argv[2];
-    //     port = argv[4];
-    // }
 
     return 0;
 }
