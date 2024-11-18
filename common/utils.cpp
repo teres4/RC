@@ -3,9 +3,11 @@
 
 #include "protocols.hpp"
 
-int is_shutting_down = 0;
 
-void is_valid_port(std::string &port) {
+int is_exiting = 0;
+
+
+void validate_port(std::string &port) {
     for (char c : port) {
         if (!std::isdigit(static_cast<unsigned char>(c))) 
             throw UnrecoverableError("Invalid port: not a number");
@@ -22,53 +24,39 @@ void is_valid_port(std::string &port) {
 }
 
 
-int8_t validateUserID(std::string userID) {
-
-  uint32_t id = (uint32_t)std::stoi(userID);
-  if (id > USER_ID_MAX) {
-    return INVALID;
-  }
-
-  return 0;
-}
-
-
 /**
  * Check if the plid is valid
 */
-int is_valid_plid(std::string plid) {
-    if (!is_digits(plid) || plid.length() != PLID_MAX_SIZE)
+int validate_plid(std::string plid) {
+    if (plid.length() != PLID_MAX_SIZE)
         return INVALID;
-
-    uint32_t id = (uint32_t)std::stoi(plid);
-
+    
     for (char c : plid) {
         if(!isdigit(c)) 
-            throw UnrecoverableError("Invalid PLID: must be a number of 6 digits");
+            return INVALID;
     }
+
+    int i = std::stoi(plid);
+    if (i < 0) 
+        return INVALID;
+
+    return i;
 }
 
 
-uint32_t parse_packet_player_id(std::string &id_str) {
-    if (id_str.length() != 6) 
-        throw InvalidPacketException();
-    
-    for (char c : id_str) {
-        if (!isdigit(c)) 
-        throw InvalidPacketException();
-    }
+int validatePlayTime(std::string playtime){
+    if (playtime.length() > MAX_PLAYTIME)
+        return INVALID;
 
-    try {
-        int i = std::stoi(id_str);
-        if (i < 0 || i > (int)PLAYER_ID_MAX) {
-        throw InvalidPacketException();
-        }
-        return (uint32_t)i;
-    } catch (...) {
-        throw InvalidPacketException();
+    for (char c : playtime){
+        if (!isdigit(c))
+            return INVALID;
     }
+    int i = std::stoi(playtime);
+
+    if (i < 0)
+        return INVALID;
 }
-
 
 
 
@@ -98,10 +86,11 @@ void setup_signal_handlers() {
     signal(SIGPIPE, SIG_IGN);
 }
 
-void signal_handler(int sig) {
+void terminate_signal_handler(int sig) {
+  // ignore the signal if the application is already shutting down
   (void)sig;
-  if (is_shutting_down) {
+  if (is_exiting) {
     exit(EXIT_SUCCESS);
   }
-  is_shutting_down = true;
+  is_exiting = true;
 }

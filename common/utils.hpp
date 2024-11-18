@@ -14,9 +14,10 @@ class UnrecoverableError : public std::runtime_error {
       : std::runtime_error(__what + ": " + strerror(__errno)) {}
 };
 
-void is_valid_port(std::string& port);
 
-int is_valid_plid(char *plid);
+void validate_port(std::string &port);
+
+int validate_plid(std::string plid);
 
 void signal_handler(int sig);
 
