@@ -1,12 +1,16 @@
 #include "utils.hpp"
 #include "protocols.hpp"
 
+#include <iostream>
+
 int is_exiting = 0;
 
 void validate_port(std::string &port) {
     for (char c : port) {
-        if (!std::isdigit(static_cast<unsigned char>(c)))
+        if (!std::isdigit(static_cast<unsigned char>(c))){
             throw UnrecoverableError("Invalid port: not a number");
+        }
+            
     }
 
     try {
@@ -54,6 +58,8 @@ int validatePlayTime(std::string playtime) {
 
     if (i < 0)
         return INVALID;
+
+    return VALID;
 }
 
 
@@ -63,7 +69,7 @@ void setup_signal_handlers() {
     struct sigaction sa;
 
     // set the custom signal handler
-    sa.sa_handler = signal_handler;
+    sa.sa_handler = terminate_signal_handler;
 
     // clear the signal set, so that no other signals are blocked
     sigemptyset(&sa.sa_mask);

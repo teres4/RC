@@ -20,6 +20,6 @@ int validatePlayTime(std::string playtime);
 
 
 void setup_signal_handlers();
-void signal_handler(int sig);
+void terminate_signal_handler(int sig);
 
 #endif
