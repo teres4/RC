@@ -8,20 +8,19 @@
 #include <string.h>
 #include <stdio.h>
 
-
 #include "../common/constants.hpp"
 #include "../common/utils.hpp"
 
-
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[])
+{
     // char* IP = DEFAULT_HOSTNAME;
     // char* port = DEFAULT_PORT;
 
     // if (argc == 3){ // check if -n or -p
-    //     if (strcmp(argv[1], "-n") == 0) 
+    //     if (strcmp(argv[1], "-n") == 0)
     //         IP = argv[2];
 
-    //     else if (strcmp(argv[1], "-p") == 0) 
+    //     else if (strcmp(argv[1], "-p") == 0)
     //         port = argv[2];
     // }
 
@@ -29,7 +28,6 @@ int main(int argc, char* argv[]) {
     //     IP = argv[2];
     //     port = argv[4];
     // }
-
 
     return 0;
 }
