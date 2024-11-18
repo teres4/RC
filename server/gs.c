@@ -7,7 +7,8 @@
 #include <netdb.h>
 #include <string.h>
 
-#define PORT “58013” //5800 + GROUP NUMBER
+#include "../common/constants.h"
+
 
 int fd,errcode;
 ssize_t n;
@@ -25,7 +26,7 @@ int main(){
     hints.ai_socktype=SOCK_DGRAM; // UDP socket
     hints.ai_flags=AI_PASSIVE;
 
-    errcode=getaddrinfo(NULL,PORT,&hints,&res);
+    errcode=getaddrinfo(NULL,DEFAULT_PORT,&hints,&res);
     if(errcode!=0) /*error*/ exit(1);
 
     n=bind(fd,res->ai_addr, res->ai_addrlen);
