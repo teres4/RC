@@ -3,7 +3,6 @@
 
 #include <csignal>
 
-#include "commands.hpp"
 #include "common/constants.hpp"
 #include "common/utils.hpp"
 
