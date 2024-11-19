@@ -20,17 +20,6 @@ public:
 
 // void registerCommands(CommandManager& manager);
 
-class Player_Info
-{
-public:
-  int plid; // The username of the user
-  bool hasActiveGame = false;
-  int num_trials = 0;
-  // a map for the players' attempts?
-
-  Player_Info(int plid);
-};
-
 // TODO: implement Game_info class
 // put game_info in player info
 

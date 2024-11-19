@@ -8,6 +8,7 @@
 #include <unistd.h>
 
 #include "player.hpp"
+#include "commands.hpp"
 
 // extern bool is_exiting; // flag to indicate whether the application is exiting
 
