@@ -10,8 +10,8 @@ class Client
 {
 public:
   // char* program_path;
-  std::string host = DEFAULT_HOSTNAME;
-  std::string port = DEFAULT_PORT;
+  std::string gsip = DEFAULT_HOSTNAME;
+  std::string gsport = DEFAULT_PORT;
   // bool help = false;
 
   Client(int argc, char *argv[]);

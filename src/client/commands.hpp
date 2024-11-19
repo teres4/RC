@@ -169,7 +169,19 @@ public:
 
 public:
   void printHelp();
+
+  /**
+   * @brief Adds a command to the command manager.
+   *
+   * @param handler The command handler to add.
+   */
   void addCommand(std::shared_ptr<CommandHandler> handler);
+
+  /**
+   * @brief Waits for a command from the player and processes it.
+   *
+   * @param state A reference to a Player_Info structure that will be updated based on the received command.
+   */
   void waitForCommand(Player_Info &state);
 };
 

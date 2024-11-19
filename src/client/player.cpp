@@ -25,17 +25,32 @@ Client::Client(int argc, char *argv[])
     if (argc == 3)
     { // check if -n or -p
         if (strcmp(argv[1], "-n") == 0)
-            host = argv[2];
+            gsip = argv[2];
 
         else if (strcmp(argv[1], "-p") == 0)
-            port = argv[2];
+            gsport = argv[2];
     }
 
     if (argc == 5)
     {
-        host = argv[2];
-        port = argv[4];
+        gsip = argv[2];
+        gsport = argv[4];
     }
 
-    validate_port(port);
+    validate_port(gsport);
+    validate_ip(gsip);
+
+    CommandManager manager;
+    addAllComands(manager);
+}
+
+void addAllComands(CommandManager &manager)
+{
+    manager.addCommand(std::make_shared<StartCommand>());
+    manager.addCommand(std::make_shared<TryCommand>());
+    manager.addCommand(std::make_shared<QuitCommand>());
+    manager.addCommand(std::make_shared<ShowTrialsCommand>());
+    manager.addCommand(std::make_shared<ScoreboardCommand>());
+    manager.addCommand(std::make_shared<ExitCommand>());
+    manager.addCommand(std::make_shared<DebugCommand>());
 }
