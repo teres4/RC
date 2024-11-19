@@ -21,4 +21,21 @@ class Client {
 
 // void registerCommands(CommandManager& manager);
 
+
+class Player {
+  public:
+    int plid;  // The username of the user
+    bool hasActiveGame = false;
+    int num_trials = 0;
+    // a map for the players' attempts? 
+
+    Player(int plid);
+
+
+
+};
+
+
+
+
 #endif
