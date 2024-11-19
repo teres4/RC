@@ -42,6 +42,11 @@ Client::Client(int argc, char *argv[])
 
     CommandManager manager;
     addAllComands(manager);
+
+    // player info
+    // setup sockets
+
+    manager.waitForCommand();
 }
 
 void addAllComands(CommandManager &manager)

@@ -59,5 +59,16 @@ void CommandManager::printHelp()
 
 void CommandManager::waitForCommand(Player_Info &state)
 {
-    // Add your implementation here
+    std::string command;
+    std::string args;
+    std::cin >> command;
+    std::getline(std::cin, args);
+
+    if (handlers.find(command) == handlers.end())
+    {
+        std::cerr << "Unknown command" << std::endl;
+        return;
+    }
+
+    handlers[command]->handle(args, state);
 }

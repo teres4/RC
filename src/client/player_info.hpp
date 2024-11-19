@@ -12,12 +12,6 @@ public:
     int num_trials = 0;
     // a map for the players' attempts?
 
-    // the sockets
-    int udpSockFD = -1;
-    int tcpSockFD = -1;
-    struct addrinfo *serverUdpAddr = NULL;
-    struct addrinfo *serverTcpAddr = NULL;
-
     Player_Info(int plid);
 };
 
