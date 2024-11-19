@@ -7,6 +7,7 @@
 #include <string>
 
 #include <vector>
+#include <unordered_map>
 
 #include "player_info.hpp"
 
@@ -154,6 +155,20 @@ class UnknownCommandException : public CommandException
 {
 public:
   UnknownCommandException() : CommandException("Unknown Command.") {};
+};
+
+class CommandManager
+{
+public:
+  CommandManager();
+
+  std::vector<std::shared_ptr<CommandHandler>> handlerList;
+  std::unordered_map<std::string, std::shared_ptr<CommandHandler>> handlers;
+
+public:
+  void printHelp();
+  void addCommand(std::shared_ptr<CommandHandler> handler);
+  void waitForCommand(Player_Info &state);
 };
 
 #endif
