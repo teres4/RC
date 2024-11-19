@@ -37,11 +37,11 @@ int validate_plid(std::string plid) {
             return INVALID;
     }
 
-    int i = std::stoi(plid);
-    if (i < 0)
+    int parsed = std::stoi(plid);
+    if (parsed < 0)
         return INVALID;
 
-    return i;
+    return parsed;
 }
 
 
