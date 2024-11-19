@@ -33,16 +33,14 @@ class CommandHandler {
          * should be implemented by derived classes
         */
 
-        // virtual void handle(std::string args, Player &receiver) = 0;
-
-        virtual void handle(std::string args) = 0;
+        virtual void handle(std::string args, Player &receiver) = 0;
 
 
         const char* name;                           // The name of the command
         const std::optional<const char*> args;      // The args of the command
         const std::optional<const char*> usage;     // The description of the command
 
-        void readCommand(std::string command, Client &state);
+        void readCommand(std::string command, Player &state);
     
 
 
