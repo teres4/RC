@@ -43,3 +43,21 @@
 //     }
 // }
 // Create datagram with server IP and port=x; send datagram via clientSocket
+
+void CommandManager::addCommand(std::shared_ptr<CommandHandler> command)
+{
+    handlers[command->name] = std::move(command);
+}
+
+void CommandManager::printHelp()
+{
+    for (auto &handler : handlerList)
+    {
+        std::cout << handler->name << " " << handler->args.value_or("") << " - " << handler->usage.value_or("") << std::endl;
+    }
+}
+
+void CommandManager::waitForCommand(Player_Info &state)
+{
+    // Add your implementation here
+}
