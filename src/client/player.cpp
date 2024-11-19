@@ -16,13 +16,13 @@
 int main(int argc, char *argv[])
 {
     setup_signal_handlers();  // change the signal handlers to our own
-    ClientConfig config(argc, argv); // parse command-line arguments
+    Client client(argc, argv); // parse command-line arguments
 
     return 0;
 }
 
 
-ClientConfig::ClientConfig(int argc, char *argv[]) {
+Client::Client(int argc, char *argv[]) {
     if (argc == 3){ // check if -n or -p
         if (strcmp(argv[1], "-n") == 0) 
             host = argv[2];
@@ -38,3 +38,4 @@ ClientConfig::ClientConfig(int argc, char *argv[]) {
 
     validate_port(port);
 }
+
