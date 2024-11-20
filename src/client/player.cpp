@@ -17,6 +17,15 @@ int main(int argc, char *argv[])
     setup_signal_handlers();   // change the signal handlers to our own
     Client client(argc, argv); // parse command-line arguments
 
+    CommandManager commandManager;    // create a new command manager
+
+    addAllComands(commandManager);
+
+    // player info
+    // setup sockets
+
+    commandManager.waitForCommand();
+
     return 0;
 }
 
@@ -39,15 +48,9 @@ Client::Client(int argc, char *argv[])
 
     validate_port(gsport);
     validate_ip(gsip);
-
-    CommandManager manager;
-    addAllComands(manager);
-
-    // player info
-    // setup sockets
-
-    manager.waitForCommand();
 }
+
+
 
 void addAllComands(CommandManager &manager)
 {
