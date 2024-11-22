@@ -24,6 +24,9 @@ public:
   // void printHelp(std::ostream& stream);
 };
 
-void addAllComands(CommandManager &manager);
+
+void addAllCommands(CommandManager &manager);
+
+void setUpSockets(Client &client);
 
 #endif

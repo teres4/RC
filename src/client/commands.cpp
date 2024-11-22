@@ -49,26 +49,108 @@ void CommandManager::addCommand(std::shared_ptr<CommandHandler> command)
     handlers[command->name] = std::move(command);
 }
 
-void CommandManager::printHelp()
-{
-    for (auto &handler : handlerList)
-    {
-        std::cout << handler->name << " " << handler->args.value_or("") << " - " << handler->usage.value_or("") << std::endl;
-    }
-}
+// void CommandManager::printHelp()
+// {
+//     for (auto &handler : handlerList)
+//     {
+//         std::cout << handler->name << " " << handler->args.value_or("") << " - " << handler->usage.value_or("") << std::endl;
+//     }
+// }
 
 void CommandManager::waitForCommand(Player_Info &state)
 {
-    std::string command;
-    std::string args;
-    std::cin >> command;
-    std::getline(std::cin, args);
+    std::string input;
 
-    if (handlers.find(command) == handlers.end())
-    {
-        std::cerr << "Unknown command" << std::endl;
-        return;
+    std::cout << "> ";   // Print the prompt
+    // std::getline(std::cin, input); // Gets command
+
+    while (getline(std::cin, input, ' ' )){
+
     }
 
-    handlers[command]->handle(args, state);
+
+    if (std::cin.eof()) // If the user has pressed Ctrl+D
+        return;
+
+    std::cout << state.hasActiveGame;
+
+
+
+}
+
+
+// {
+//   std::string commandName;          // The name of the command
+//   std::string args;                 // The arguments to the command
+//   auto splitIndex = line.find(' '); // Find the index of the separator space
+
+//   if (splitIndex == std::string::npos) { // If there is no space
+//     commandName = line;                  // The entire line is the command name
+//     args = "";                           // There are no arguments
+//   } else {
+//     commandName = line.substr(0, splitIndex);
+//     args = line.erase(0, splitIndex + 1);
+//   }
+
+//   if (commandName.length() == 0) { // If the command name is empty
+//     return;
+//   }
+
+//   auto handler = handlers.find(commandName); // Find the handler for the command
+
+//   if (handler == handlers.end()) { // If the handler does not exist
+//     std::cout << "Invalid command: " << commandName << std::endl;
+//     return;
+//   }
+
+//   try {
+//     handler->second->handleCommand(args, state); // Handle the command
+//   } catch (std::exception &e) {
+//     std::cout << "Error: " << e.what() << std::endl;
+//   }
+// }
+
+
+
+void StartCommand::handle(std::string args, Player_Info& state) {
+  // TODO
+  std::cout << args << state.hasActiveGame;
+
+}
+
+void TryCommand::handle(std::string args, Player_Info& state) {
+
+// TODO
+std::cout << args << state.hasActiveGame;
+
+}
+
+void ShowTrialsCommand::handle(std::string args, Player_Info& state) {
+  // TODO
+  std::cout << args << state.hasActiveGame;
+
+}
+
+void ScoreboardCommand::handle(std::string args, Player_Info& state) {
+  // TODO
+  std::cout << args << state.hasActiveGame;
+
+}
+
+void QuitCommand::handle(std::string args, Player_Info& state) {
+  // TODO
+  std::cout << args << state.hasActiveGame;
+
+}
+
+void ExitCommand::handle(std::string args, Player_Info& state) {
+  // TODO
+  std::cout << args << state.hasActiveGame;
+
+}
+
+void DebugCommand::handle(std::string args, Player_Info& state) {
+  // TODO
+  std::cout << args << state.hasActiveGame;
+
 }

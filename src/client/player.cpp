@@ -20,12 +20,30 @@ int main(int argc, char *argv[])
 
     CommandManager commandManager; // create a new command manager
 
-    addAllComands(commandManager);
+    addAllCommands(commandManager);
+
+
+    std::string input;
+
+    std::cout << "> ";   // Print the prompt
+    // std::getline(std::cin, input); // Gets command
+
+    while (getline(std::cin, input, ' ' )){
+        std::cout << input;
+    }
+
+
+    if (std::cin.eof()) // If the user has pressed Ctrl+D
+        return 0 ;
+
+
+
+
 
     // player info`
     // setup sockets
 
-    commandManager.waitForCommand();
+    // commandManager.waitForCommand();
 
     setUpSockets(client);
 
@@ -55,7 +73,9 @@ Client::Client(int argc, char *argv[])
     validate_ip(gsip);
 }
 
-void addAllComands(CommandManager &manager)
+
+
+void addAllCommands(CommandManager &manager)
 {
     manager.addCommand(std::make_shared<StartCommand>());
     manager.addCommand(std::make_shared<TryCommand>());

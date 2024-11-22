@@ -31,6 +31,7 @@ void validate_port(std::string &port)
 int validate_ip(std::string ip)
 {
     // check if the ip is valid
+    std::cout << ip;
     return VALID;
 }
 

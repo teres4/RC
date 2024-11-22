@@ -17,8 +17,8 @@ class CommandHandler
   public:
     const char *name;                        // The name of the command
     const std::optional<const char *> alias; // The aliases of the command
-    const std::optional<const char *> args;  // The args of the command
-    const std::optional<const char *> usage; // The description of the command
+    const std::optional<const char *> usage;  // The args of the command
+    const std::optional<const char *> description; // The description of the command
 
     /**
      * @brief Handles the command with the given arguments.
@@ -38,23 +38,20 @@ class CommandHandler
      */
 
     CommandHandler(const char *__name, const std::optional<const char *> __alias,
-                  const std::optional<const char *> __args, const char *__usage)
-        : name{__name}, alias{__alias}, args{__args}, usage{__usage} {}
+                  const std::optional<const char *> __usage, const char *__description)
+        : name{__name}, alias{__alias}, usage{__usage}, description{__description} {}
 };
 
 
 class CommandManager
 {
-  public:
-    CommandManager();
-
-    // list of command handlers
-    std::vector<std::shared_ptr<CommandHandler>> handlerList;
-    // name->handler map
-    std::unordered_map<std::string, std::shared_ptr<CommandHandler>> handlers;
+  // list of command handlers
+  std::vector<std::shared_ptr<CommandHandler>> handlerList;
+  // name->handler map
+  std::unordered_map<std::string, std::shared_ptr<CommandHandler>> handlers;
 
   public:
-    void printHelp();
+    // void printHelp();
 
     /**
      * @brief Adds a command to the command manager.
@@ -72,7 +69,6 @@ class CommandManager
 };
 
 
-
 class StartCommand : public CommandHandler
 {
   void handle(std::string args, Player_Info &state);
@@ -82,6 +78,7 @@ class StartCommand : public CommandHandler
         : CommandHandler("start", std::nullopt, "PLID max_playtime",
                         "Start a new game") {}
 };
+
 
 class TryCommand : public CommandHandler
 {
