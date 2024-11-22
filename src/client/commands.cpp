@@ -1,4 +1,6 @@
 #include "commands.hpp"
+#include <iostream>
+
 
 // void start(std::string args)
 // {
@@ -59,57 +61,50 @@ void CommandManager::addCommand(std::shared_ptr<CommandHandler> command)
 
 void CommandManager::waitForCommand(Player_Info &state)
 {
-    std::string input;
+  std::cout << "> ";   // Print the prompt
 
-    std::cout << "> ";   // Print the prompt
-    // std::getline(std::cin, input); // Gets command
+  std::string input;
+  std::getline(std::cin, input); // Read the line from the user
 
-    while (getline(std::cin, input, ' ' )){
+  if (std::cin.eof()) // in case of ctrl-d 
+      return;
 
-    }
+  std::stringstream ss(input);  // Create a stringstream object
+  std::string temp;
+  std::vector<std::string> command_split;
 
+  // Splitting the input string by space
+  while (std::getline(ss, temp, ' '))
+      command_split.push_back(temp);
 
-    if (std::cin.eof()) // If the user has pressed Ctrl+D
-        return;
+  if (command_split.size() == 0)
+    return;
 
-    std::cout << state.hasActiveGame;
+  std::string commandName = command_split[0];   // The name of the command
 
+  if (commandName.length() == 0)
+      return;
+  
 
+  auto handler = handlers.find(commandName); // handler of the command
+
+  if (handler == handlers.end()) { // If the handler does not exist
+    std::cout << "Invalid command: " << commandName << std::endl;
+    return;
+  }
+
+  try {
+    input.erase(0, commandName.length());
+    handler->second->handle(input, state);
+  } catch (std::exception& e) {
+    std::cout << "[ERROR] " << e.what() << std::endl;
+  } catch (...) {
+    std::cout << "[ERROR] An unknown error occurred." << std::endl;
+  }
+
+  return;
 
 }
-
-
-// {
-//   std::string commandName;          // The name of the command
-//   std::string args;                 // The arguments to the command
-//   auto splitIndex = line.find(' '); // Find the index of the separator space
-
-//   if (splitIndex == std::string::npos) { // If there is no space
-//     commandName = line;                  // The entire line is the command name
-//     args = "";                           // There are no arguments
-//   } else {
-//     commandName = line.substr(0, splitIndex);
-//     args = line.erase(0, splitIndex + 1);
-//   }
-
-//   if (commandName.length() == 0) { // If the command name is empty
-//     return;
-//   }
-
-//   auto handler = handlers.find(commandName); // Find the handler for the command
-
-//   if (handler == handlers.end()) { // If the handler does not exist
-//     std::cout << "Invalid command: " << commandName << std::endl;
-//     return;
-//   }
-
-//   try {
-//     handler->second->handleCommand(args, state); // Handle the command
-//   } catch (std::exception &e) {
-//     std::cout << "Error: " << e.what() << std::endl;
-//   }
-// }
-
 
 
 void StartCommand::handle(std::string args, Player_Info& state) {

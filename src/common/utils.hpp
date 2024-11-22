@@ -18,7 +18,7 @@ class UnrecoverableError : public std::runtime_error
 void validate_port(std::string &port);
 int validate_plid(std::string plid);
 int validatePlayTime(std::string playtime);
-int validate_ip(std::string ip);
+// int validate_ip(std::string ip);
 
 void setup_signal_handlers();
 void terminate_signal_handler(int sig);

@@ -9,24 +9,27 @@
 
 class Client
 {
-public:
-  // char* program_path;
-  std::string gsip = DEFAULT_HOSTNAME;
-  std::string gsport = DEFAULT_PORT;
-  // the sockets
-  int udpSockFD = -1;
-  int tcpSockFD = -1;
-  struct addrinfo *serverUdpAddr = NULL;
-  struct addrinfo *serverTcpAddr = NULL;
-  // bool help = false;
+  public:
+    // char* program_path;
+    std::string gsip = DEFAULT_HOSTNAME;
+    std::string gsport = DEFAULT_PORT;
+    // bool help = false;
 
-  Client(int argc, char *argv[]);
-  // void printHelp(std::ostream& stream);
+    // // the sockets
+    // int udpSockFD = -1;
+    // int tcpSockFD = -1;
+    // struct addrinfo *serverUdpAddr = NULL;
+    // struct addrinfo *serverTcpAddr = NULL;
+    
+
+    Client(int argc, char *argv[]);
+
+    // void printHelp(std::ostream& stream);
 };
 
 
 void addAllCommands(CommandManager &manager);
 
-void setUpSockets(Client &client);
+// void setUpSockets(Client &client);
 
 #endif
