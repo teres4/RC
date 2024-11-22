@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
 
     addAllComands(commandManager);
 
-    // player info
+    // player info`
     // setup sockets
 
     commandManager.waitForCommand();

@@ -54,7 +54,7 @@ class CommandManager
     std::unordered_map<std::string, std::shared_ptr<CommandHandler>> handlers;
 
   public:
-    // void printHelp();
+    void printHelp();
 
     /**
      * @brief Adds a command to the command manager.
