@@ -62,20 +62,17 @@ int validate_plid(std::string plid)
 
 int validatePlayTime(std::string playtime)
 {
-    if (playtime.length() > MAX_PLAYTIME)
-        return INVALID;
-
     for (char c : playtime)
     {
         if (!std::isdigit(c))
             return INVALID;
     }
-    int i = std::stoi(playtime);
+    int parsed = std::stoi(playtime);
 
-    if (i < 0)
+    if (parsed < 0 || parsed > MAX_PLAYTIME)
         return INVALID;
 
-    return VALID;
+    return parsed;
 }
 
 void setup_signal_handlers()

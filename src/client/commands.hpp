@@ -10,15 +10,16 @@
 #include <unordered_map>
 
 #include "player_info.hpp"
+#include "../common/utils.hpp"
 
 
 class CommandHandler
 {
   public:
-    const char *name;                        // The name of the command
-    const std::optional<const char *> alias; // The aliases of the command
-    const std::optional<const char *> usage;  // The args of the command
-    const std::optional<const char *> description; // The description of the command
+    std::string name;                        // The name of the command
+    std::optional<std::string> alias; // The aliases of the command
+    std::optional<std::string> command_arg;  // The args of the command
+    std::optional<std::string> description; // The description of the command
 
     /**
      * @brief Handles the command with the given arguments.
@@ -37,9 +38,15 @@ class CommandHandler
      * @param usage The description of the command.
      */
 
-    CommandHandler(const char *__name, const std::optional<const char *> __alias,
-                  const std::optional<const char *> __usage, const char *__description)
-        : name{__name}, alias{__alias}, usage{__usage}, description{__description} {}
+
+    CommandHandler(const std::string& __name, 
+                  const std::optional<std::string>& __alias,
+                  const std::optional<std::string>& __command_arg, 
+                  const std::string& __description)
+        : name{__name}, 
+          alias{__alias}, 
+          command_arg{__command_arg}, 
+          description{__description} {}
 };
 
 
@@ -63,7 +70,8 @@ class CommandManager
     /**
      * @brief Waits for a command from the player and processes it.
      *
-     * @param state A reference to a Player_Info structure that will be updated based on the received command.
+     * @param state A reference to a Player_Info structure that will be 
+     * updated based on the received command.
      */
     void waitForCommand(Player_Info &state);
 };
@@ -142,9 +150,6 @@ class DebugCommand : public CommandHandler
 
 
 
-
-
-
 /**
  * @brief Exception class for command-related errors.
  *
@@ -160,26 +165,27 @@ class CommandException : public std::runtime_error
      * @param reason The reason for the exception.
      */
     CommandException(std::string reason)
-        : std::runtime_error("ERROR: " + reason) {};
+        : std::runtime_error("ERROR: " + reason + "\n") {};
 };
 
 
 /**
  * @brief Exception thrown when invalid arguments are provided for a command.
  */
-class CommandArgumentException : public CommandException
+class StartCommandArgumentException : public CommandException
 {
   public:
     /**
-     * @brief Constructs a CommandArgumentException with the specified usage
-     * information.
+     * @brief Constructs a CommandArgumentException with the specified command
+     * args information.
      *
-     * @param usage The usage information for the command.
+     * @param command_arg The arguments needed for the command.
      */
-    CommandArgumentException(std::string usage)
-        : CommandException("Invalid arguments.\nUsage: " + usage) {};
+    StartCommandArgumentException(std::string &command_arg)
+        : CommandException("Invalid arguments.\nUsage: " + command_arg + 
+          "\nPLID must be a 6-digit number. max_playtime cannot exceed 600 seconds")
+          {};
 };
-
 
 /**
  * @brief Exception thrown when an unknown command is encountered.
@@ -187,9 +193,11 @@ class CommandArgumentException : public CommandException
 class UnknownCommandException : public CommandException
 {
   public:
-    UnknownCommandException() : CommandException("Unknown Command.") {};
+    UnknownCommandException() : CommandException("Unknown Command.\n") {};
 };
 
+
+std::vector<std::string> split_command(std::string input);
 
 
 #endif

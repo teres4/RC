@@ -24,13 +24,7 @@ void CommandManager::waitForCommand(Player_Info &state)
   if (std::cin.eof()) // in case of ctrl-d 
       return;
 
-  std::stringstream ss(input);  // Create a stringstream object
-  std::string temp;
-  std::vector<std::string> command_split;
-
-  // Splitting the input string by space
-  while (std::getline(ss, temp, ' '))
-      command_split.push_back(temp);
+  std::vector<std::string> command_split = split_command(input);
 
   if (command_split.size() == 0)
     return;
@@ -38,40 +32,43 @@ void CommandManager::waitForCommand(Player_Info &state)
   std::string commandName = command_split[0];   // The name of the command
 
   if (commandName.length() == 0)
-      return;
-  
+    return;
 
-  auto handler = handlers.find(commandName); // handler of the command
+  auto handler = handlers.find(commandName); // find handler of the command
 
   if (handler == handlers.end()) { // If the handler does not exist
-    std::cout << "Invalid command: " << commandName << std::endl;
-    return;
+    throw UnknownCommandException();
   }
 
   try {
-    input.erase(0, commandName.length());
-    handler->second->handle(input, state);
+    input.erase(0, commandName.length() + 1);   // gets args
+    handler->second->handle(input, state);  // Call the handle function of the handler
   } catch (std::exception& e) {
-    std::cout << "[ERROR] " << e.what() << std::endl;
-  } catch (...) {
-    std::cout << "[ERROR] An unknown error occurred." << std::endl;
-  }
-
-  return;
+    std::cout << e.what() << std::endl;
+  } 
 
 }
 
 
 void StartCommand::handle(std::string args, Player_Info& state) {
+  std::vector<std::string> arg_split = split_command(args);
 
-  uint32_t player_id;
+  if (arg_split.size() != 2) {
+    // If the number of arguments is not 2, throw exception
+    throw StartCommandArgumentException(*command_arg);
+  }
 
-  // parse plid
-  // validate plid
-  // parse max time
+  // Get the username and password from the arguments
+  std::string PLID = arg_split[0];
+  std::string max_playtime = arg_split[1];
 
+  if (validate_plid(PLID) == INVALID || validatePlayTime(max_playtime) == INVALID){
+    throw StartCommandArgumentException(*command_arg);
+  }
 
-  std::cout << args << state.hasActiveGame;
+  state.plid = validate_plid(PLID);
+  state.max_playtime = validatePlayTime(max_playtime);
+
 
 }
 
@@ -112,4 +109,17 @@ void DebugCommand::handle(std::string args, Player_Info& state) {
   // TODO
   std::cout << args << state.hasActiveGame;
 
+}
+
+
+std::vector<std::string> split_command(std::string input){
+  std::stringstream ss(input);  // Create a stringstream object
+  std::string temp;
+  std::vector<std::string> command_split;
+
+  // Splitting the input string by space
+  while (std::getline(ss, temp, ' '))
+      command_split.push_back(temp);
+
+  return command_split;
 }

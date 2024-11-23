@@ -33,7 +33,8 @@ class Player_Info
         // bool hasActiveGame();
         // bool hasGame();
                                             
-        int plid; // The username of the user
+        int plid; // The player id
+        int max_playtime = 0;
         bool hasActiveGame = false;
         int num_trials = 0;
         // a map for the players' attempts?

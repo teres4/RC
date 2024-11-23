@@ -13,12 +13,15 @@ int main(int argc, char *argv[])
     addAllCommands(commandManager);
 
     Player_Info state(client.gsip, client.gsport);
-    
 
     // player info
     // setup sockets
 
-    commandManager.waitForCommand(state);
+    while (!std::cin.eof()){
+        commandManager.waitForCommand(state);
+
+    }
+
 
     // TODO: open sockets send t o command manager etc
 
