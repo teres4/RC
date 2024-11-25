@@ -17,17 +17,15 @@ int main(int argc, char *argv[])
     // player info
     // setup sockets
 
-    while (!std::cin.eof()){
+    while (!std::cin.eof())
+    {
         commandManager.waitForCommand(state);
-
     }
-
 
     // TODO: open sockets send t o command manager etc
 
     return 0;
 }
-
 
 Client::Client(int argc, char *argv[])
 {
@@ -49,8 +47,6 @@ Client::Client(int argc, char *argv[])
     validate_port(gsport);
     // validate_ip(gsip);
 }
-
-
 
 void addAllCommands(CommandManager &manager)
 {

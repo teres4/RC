@@ -13,10 +13,10 @@
 #include <cstddef>
 #include <iostream>
 
-
 class Player_Info
 {
     // the sockets
+public:
     int udpSockFD = -1;
     int tcpSockFD = -1;
     struct addrinfo *serverUdpAddr = NULL;
@@ -25,21 +25,20 @@ class Player_Info
     void setupSockets();
     void setupServerAddr(std::string &hostname, std::string &port);
 
-    public:
-        Player_Info(std::string& hostname, std::string& port);
-        // ~PlayerState();
+public:
+    Player_Info(std::string &hostname, std::string &port);
+    // ~PlayerState();
 
+    // bool hasActiveGame();
+    // bool hasGame();
 
-        // bool hasActiveGame();
-        // bool hasGame();
-                                            
-        int plid; // The player id
-        int max_playtime = 0;
-        bool hasActiveGame = false;
-        int num_trials = 0;
-        // a map for the players' attempts?
+    int plid; // The player id
+    int max_playtime = 0;
+    bool hasActiveGame = false;
+    int num_trials = 0;
+    // a map for the players' attempts?
 
-        // Player_Info(int plid);
+    // Player_Info(int plid);
 };
 
 #endif

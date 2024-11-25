@@ -3,7 +3,7 @@
 
 void CommandManager::addCommand(std::shared_ptr<CommandHandler> command)
 {
-    handlers[command->name] = std::move(command);
+  handlers[command->name] = std::move(command);
 }
 
 // void CommandManager::printHelp()
@@ -16,44 +16,48 @@ void CommandManager::addCommand(std::shared_ptr<CommandHandler> command)
 
 void CommandManager::waitForCommand(Player_Info &state)
 {
-  std::cout << "> ";   // Print the prompt
+  std::cout << "> "; // Print the prompt
 
   std::string input;
   std::getline(std::cin, input); // Read the line from the user
 
-  if (std::cin.eof()) // in case of ctrl-d 
-      return;
+  if (std::cin.eof()) // in case of ctrl-d
+    return;
 
   std::vector<std::string> command_split = split_command(input);
 
   if (command_split.size() == 0)
     return;
 
-  std::string commandName = command_split[0];   // The name of the command
+  std::string commandName = command_split[0]; // The name of the command
 
   if (commandName.length() == 0)
     return;
 
   auto handler = handlers.find(commandName); // find handler of the command
 
-  if (handler == handlers.end()) { // If the handler does not exist
+  if (handler == handlers.end())
+  { // If the handler does not exist
     throw UnknownCommandException();
   }
 
-  try {
-    input.erase(0, commandName.length() + 1);   // gets args
-    handler->second->handle(input, state);  // Call the handle function of the handler
-  } catch (std::exception& e) {
+  try
+  {
+    input.erase(0, commandName.length() + 1); // gets args
+    handler->second->handle(input, state);    // Call the handle function of the handler
+  }
+  catch (std::exception &e)
+  {
     std::cout << e.what() << std::endl;
-  } 
-
+  }
 }
 
-
-void StartCommand::handle(std::string args, Player_Info& state) {
+void StartCommand::handle(std::string args, Player_Info &state)
+{
   std::vector<std::string> arg_split = split_command(args);
 
-  if (arg_split.size() != 2) {
+  if (arg_split.size() != 2)
+  {
     // If the number of arguments is not 2, throw exception
     throw StartCommandArgumentException(*command_arg);
   }
@@ -62,64 +66,72 @@ void StartCommand::handle(std::string args, Player_Info& state) {
   std::string PLID = arg_split[0];
   std::string max_playtime = arg_split[1];
 
-  if (validate_plid(PLID) == INVALID || validatePlayTime(max_playtime) == INVALID){
+  if (validate_plid(PLID) == INVALID || validatePlayTime(max_playtime) == INVALID)
+  {
     throw StartCommandArgumentException(*command_arg);
   }
 
   state.plid = validate_plid(PLID);
   state.max_playtime = validatePlayTime(max_playtime);
 
+  // falta mandar o start...
 
+  // send to GS "SNG PLID time", UDP
+
+  std::string message = "SNG " + PLID + " " + max_playtime;
+
+  if (sendto(state.udpSockFD, message.c_str(), message.length(), 0, state.serverUdpAddr->ai_addr, state.serverUdpAddr->ai_addrlen) == -1)
+  {
+    throw std::runtime_error("Error sending message to server");
+  }
 }
 
+void TryCommand::handle(std::string args, Player_Info &state)
+{
 
-
-void TryCommand::handle(std::string args, Player_Info& state) {
-
-// TODO
-std::cout << args << state.hasActiveGame;
-
-}
-
-void ShowTrialsCommand::handle(std::string args, Player_Info& state) {
   // TODO
   std::cout << args << state.hasActiveGame;
-
 }
 
-void ScoreboardCommand::handle(std::string args, Player_Info& state) {
+void ShowTrialsCommand::handle(std::string args, Player_Info &state)
+{
   // TODO
   std::cout << args << state.hasActiveGame;
-
 }
 
-void QuitCommand::handle(std::string args, Player_Info& state) {
+void ScoreboardCommand::handle(std::string args, Player_Info &state)
+{
   // TODO
   std::cout << args << state.hasActiveGame;
-
 }
 
-void ExitCommand::handle(std::string args, Player_Info& state) {
+void QuitCommand::handle(std::string args, Player_Info &state)
+{
   // TODO
   std::cout << args << state.hasActiveGame;
-
 }
 
-void DebugCommand::handle(std::string args, Player_Info& state) {
+void ExitCommand::handle(std::string args, Player_Info &state)
+{
   // TODO
   std::cout << args << state.hasActiveGame;
-
 }
 
+void DebugCommand::handle(std::string args, Player_Info &state)
+{
+  // TODO
+  std::cout << args << state.hasActiveGame;
+}
 
-std::vector<std::string> split_command(std::string input){
-  std::stringstream ss(input);  // Create a stringstream object
+std::vector<std::string> split_command(std::string input)
+{
+  std::stringstream ss(input); // Create a stringstream object
   std::string temp;
   std::vector<std::string> command_split;
 
   // Splitting the input string by space
   while (std::getline(ss, temp, ' '))
-      command_split.push_back(temp);
+    command_split.push_back(temp);
 
   return command_split;
 }
