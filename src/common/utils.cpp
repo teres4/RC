@@ -29,16 +29,6 @@ void validate_port(std::string &port)
 }
 
 
-// TODO perguntar ao prof se ha forma de validar o ip
-
-// int validate_ip(std::string ip)
-// {
-//     // check if the ip is valid
-    
-//     return VALID;
-// }
-
-
 /**
  * Check if the plid is valid
  */

@@ -150,53 +150,6 @@ class DebugCommand : public CommandHandler
 
 
 
-/**
- * @brief Exception class for command-related errors.
- *
- * This class is derived from std::runtime_error and is used to represent
- * exceptions that occur during command execution.
- */
-class CommandException : public std::runtime_error
-{
-  public:
-    /**
-     * @brief Constructs a CommandException object with the specified reason.
-     *
-     * @param reason The reason for the exception.
-     */
-    CommandException(std::string reason)
-        : std::runtime_error("ERROR: " + reason + "\n") {};
-};
-
-
-/**
- * @brief Exception thrown when invalid arguments are provided for a command.
- */
-class StartCommandArgumentException : public CommandException
-{
-  public:
-    /**
-     * @brief Constructs a CommandArgumentException with the specified command
-     * args information.
-     *
-     * @param command_arg The arguments needed for the command.
-     */
-    StartCommandArgumentException(std::string &command_arg)
-        : CommandException("Invalid arguments.\nUsage: " + command_arg + 
-          "\nPLID must be a 6-digit number. max_playtime cannot exceed 600 seconds")
-          {};
-};
-
-/**
- * @brief Exception thrown when an unknown command is encountered.
- */
-class UnknownCommandException : public CommandException
-{
-  public:
-    UnknownCommandException() : CommandException("Unknown Command.\n") {};
-};
-
-
 std::vector<std::string> split_command(std::string input);
 
 

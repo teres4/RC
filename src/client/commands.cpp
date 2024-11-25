@@ -36,9 +36,9 @@ void CommandManager::waitForCommand(Player_Info &state)
 
   auto handler = handlers.find(commandName); // find handler of the command
 
-  if (handler == handlers.end())
-  { // If the handler does not exist
-    throw UnknownCommandException();
+  if (handler == handlers.end()) { // If the handler does not exist
+    std::cout << "Invalid command: " << commandName << std::endl;
+    return;
   }
 
   try
@@ -56,27 +56,28 @@ void StartCommand::handle(std::string args, Player_Info &state)
 {
   std::vector<std::string> arg_split = split_command(args);
 
-  if (arg_split.size() != 2)
-  {
-    // If the number of arguments is not 2, throw exception
-    throw StartCommandArgumentException(*command_arg);
+  std::string plid_error = "PLID must be a 6-digit number.";
+  std::string max_playtime_error = "max_playtime cannot exceed 600 seconds.";
+
+  if (arg_split.size() != 2) {
+    // If the number of arguments is not 2 
+    std::cout << "Invalid number of arguments.\nUsage: " << *command_arg 
+      << std::endl << plid_error << max_playtime_error << std::endl;
   }
 
   // Get the username and password from the arguments
   std::string PLID = arg_split[0];
   std::string max_playtime = arg_split[1];
 
-  if (validate_plid(PLID) == INVALID || validatePlayTime(max_playtime) == INVALID)
-  {
-    throw StartCommandArgumentException(*command_arg);
+  if (validate_plid(PLID) == INVALID){
+    std::cout << "Invalid PLID: " << plid_error << std::endl;
+  }
+  if (validatePlayTime(max_playtime) == INVALID){
+    std::cout << "Invalid max_playtime: " << max_playtime_error << std::endl;
   }
 
   state.plid = validate_plid(PLID);
   state.max_playtime = validatePlayTime(max_playtime);
-
-  // falta mandar o start...
-
-  // send to GS "SNG PLID time", UDP
 
   std::string message = "SNG " + PLID + " " + max_playtime;
 
@@ -86,8 +87,22 @@ void StartCommand::handle(std::string args, Player_Info &state)
   }
 }
 
-void TryCommand::handle(std::string args, Player_Info &state)
-{
+void TryCommand::handle(std::string args, Player_Info& state) {
+  if (!state.hasActiveGame){
+    return;
+  }
+  std::string plid_error = "PLID must be a 6-digit number.";
+  std::string max_playtime_error = "max_playtime cannot exceed 600 seconds.";
+
+  std::vector<std::string> arg_split = split_command(args);
+
+  if (arg_split.size() != 2) {    // If the number of arguments is not 2, throw exception
+    // throw StartCommandArgumentException(*command_arg);
+  }
+
+
+// TODO
+std::cout << args << state.hasActiveGame;
 
   // TODO
   std::cout << args << state.hasActiveGame;
