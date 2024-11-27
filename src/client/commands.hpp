@@ -10,7 +10,9 @@
 #include <unordered_map>
 
 #include "player_info.hpp"
+#include "player.hpp"
 #include "../common/utils.hpp"
+#include "../common/protocol.hpp"
 
 
 class CommandHandler
@@ -25,7 +27,7 @@ class CommandHandler
      * @brief Handles the command with the given arguments.
      * should be implemented by derived classes
      */
-    virtual void handle(std::string args, Player_Info &receiver) = 0;
+    virtual void handle(std::string args, Client &receiver) = 0;
 
 
   protected:
@@ -67,19 +69,22 @@ class CommandManager
      */
     void addCommand(std::shared_ptr<CommandHandler> handler);
 
+    void addAllCommands();
+
     /**
      * @brief Waits for a command from the player and processes it.
      *
-     * @param state A reference to a Player_Info structure that will be 
+     * @param state A reference to a Client structure that will be 
      * updated based on the received command.
      */
-    void waitForCommand(Player_Info &state);
+    void waitForCommand(Client &state);
 };
+
 
 
 class StartCommand : public CommandHandler
 {
-  void handle(std::string args, Player_Info &state);
+  void handle(std::string args, Client &state);
 
   public:
     StartCommand()
@@ -90,7 +95,7 @@ class StartCommand : public CommandHandler
 
 class TryCommand : public CommandHandler
 {
-  void handle(std::string args, Player_Info &state);
+  void handle(std::string args, Client &state);
 
   public:
     TryCommand()
@@ -100,7 +105,7 @@ class TryCommand : public CommandHandler
 
 class ShowTrialsCommand : public CommandHandler
 {
-  void handle(std::string args, Player_Info &state);
+  void handle(std::string args, Client &state);
 
   public:
     ShowTrialsCommand()
@@ -111,7 +116,7 @@ class ShowTrialsCommand : public CommandHandler
 
 class ScoreboardCommand : public CommandHandler
 {
-  void handle(std::string args, Player_Info &state);
+  void handle(std::string args, Client &state);
 
   public:
     ScoreboardCommand()
@@ -121,7 +126,7 @@ class ScoreboardCommand : public CommandHandler
 
 class QuitCommand : public CommandHandler
 {
-  void handle(std::string args, Player_Info &state);
+  void handle(std::string args, Client &state);
 
   public:
     QuitCommand()
@@ -130,7 +135,7 @@ class QuitCommand : public CommandHandler
 
 class ExitCommand : public CommandHandler
 {
-  void handle(std::string args, Player_Info &state);
+  void handle(std::string args, Client &state);
 
   public:
     ExitCommand()
@@ -140,7 +145,7 @@ class ExitCommand : public CommandHandler
 
 class DebugCommand : public CommandHandler
 {
-  void handle(std::string args, Player_Info &state);
+  void handle(std::string args, Client &state);
 
   public:
     DebugCommand()

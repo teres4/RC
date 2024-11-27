@@ -10,16 +10,11 @@ int main(int argc, char *argv[])
     Client client(argc, argv); // parse command-line arguments
 
     CommandManager commandManager; // create a new command manager
-    addAllCommands(commandManager);
-
-    Player_Info state(client.gsip, client.gsport);
-
-    // player info
-    // setup sockets
+    commandManager.addAllCommands();
 
     while (!std::cin.eof())
     {
-        commandManager.waitForCommand(state);
+        commandManager.waitForCommand(client);
     }
 
     // TODO: open sockets send t o command manager etc
@@ -45,16 +40,35 @@ Client::Client(int argc, char *argv[])
     }
 
     validate_port(gsport);
-    // validate_ip(gsip);
+
 }
 
-void addAllCommands(CommandManager &manager)
-{
-    manager.addCommand(std::make_shared<StartCommand>());
-    manager.addCommand(std::make_shared<TryCommand>());
-    manager.addCommand(std::make_shared<QuitCommand>());
-    manager.addCommand(std::make_shared<ShowTrialsCommand>());
-    manager.addCommand(std::make_shared<ScoreboardCommand>());
-    manager.addCommand(std::make_shared<ExitCommand>());
-    manager.addCommand(std::make_shared<DebugCommand>());
+void Client::processRequest(ProtocolCommunication &comm) {
+    std::stringstream reqMessage = comm.encodeRequest();
+    std::stringstream resMessage;
+
+
+    char buffer[BUFFER_SIZE];
+    reqMessage.read(buffer, BUFFER_SIZE);  // Read the message
+    std::cout << "reqMessage: " << buffer;
+
+    if (comm.isTcp()) {  // If the communication is TCP, use TCP
+        TCPInfo tcp(gsip, gsport); 
+        tcp.send(reqMessage);         // send request message 
+        resMessage = tcp.receive();   // receive response
+    }
+    
+    else {  // If the communication is UDP, use UDP
+
+        UDPInfo udp(gsip, gsport); 
+        udp.send(reqMessage);         // request 
+
+        resMessage = udp.receive();   // receive response
+        
+    }
+
+    StreamMessage resStreamMessage(resMessage);  // Create a StreamMessage from the response
+    
+    comm.decodeResponse(resStreamMessage);  // Decode the response
+    std::cout << "got response message ";
 }

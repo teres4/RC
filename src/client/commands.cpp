@@ -1,10 +1,24 @@
 #include "commands.hpp"
+#include "player.hpp"
 #include <iostream>
 
 void CommandManager::addCommand(std::shared_ptr<CommandHandler> command)
 {
   handlers[command->name] = std::move(command);
 }
+
+
+void CommandManager::addAllCommands()
+{
+  this->addCommand(std::make_shared<StartCommand>());
+  this->addCommand(std::make_shared<TryCommand>());
+  this->addCommand(std::make_shared<QuitCommand>());
+  this->addCommand(std::make_shared<ShowTrialsCommand>());
+  this->addCommand(std::make_shared<ScoreboardCommand>());
+  this->addCommand(std::make_shared<ExitCommand>());
+  this->addCommand(std::make_shared<DebugCommand>());
+}
+
 
 // void CommandManager::printHelp()
 // {
@@ -14,7 +28,7 @@ void CommandManager::addCommand(std::shared_ptr<CommandHandler> command)
 //     }
 // }
 
-void CommandManager::waitForCommand(Player_Info &state)
+void CommandManager::waitForCommand(Client &state)
 {
   std::cout << "> "; // Print the prompt
 
@@ -52,7 +66,9 @@ void CommandManager::waitForCommand(Player_Info &state)
   }
 }
 
-void StartCommand::handle(std::string args, Player_Info &state)
+
+
+void StartCommand::handle(std::string args, Client &state)
 {
   std::vector<std::string> arg_split = split_command(args);
 
@@ -63,6 +79,7 @@ void StartCommand::handle(std::string args, Player_Info &state)
     // If the number of arguments is not 2 
     std::cout << "Invalid number of arguments.\nUsage: " << *command_arg 
       << std::endl << plid_error << max_playtime_error << std::endl;
+    return;
   }
 
   // Get the username and password from the arguments
@@ -71,26 +88,40 @@ void StartCommand::handle(std::string args, Player_Info &state)
 
   if (validate_plid(PLID) == INVALID){
     std::cout << "Invalid PLID: " << plid_error << std::endl;
+    return;
   }
   if (validatePlayTime(max_playtime) == INVALID){
     std::cout << "Invalid max_playtime: " << max_playtime_error << std::endl;
-  }
-
-  state.plid = validate_plid(PLID);
-  state.max_playtime = validatePlayTime(max_playtime);
-
-  std::string message = "SNG " + PLID + " " + max_playtime;
-
-  if (sendto(state.udpSockFD, message.c_str(), message.length(), 0, state.serverUdpAddr->ai_addr, state.serverUdpAddr->ai_addrlen) == -1)
-  {
-    throw std::runtime_error("Error sending message to server");
-  }
-}
-
-void TryCommand::handle(std::string args, Player_Info& state) {
-  if (!state.hasActiveGame){
     return;
   }
+
+  StartCommunication startComm;
+  startComm._plid = get_plid(PLID);
+  startComm._time = get_playtime(max_playtime);
+
+  state.processRequest(startComm);  // Send the request to the server, receiving its response
+
+  if (startComm._status == "OK") {
+    std::cout << "New game can be started!" << std::endl;
+    // start a new game
+  } 
+  else if (startComm._status == "NOK") {
+    std::cout << "Player already has an ongoing game" << std::endl;
+  } 
+  else if (startComm._status == "ERR") {
+    std::cout << "Check syntax" << std::endl;
+  }
+
+}
+
+
+
+
+
+void TryCommand::handle(std::string args, Client& state) {
+  // if (!state.hasActiveGame){
+  //   return;
+  // }
   std::string plid_error = "PLID must be a 6-digit number.";
   std::string max_playtime_error = "max_playtime cannot exceed 600 seconds.";
 
@@ -102,40 +133,40 @@ void TryCommand::handle(std::string args, Player_Info& state) {
 
 
 // TODO
-std::cout << args << state.hasActiveGame;
+std::cout << args << state.gsip;
 
   // TODO
-  std::cout << args << state.hasActiveGame;
+  std::cout << args << state.gsip;
 }
 
-void ShowTrialsCommand::handle(std::string args, Player_Info &state)
+void ShowTrialsCommand::handle(std::string args, Client &state)
 {
   // TODO
-  std::cout << args << state.hasActiveGame;
+  std::cout << args << state.gsip;
 }
 
-void ScoreboardCommand::handle(std::string args, Player_Info &state)
+void ScoreboardCommand::handle(std::string args, Client &state)
 {
   // TODO
-  std::cout << args << state.hasActiveGame;
+  std::cout << args << state.gsip;
 }
 
-void QuitCommand::handle(std::string args, Player_Info &state)
+void QuitCommand::handle(std::string args, Client &state)
 {
   // TODO
-  std::cout << args << state.hasActiveGame;
+  std::cout << args << state.gsip;
 }
 
-void ExitCommand::handle(std::string args, Player_Info &state)
+void ExitCommand::handle(std::string args, Client &state)
 {
   // TODO
-  std::cout << args << state.hasActiveGame;
+  std::cout << args << state.gsip;
 }
 
-void DebugCommand::handle(std::string args, Player_Info &state)
+void DebugCommand::handle(std::string args, Client &state)
 {
   // TODO
-  std::cout << args << state.hasActiveGame;
+  std::cout << args << state.gsip;
 }
 
 std::vector<std::string> split_command(std::string input)

@@ -1,19 +1,34 @@
 #include "utils.hpp"
-#include "protocols.hpp"
+#include "protocol.hpp"
 
 #include <iostream>
 
 int is_exiting = 0;
 
-void validate_port(std::string &port)
-{
-    for (char c : port)
+int is_numeric(std::string &str){
+    for (char c : str)
     {
         if (!std::isdigit(static_cast<unsigned char>(c)))
         {
-            throw UnrecoverableError("Invalid port: not a number");
+            return INVALID;
         }
     }
+    return VALID;
+}
+
+
+int is_not_numeric(std::string &str){
+    if (is_numeric(str) == VALID)
+        return INVALID;
+
+    return VALID;
+}
+
+
+void validate_port(std::string &port)
+{
+    if (is_numeric(port) == INVALID)
+        throw UnrecoverableError("Invalid port: not a number");
 
     try
     {
@@ -34,35 +49,36 @@ void validate_port(std::string &port)
  */
 int validate_plid(std::string plid)
 {
-    if (plid.length() != PLID_MAX_SIZE)
+    if (plid.length() != PLID_MAX_SIZE || is_numeric(plid) == INVALID)
         return INVALID;
-
-    for (char c : plid)
-    {
-        if (!std::isdigit(c))
-            return INVALID;
-    }
 
     int parsed = std::stoi(plid);
     if (parsed < 0)
         return INVALID;
 
-    return parsed;
+    return VALID;
+}
+
+int get_plid(std::string plid){
+    return std::stoi(plid);
 }
 
 int validatePlayTime(std::string playtime)
 {
-    for (char c : playtime)
-    {
-        if (!std::isdigit(c))
-            return INVALID;
-    }
+    if (is_numeric(playtime) == INVALID)
+        return INVALID;
+
     int parsed = std::stoi(playtime);
 
     if (parsed < 0 || parsed > MAX_PLAYTIME)
         return INVALID;
 
-    return parsed;
+    return VALID;
+}
+
+
+int get_playtime(std::string playtime){
+    return std::stoi(playtime);
 }
 
 void setup_signal_handlers()
