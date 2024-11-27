@@ -2,12 +2,7 @@
 
 
 char ProtocolCommunication::readChar(MessageSource &message) {
-    char c = (char)message
-                 .get();  // get() returns an int, so we need to cast it to char
-
-    if (!message.good()) {  // if the stream is not good, throw an exception
-        throw ProtocolViolationException();
-    }
+    char c = (char)message.get();  // get() returns an int, so we need to cast it to char
 
     return c;
 }
@@ -34,17 +29,12 @@ std::string ProtocolCommunication::readString(MessageSource &message) {
     return readString(message, std::string::npos);
 }
 
-std::string ProtocolCommunication::readString(MessageSource &message,
-                                              size_t n) {
+std::string ProtocolCommunication::readString(MessageSource &message, size_t n) {
     std::string result;
 
     for (size_t i = 0; i < n; i++) {  // read n chars
         // Read a char
-        char c = (char)message.get();
-
-        if (!message.good()) {  // if the stream is not good, throw an exception
-            throw ProtocolViolationException();
-        }
+        char c = (char) message.get();
 
         if (c == ' ' || c == '\n') {
             // If the char is a space or a delimiter, put it back in the stream
@@ -59,16 +49,16 @@ std::string ProtocolCommunication::readString(MessageSource &message,
     return result;
 }
 
-void ProtocolCommunication::readString(MessageSource &message,
-                                       std::string expected) {
+void ProtocolCommunication::readString(MessageSource &message, std::string expected) {
     if (readString(message) != expected) {
         // if the read string is not the expected one, throw an exception
         throw ProtocolViolationException();
     }
 }
 
-std::string ProtocolCommunication::readString(
-    MessageSource &message, std::vector<std::string> options) {
+std::string ProtocolCommunication::readString(MessageSource &message, 
+                                    std::vector<std::string> options) {
+
     // Read a string
     std::string string = readString(message);
 
@@ -112,12 +102,13 @@ int ProtocolCommunication::readTime(MessageSource &message) {
 void ProtocolCommunication::readIdentifier(MessageSource &message,
                                            std::string identifier) {
 
-    std::string identifierRecieved = readString(message, 3);  // Read a string
+    std::string identifierReceived = readString(message, 3);  // Read a string
 
-    if (identifierRecieved == PROTOCOL_ERROR) {
+    if (identifierReceived == PROTOCOL_ERROR) {
         // If the identifier is the error identifier, throw an exception
         throw ProtocolMessageErrorException();
-    } else if (identifierRecieved != identifier) {
+
+    } else if (identifierReceived != identifier) {
         // If the identifier is not the expected one, throw an exception
         throw ProtocolViolationException();
     }
@@ -197,10 +188,10 @@ std::string StartCommunication::encodeResponse() {
 void StartCommunication::decodeResponse(MessageSource &message) {
 
     readIdentifier(message, "RSG");  // read identifier "RSG"
-
     readSpace(message);
+
     // Read the status, and check if it is one of the options
     _status = readString(message, {"OK", "NOK", "ERR"});
-
+    
     readDelimiter(message);  // Read the delimiter
 }

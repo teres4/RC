@@ -71,7 +71,7 @@ class MessageSource {
 };
 
 /**
- * @brief Represents a message source that reads from a stringstream.
+ * @brief Represents a message source that reads from a string.
  */
 class StreamMessage : public MessageSource {
   private:

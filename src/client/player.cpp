@@ -52,11 +52,6 @@ void Client::processRequest(ProtocolCommunication &comm) {
     std::string resMessage;
 
 
-    // char buffer[BUFFER_SIZE];
-    // reqMessage.read(buffer, BUFFER_SIZE);  // Read the message
-    std::cout << "reqMessage: " << reqMessage;
-
-
     if (comm.isTcp()) {  // If the communication is TCP, use TCP
         TCPInfo tcp(gsip, gsport); 
         tcp.send(reqMessage);         // send request message 
@@ -64,7 +59,6 @@ void Client::processRequest(ProtocolCommunication &comm) {
     }
     
     else {  // If the communication is UDP, use UDP
-
         UDPInfo udp(gsip, gsport); 
         udp.send(reqMessage);         // request 
         resMessage = udp.receive();   // receive response
@@ -73,8 +67,5 @@ void Client::processRequest(ProtocolCommunication &comm) {
 
     StreamMessage resStreamMessage(resMessage);  // Create a StreamMessage from the response
     
-    std::cout << "response message in process req" << resMessage;
     comm.decodeResponse(resStreamMessage);  // Decode the response
-
-    // std::cout << "got response message ";
 }

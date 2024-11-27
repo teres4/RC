@@ -103,7 +103,7 @@ void StartCommand::handle(std::string args, Client &state)
 
 
   if (startComm._status == "OK") {
-    std::cout << "New game can be started!" << std::endl;
+    std::cout << "New game has started!" << std::endl;
     // start a new game
   } 
   else if (startComm._status == "NOK") {

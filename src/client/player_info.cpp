@@ -62,7 +62,7 @@ std::string UDPInfo::receive() {
         throw SocketException();
     }
 
-    buffer[n] = '\0';  // Null-terminate the buffer to safely convert to string
+    buffer[n] = '\n';  // Null-terminate the buffer to safely convert to string
 
     // Create a string from the buffer
     return std::string(buffer, (size_t)n); 
