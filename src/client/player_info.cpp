@@ -38,44 +38,35 @@ UDPInfo::~UDPInfo() {
 }
    
 
-void UDPInfo::send(std::stringstream &message) {
-    char buffer[BUFFER_SIZE];
-    std::streamsize n = message.gcount();  // Get the size of the message
-
-    message.read(buffer, n);  // Read the message
-
-    if (n == -1) {
+void UDPInfo::send(std::string &message) {
+    size_t n = message.size();
+    if (n <= 0) {
         throw TimeoutException();
     }
     // Send the message
-    if (sendto(_fd, buffer, (size_t) n, 0, _res->ai_addr, _res->ai_addrlen) != n) {  
+    if (sendto(_fd, message.c_str(), (size_t) n, 0, _res->ai_addr, _res->ai_addrlen) <= 0) {  
         throw SocketException();
     }
 }
 
-std::stringstream UDPInfo::receive() {
+std::string UDPInfo::receive() {
     char buffer[BUFFER_SIZE + 1];  
     socklen_t addrlen = sizeof(_addr);  // Get the size of the address
+
     ssize_t n = recvfrom(_fd, buffer, BUFFER_SIZE + 1, 0, (struct sockaddr *) &_addr, &addrlen);  // Receive the message
-
-
-    std::cout << "in udp receive. received message: " << buffer;
-
     
-    if (n == -1) {
+    if (n <= -1) {
         throw TimeoutException();
     }
     if (n > BUFFER_SIZE) {
         throw SocketException();
     }
 
-    std::stringstream message;
+    buffer[n] = '\0';  // Null-terminate the buffer to safely convert to string
 
-    message.write(buffer, (std::streamsize)n);  // Write the message to a stringstream
+    // Create a string from the buffer
+    return std::string(buffer, (size_t)n); 
 
-
-
-    return message;
 }
 
 
@@ -112,25 +103,25 @@ TCPInfo::~TCPInfo() {
 }
 
 
-void TCPInfo::send(std::stringstream &message) {
-    ssize_t n = message.gcount();
-    char buffer[BUFFER_SIZE];
+void TCPInfo::send(std::string &message) {
+    size_t message_size = message.size();
+    size_t total_sent = 0;
 
-    message.read(buffer, n);  // Read the message
+    while (total_sent < message_size) {
+        size_t bytes_to_send = std::min(message_size - total_sent, static_cast<size_t>(BUFFER_SIZE));
+        ssize_t bytes_sent = write(_fd, message.data() + total_sent, bytes_to_send);
 
-    while (n != 0) {  // While there is content to be read, loops and writes to the socket
-        if (write(_fd, buffer, (size_t)n) == -1) {
+        if (bytes_sent == -1) {
             throw SocketException();
         }
-        message.read(buffer, BUFFER_SIZE);
-        n = message.gcount();
+        total_sent += (size_t)bytes_sent;
     }
 }
 
 
-std::stringstream TCPInfo::receive() {
+std::string TCPInfo::receive() {
     char buffer[BUFFER_SIZE];
-    std::stringstream message;
+    std::string message;
 
     ssize_t n = read(_fd, buffer, BUFFER_SIZE);  // Read the message
 
@@ -138,7 +129,7 @@ std::stringstream TCPInfo::receive() {
         throw SocketException();
 
     while (n != 0) {  // While there is content to be read
-        message.write(buffer, n);
+        message.append(buffer, (size_t)n);  // Append the data to the string
 
         n = read(_fd, buffer, BUFFER_SIZE);
 

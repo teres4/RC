@@ -36,6 +36,7 @@ class ProtocolViolationException : public ProtocolException {};
  */
 class ProtocolMessageErrorException : public ProtocolException {};
 
+
 /**
  * @brief The MessageSource class represents a source of messages.
  *
@@ -74,34 +75,43 @@ class MessageSource {
  */
 class StreamMessage : public MessageSource {
   private:
-    std::stringstream &_stream;
+    std::string &_stream;
+    size_t _current_pos;  // current index
+
 
   public:
     /**
-     * @brief Constructs a StreamMessage object with the given stringstream.
+     * @brief Constructs a StreamMessage object with the given string.
      *
-     * @param stream The stringstream to read from.
+     * @param stream The string to read from.
      */
-    StreamMessage(std::stringstream &stream) : _stream(stream){};
+    StreamMessage(std::string &stream) : _stream(stream), _current_pos(0) {};
 
     /**
-     * @brief Reads the next character from the stringstream.
+     * @brief Reads the next character from the string.
      *
-     * @return The next character from the stringstream.
+     * @return The next character from the string.
      */
-    char get() { return (char)_stream.get(); };
+    char get() { 
+      if (_current_pos < _stream.size()) 
+        return _stream[_current_pos++];
+      throw std::out_of_range("End of stream reached"); 
+    };
 
     /**
-     * @brief Checks if the stringstream is in a good state.
+     * @brief Checks if the string is in a good state.
      *
-     * @return True if the stringstream is in a good state, false otherwise.
+     * @return True if the string is in a good state, false otherwise.
      */
-    bool good() { return _stream.good(); };
+    bool good() { return _current_pos < _stream.size(); };
 
     /**
-     * @brief Puts the last character extracted from the stringstream back.
+     * @brief Puts the last character extracted from the string back.
      */
-    void unget() { _stream.unget(); };
+    void unget() { 
+      if (_current_pos > 0) 
+        --_current_pos; 
+    };
 };
 
 
@@ -195,11 +205,11 @@ class ProtocolCommunication {
   public:
     // Each subclass should implement their information as members.
 
-    virtual std::stringstream encodeRequest() = 0;
+    virtual std::string encodeRequest() = 0;
 
     virtual void decodeRequest(MessageSource &message) = 0;
 
-    virtual std::stringstream encodeResponse() = 0;
+    virtual std::string encodeResponse() = 0;
 
     virtual void decodeResponse(MessageSource &message) = 0;
 
@@ -276,21 +286,21 @@ class ProtocolCommunication {
      * @param message The stringstream to write to.
      * @param c The character to write.
      */
-    void writeChar(std::stringstream &message, char c);
+    void writeChar(std::string &message, char c);
 
     /**
      * @brief Writes a delimiter to stringstream.
      *
      * @param message The stringstream to write to.
      */
-    void writeDelimiter(std::stringstream &message);
+    void writeDelimiter(std::string &message);
 
     /**
      * @brief Writes a space to stringstream.
      *
      * @param message The stringstream to write to.
      */
-    void writeSpace(std::stringstream &message);
+    void writeSpace(std::string &message);
 
     /**
      * @brief Writes a string to stringstream.
@@ -298,7 +308,7 @@ class ProtocolCommunication {
      * @param message The stringstream to write to.
      * @param string The string to write.
      */
-    void writeString(std::stringstream &message, std::string string);
+    void writeString(std::string &message, std::string string);
 
     /**
      * @brief Writes a number to stringstream.
@@ -306,7 +316,7 @@ class ProtocolCommunication {
      * @param message The stringstream to write to.
      * @param number The number to write.
      */
-    void writeNumber(std::stringstream &message, int number);
+    void writeNumber(std::string &message, int number);
 
     /**
      * @brief Writes a UID to stringstream.
@@ -314,7 +324,7 @@ class ProtocolCommunication {
      * @param message The stringstream to write to.
      * @param uid The UID to write.
      */
-    void writePlid(std::stringstream &message, std::string uid);
+    void writePlid(std::string &message, std::string uid);
 
     /**
      * @brief Writes the file name to the given message.
@@ -322,7 +332,7 @@ class ProtocolCommunication {
      * @param message The message to write the file name to.
      * @param fileName The name of the file to be written.
      */
-    void writeFileName(std::stringstream &message, std::string fileName);
+    void writeFileName(std::string &message, std::string fileName);
 
     /**
      * @brief Checks if the communication protocol uses TCP.
@@ -355,7 +365,7 @@ class StartCommunication : public ProtocolCommunication {
      *
      * @return The encoded start request as a stringstream.
      */
-    std::stringstream encodeRequest();
+    std::string encodeRequest();
 
     /**
      * @brief Decodes the start request from a stringstream.
@@ -369,7 +379,7 @@ class StartCommunication : public ProtocolCommunication {
      *
      * @return The encoded start response as a stringstream.
      */
-    std::stringstream encodeResponse();
+    std::string encodeResponse();
 
     /**
      * @brief Decodes the start response from a stringstream.

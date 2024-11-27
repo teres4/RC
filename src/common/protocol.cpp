@@ -123,30 +123,31 @@ void ProtocolCommunication::readIdentifier(MessageSource &message,
     }
 }
 
-void ProtocolCommunication::writeChar(std::stringstream &message, char c) {
-    message.put(c);  // put() takes a char as an argument
-
-    if (!message.good()) {  // if the stream is not good, throw an exception
+void ProtocolCommunication::writeChar(std::string &message, char c) {
+    try {
+        message.push_back(c);
+    } catch (const std::exception &) {
         throw ProtocolViolationException();
     }
+
 }
 
-void ProtocolCommunication::writeDelimiter(std::stringstream &message) {
+void ProtocolCommunication::writeDelimiter(std::string &message) {
     writeChar(message, '\n');  // write the delimiter
 }
 
-void ProtocolCommunication::writeSpace(std::stringstream &message) {
+void ProtocolCommunication::writeSpace(std::string &message) {
     writeChar(message, ' ');  // write a space
 }
 
-void ProtocolCommunication::writeString(std::stringstream &message,
+void ProtocolCommunication::writeString(std::string &message,
                                         std::string string) {
     for (auto c : string) {  // write each char of the string
         writeChar(message, c);
     }
 }
 
-void ProtocolCommunication::writeNumber(std::stringstream &message,
+void ProtocolCommunication::writeNumber(std::string &message,
                                         int number) {
     std::string value =
         std::to_string(number);  // convert the number to a string
@@ -157,8 +158,8 @@ void ProtocolCommunication::writeNumber(std::stringstream &message,
 
 
 
-std::stringstream StartCommunication::encodeRequest() {
-    std::stringstream message;
+std::string StartCommunication::encodeRequest() {
+    std::string message;
 
     writeString(message, "SNG ");  // write identifier "SNG"
     writeNumber(message, _plid);
@@ -181,8 +182,8 @@ void StartCommunication::decodeRequest(MessageSource &message) {
 }
 
 
-std::stringstream StartCommunication::encodeResponse() {
-    std::stringstream message;
+std::string StartCommunication::encodeResponse() {
+    std::string message;
 
     writeString(message, "RSG ");  // write identifier "RSG"
 
@@ -194,6 +195,7 @@ std::stringstream StartCommunication::encodeResponse() {
 }
 
 void StartCommunication::decodeResponse(MessageSource &message) {
+
     readIdentifier(message, "RSG");  // read identifier "RSG"
 
     readSpace(message);

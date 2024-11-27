@@ -46,13 +46,13 @@ class UDPInfo {
      * @brief Sends the specified message to the server.
      * @param message The message to send.
      */
-    void send(std::stringstream &message);
+    void send(std::string &message);
 
     /**
      * @brief Receives a message from the server.
-     * @return The received message as a stringstream.
+     * @return The received message as a string.
      */
-    std::stringstream receive();
+    std::string receive();
 };
 
 
@@ -85,13 +85,13 @@ class TCPInfo {
      * @brief Sends the specified message to the server.
      * @param message The message to send.
      */
-    void send(std::stringstream &message);
+    void send(std::string &message);
 
     /**
      * @brief Receives a message from the server.
-     * @return The received message as a stringstream.
+     * @return The received message as a string.
      */
-    std::stringstream receive();
+    std::string receive();
 };
 
 

@@ -12,6 +12,10 @@ int main(int argc, char *argv[])
     CommandManager commandManager; // create a new command manager
     commandManager.addAllCommands();
 
+
+    // player info
+    // setup sockets
+
     while (!std::cin.eof())
     {
         commandManager.waitForCommand(client);
@@ -44,13 +48,14 @@ Client::Client(int argc, char *argv[])
 }
 
 void Client::processRequest(ProtocolCommunication &comm) {
-    std::stringstream reqMessage = comm.encodeRequest();
-    std::stringstream resMessage;
+    std::string reqMessage = comm.encodeRequest();
+    std::string resMessage;
 
 
-    char buffer[BUFFER_SIZE];
-    reqMessage.read(buffer, BUFFER_SIZE);  // Read the message
-    std::cout << "reqMessage: " << buffer;
+    // char buffer[BUFFER_SIZE];
+    // reqMessage.read(buffer, BUFFER_SIZE);  // Read the message
+    std::cout << "reqMessage: " << reqMessage;
+
 
     if (comm.isTcp()) {  // If the communication is TCP, use TCP
         TCPInfo tcp(gsip, gsport); 
@@ -62,13 +67,14 @@ void Client::processRequest(ProtocolCommunication &comm) {
 
         UDPInfo udp(gsip, gsport); 
         udp.send(reqMessage);         // request 
-
         resMessage = udp.receive();   // receive response
         
     }
 
     StreamMessage resStreamMessage(resMessage);  // Create a StreamMessage from the response
     
+    std::cout << "response message in process req" << resMessage;
     comm.decodeResponse(resStreamMessage);  // Decode the response
-    std::cout << "got response message ";
+
+    // std::cout << "got response message ";
 }

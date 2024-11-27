@@ -101,6 +101,7 @@ void StartCommand::handle(std::string args, Client &state)
 
   state.processRequest(startComm);  // Send the request to the server, receiving its response
 
+
   if (startComm._status == "OK") {
     std::cout << "New game can be started!" << std::endl;
     // start a new game
