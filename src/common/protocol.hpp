@@ -227,6 +227,11 @@ class ProtocolCommunication {
     void readChar(MessageSource &message, char expected);
 
     /**
+     * @brief Reads a character from a MessageSource.
+     */
+    char readChar(MessageSource &message, std::vector<char> options);
+
+    /**
      * @brief Reads a delimiter from a MessageSource.
      */
     void readDelimiter(MessageSource &message);
@@ -258,6 +263,14 @@ class ProtocolCommunication {
                            std::vector<std::string> options);
 
 
+    /**
+     * @brief Reads a number from a MessageSource.
+     */
+    int readNumber(MessageSource &message);
+
+    /**
+     * @brief Reads a number from a MessageSource with the specified size.
+    */
     int readNumber(MessageSource &message, size_t size);
 
     /**
@@ -271,6 +284,10 @@ class ProtocolCommunication {
      */
     int readTime(MessageSource &message);
 
+    /**
+     * @brief Reads key from a MessageSource.
+    */
+    std::string readKey(MessageSource &message);
 
     /**
      * @brief Reads a identifier from a MessageSource.
@@ -353,46 +370,63 @@ class ProtocolCommunication {
 class StartCommunication : public ProtocolCommunication {
   public:
     // Request parameters:
-    int _plid;       // The user ID for start request.
+    int _plid;       // The player ID for start request.
     int _time;      // The password for start request.
 
     // Response parameters:
     std::string _status;    // The status of the start response.
 
-
-    /**
-     * @brief Encodes the start request into a stringstream.
-     *
-     * @return The encoded start request as a stringstream.
-     */
     std::string encodeRequest();
 
-    /**
-     * @brief Decodes the start request from a stringstream.
-     *
-     * @param message The stringstream containing the start request.
-     */
     void decodeRequest(MessageSource &message);
 
-    /**
-     * @brief Encodes the start response into a stringstream.
-     *
-     * @return The encoded start response as a stringstream.
-     */
     std::string encodeResponse();
 
-    /**
-     * @brief Decodes the start response from a stringstream.
-     *
-     * @param message The stringstream containing the start response.
-     */
     void decodeResponse(MessageSource &message);
 
-    /**
-     * @brief Checks if the communication is using TCP.
-     *
-     * @return True if the communication is using TCP, false otherwise.
-     */
+    bool isTcp() { return false; };
+};
+
+
+class TryCommunication : public ProtocolCommunication {
+  public:
+    // Request parameters:
+    int _plid;       // The player ID for start request.
+    std::string _key;       // The password for start request.
+    int _nT;
+
+    // Response parameters:
+    std::string _status;    // The status of the start response.
+    std::string _nB;
+    std::string _nW;
+
+    std::string encodeRequest();
+
+    void decodeRequest(MessageSource &message);
+
+    std::string encodeResponse();
+
+    void decodeResponse(MessageSource &message);
+
+    bool isTcp() { return false; };
+};
+
+
+
+class ShowTrialsCommunication : public ProtocolCommunication {
+  public:
+    // Response parameters:
+    std::string _status;    // The status of the start response.
+
+
+    std::string encodeRequest();
+
+    void decodeRequest(MessageSource &message);
+
+    std::string encodeResponse();
+
+    void decodeResponse(MessageSource &message);
+
     bool isTcp() { return false; };
 };
 

@@ -21,8 +21,6 @@ int main(int argc, char *argv[])
         commandManager.waitForCommand(client);
     }
 
-    // TODO: open sockets send t o command manager etc
-
     return 0;
 }
 
@@ -62,7 +60,6 @@ void Client::processRequest(ProtocolCommunication &comm) {
         UDPInfo udp(gsip, gsport); 
         udp.send(reqMessage);         // request 
         resMessage = udp.receive();   // receive response
-        
     }
 
     StreamMessage resStreamMessage(resMessage);  // Create a StreamMessage from the response

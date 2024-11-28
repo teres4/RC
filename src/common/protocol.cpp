@@ -14,6 +14,21 @@ void ProtocolCommunication::readChar(MessageSource &message, char expected) {
     }
 }
 
+char ProtocolCommunication::readChar(MessageSource &message,
+                                     std::vector<char> options) {
+    char c = readChar(message);  // read a char
+
+    for (auto option : options) {
+        // check if the read char is one of the options
+        if (option == c) {
+            return c;
+        }
+    }
+    // if not, throw an exception
+    throw ProtocolViolationException();
+}
+
+
 void ProtocolCommunication::readDelimiter(MessageSource &message) {
     readChar(message, '\n');  // read the delimiter
 }
@@ -72,6 +87,16 @@ std::string ProtocolCommunication::readString(MessageSource &message,
     throw ProtocolViolationException();
 }
 
+int ProtocolCommunication::readNumber(MessageSource &message) {
+    std::string string = readString(message);
+
+    // Check if string only contains digits
+    if (is_not_numeric(string) == VALID) {
+        throw ProtocolViolationException();
+    }
+
+    return stoi(string);  // Convert string to int
+}
 
 int ProtocolCommunication::readNumber(MessageSource &message, size_t size) {
     std::string string = readString(message, size);
@@ -98,6 +123,21 @@ int ProtocolCommunication::readTime(MessageSource &message) {
     return time;
 }
 
+
+std::string ProtocolCommunication::readKey(MessageSource &message) {
+    std::vector<char> colors = {'R', 'G', 'B', 'Y', 'O', 'P'};
+    
+    char c1 = readChar(message, colors);
+    readSpace(message);
+    char c2 = readChar(message);
+    readSpace(message);
+    char c3 = readChar(message);
+    readSpace(message);
+    char c4 = readChar(message);
+    readSpace(message);
+
+    return std::string(1, c1) + " " + c2 + " " + c3 + " " + c4;
+}
 
 void ProtocolCommunication::readIdentifier(MessageSource &message,
                                            std::string identifier) {
@@ -152,7 +192,8 @@ void ProtocolCommunication::writeNumber(std::string &message,
 std::string StartCommunication::encodeRequest() {
     std::string message;
 
-    writeString(message, "SNG ");  // write identifier "SNG"
+    writeString(message, "SNG");  // write identifier "SNG"
+    writeSpace(message);
     writeNumber(message, _plid);
     writeSpace(message);
     writeNumber(message, _time);
@@ -172,12 +213,11 @@ void StartCommunication::decodeRequest(MessageSource &message) {
     readDelimiter(message);
 }
 
-
 std::string StartCommunication::encodeResponse() {
     std::string message;
 
-    writeString(message, "RSG ");  // write identifier "RSG"
-
+    writeString(message, "RSG");  // write identifier "RSG"
+    writeSpace(message);
     writeString(message, _status);
 
     writeDelimiter(message);  // delimiter at the end
@@ -192,6 +232,65 @@ void StartCommunication::decodeResponse(MessageSource &message) {
 
     // Read the status, and check if it is one of the options
     _status = readString(message, {"OK", "NOK", "ERR"});
+    
+    readDelimiter(message);  // Read the delimiter
+}
+
+
+
+std::string TryCommunication::encodeRequest() {
+    std::string message;
+
+    writeString(message, "TRY");  // write identifier "TRY"
+    writeSpace(message);
+    writeNumber(message, _plid);
+    writeSpace(message);
+    writeString(message, _key);
+    writeSpace(message);
+    writeNumber(message, _nT);
+    writeDelimiter(message);  // delimiter at the end
+
+    return message;
+}
+
+void TryCommunication::decodeRequest(MessageSource &message) {
+    // readIdentifier(message, "TRY"); The identifier is already read by the server
+    readSpace(message);
+
+    _plid = readPlid(message);
+    readSpace(message);
+
+    _key = readKey(message);
+    readSpace(message);
+
+    _nT = readNumber(message);
+    readDelimiter(message);
+}
+
+
+std::string TryCommunication::encodeResponse() {
+    std::string message;
+    //TODO
+    writeString(message, "RTR");  // write identifier "RTR"
+    writeSpace(message);
+    writeString(message, _status);
+    writeSpace(message);
+
+
+
+    writeDelimiter(message);  // delimiter at the end
+
+    return message;
+}
+
+void TryCommunication::decodeResponse(MessageSource &message) {
+
+    readIdentifier(message, "RTR");  // read identifier "RSG"
+    readSpace(message);
+
+    // Read the status, and check if it is one of the options
+    _status = readString(message, {"OK", "NOK", "ERR"});
+    readSpace(message);
     
     readDelimiter(message);  // Read the delimiter
 }

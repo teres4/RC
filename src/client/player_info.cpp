@@ -19,6 +19,8 @@ UDPInfo::UDPInfo(std::string gsip, std::string gsport) {
         throw SocketException();
     }
 
+
+    // TODO 
     // // Set the timeout of the socket
     // struct timeval timeout;
     // timeout.tv_sec = SOCKETS_UDP_TIMEOUT;
