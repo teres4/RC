@@ -5,29 +5,29 @@
 
 int is_exiting = 0;
 
-int is_numeric(std::string &str){
+bool is_numeric(std::string &str){
     for (char c : str)
     {
         if (!std::isdigit(static_cast<unsigned char>(c)))
         {
-            return INVALID;
+            return false;
         }
     }
-    return VALID;
+    return true;
 }
 
 
-int is_not_numeric(std::string &str){
-    if (is_numeric(str) == VALID)
-        return INVALID;
+bool is_not_numeric(std::string &str){
+    if (is_numeric(str) == true)
+        return false;
 
-    return VALID;
+    return true;
 }
 
 
 void validate_port(std::string &port)
 {
-    if (is_numeric(port) == INVALID)
+    if (is_numeric(port) == false)
         throw UnrecoverableError("Invalid port: not a number");
 
     try
@@ -47,34 +47,55 @@ void validate_port(std::string &port)
 /**
  * Check if the plid is valid
  */
-int validate_plid(std::string plid)
+bool validate_plid(std::string plid)
 {
-    if (plid.length() != PLID_MAX_SIZE || is_numeric(plid) == INVALID)
-        return INVALID;
+    if (plid.length() != PLID_MAX_SIZE || is_numeric(plid) == false)
+        return false;
 
     int parsed = std::stoi(plid);
     if (parsed < 0)
-        return INVALID;
+        return false;
 
-    return VALID;
+    return true;
 }
 
 int get_plid(std::string plid){
     return std::stoi(plid);
 }
 
-int validatePlayTime(std::string playtime)
+bool validatePlayTime(std::string playtime)
 {
-    if (is_numeric(playtime) == INVALID)
-        return INVALID;
+    if (is_numeric(playtime) == false)
+        return false;
 
     int parsed = std::stoi(playtime);
 
     if (parsed < 0 || parsed > MAX_PLAYTIME)
-        return INVALID;
+        return false;
 
-    return VALID;
+    return true;
 }
+
+bool validate_color(std::string color)
+{
+    std::vector<std::string> colors = {"R", "G", "B", "Y", "O", "P"};
+    
+    for (auto c : colors) {
+        // Check if the read string is one of the options
+        if (c == color) {
+            return true;
+        }
+    }
+    return false;
+
+}
+
+
+std::string get_color_key(std::string args){
+    std::cout << args;
+    return args;
+}
+
 
 
 int get_playtime(std::string playtime){

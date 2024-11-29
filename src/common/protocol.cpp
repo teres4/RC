@@ -91,7 +91,7 @@ int ProtocolCommunication::readNumber(MessageSource &message) {
     std::string string = readString(message);
 
     // Check if string only contains digits
-    if (is_not_numeric(string) == VALID) {
+    if (is_not_numeric(string) == true) {
         throw ProtocolViolationException();
     }
 
@@ -102,7 +102,7 @@ int ProtocolCommunication::readNumber(MessageSource &message, size_t size) {
     std::string string = readString(message, size);
 
     // Check if string only contains digits
-    if (is_not_numeric(string) == VALID) {
+    if (is_not_numeric(string) == true) {
         throw ProtocolViolationException();
     }
 
@@ -245,7 +245,7 @@ std::string TryCommunication::encodeRequest() {
     writeSpace(message);
     writeNumber(message, _plid);
     writeSpace(message);
-    writeString(message, _key);
+    writeString(message, _key); // writes key to try
     writeSpace(message);
     writeNumber(message, _nT);
     writeDelimiter(message);  // delimiter at the end
@@ -284,12 +284,12 @@ std::string TryCommunication::encodeResponse() {
 }
 
 void TryCommunication::decodeResponse(MessageSource &message) {
-
+    //TODO
     readIdentifier(message, "RTR");  // read identifier "RSG"
     readSpace(message);
 
     // Read the status, and check if it is one of the options
-    _status = readString(message, {"OK", "NOK", "ERR"});
+    _status = readString(message, {"OK", "DUP", "INV", "NOK", "ENT", "ETM", "ERR"});
     readSpace(message);
     
     readDelimiter(message);  // Read the delimiter

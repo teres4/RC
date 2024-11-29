@@ -24,24 +24,42 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-Client::Client(int argc, char *argv[])
+
+void Player::setPlayer(int plid){
+    _plid = plid;
+    _nT = 1;
+}
+
+int Player::getPlid(){
+    return _plid;
+}
+
+int Player::getnT(){
+    return _nT;
+}
+
+bool Player::activePlayer(){
+    return _plid != 0 && _nT != 0;
+}
+
+Client::Client(int argc, char **argv)
 {
     if (argc == 3)
     { // check if -n or -p
         if (strcmp(argv[1], "-n") == 0)
-            gsip = argv[2];
+            _gsip = argv[2];
 
         else if (strcmp(argv[1], "-p") == 0)
-            gsport = argv[2];
+            _gsport = argv[2];
     }
 
     if (argc == 5)
     {
-        gsip = argv[2];
-        gsport = argv[4];
+        _gsip = argv[2];
+        _gsport = argv[4];
     }
 
-    validate_port(gsport);
+    validate_port(_gsport);
 
 }
 
@@ -49,15 +67,16 @@ void Client::processRequest(ProtocolCommunication &comm) {
     std::string reqMessage = comm.encodeRequest();
     std::string resMessage;
 
+    std::cout << "processReq message: " << reqMessage;
 
     if (comm.isTcp()) {  // If the communication is TCP, use TCP
-        TCPInfo tcp(gsip, gsport); 
+        TCPInfo tcp(_gsip, _gsport); 
         tcp.send(reqMessage);         // send request message 
         resMessage = tcp.receive();   // receive response
     }
     
     else {  // If the communication is UDP, use UDP
-        UDPInfo udp(gsip, gsport); 
+        UDPInfo udp(_gsip, _gsport); 
         udp.send(reqMessage);         // request 
         resMessage = udp.receive();   // receive response
     }

@@ -4,7 +4,7 @@
 
 void CommandManager::addCommand(std::shared_ptr<CommandHandler> command)
 {
-  handlers[command->name] = std::move(command);
+  _handlers[command->_name] = std::move(command);
 }
 
 
@@ -48,9 +48,9 @@ void CommandManager::waitForCommand(Client &state)
   if (commandName.length() == 0)
     return;
 
-  auto handler = handlers.find(commandName); // find handler of the command
+  auto handler = _handlers.find(commandName); // find handler of the command
 
-  if (handler == handlers.end()) { // If the handler does not exist
+  if (handler == _handlers.end()) { // If the handler does not exist
     std::cout << "Invalid command: " << commandName << std::endl;
     return;
   }
@@ -75,9 +75,8 @@ void StartCommand::handle(std::string args, Client &state)
   std::string plid_error = "PLID must be a 6-digit number.";
   std::string max_playtime_error = "max_playtime cannot exceed 600 seconds.";
 
-  if (arg_split.size() != 2) {
-    // If the number of arguments is not 2 
-    std::cout << "Invalid number of arguments.\nUsage: " << *command_arg 
+  if (arg_split.size() != 2) { // If the number of arguments is not 2 
+    std::cout << "Invalid number of arguments.\nUsage: " << *_command_arg 
       << std::endl << plid_error << max_playtime_error << std::endl;
     return;
   }
@@ -86,11 +85,11 @@ void StartCommand::handle(std::string args, Client &state)
   std::string PLID = arg_split[0];
   std::string max_playtime = arg_split[1];
 
-  if (validate_plid(PLID) == INVALID){
+  if (validate_plid(PLID) == false){
     std::cout << "Invalid PLID: " << plid_error << std::endl;
     return;
   }
-  if (validatePlayTime(max_playtime) == INVALID){
+  if (validatePlayTime(max_playtime) == false){
     std::cout << "Invalid max_playtime: " << max_playtime_error << std::endl;
     return;
   }
@@ -101,10 +100,9 @@ void StartCommand::handle(std::string args, Client &state)
 
   state.processRequest(startComm);  // Send the request to the server, receiving its response
 
-
   if (startComm._status == "OK") {
     std::cout << "New game has started!" << std::endl;
-    // start a new game
+    state._player.setPlayer(get_plid(PLID));
   } 
   else if (startComm._status == "NOK") {
     std::cout << "Player already has an ongoing game" << std::endl;
@@ -120,55 +118,77 @@ void StartCommand::handle(std::string args, Client &state)
 
 
 void TryCommand::handle(std::string args, Client& state) {
-  // if (!state.hasActiveGame){
-  //   return;
-  // }
-  std::string plid_error = "PLID must be a 6-digit number.";
-  std::string max_playtime_error = "max_playtime cannot exceed 600 seconds.";
+
+  if (!state._player.activePlayer()){
+    std::cout << "There's not an active player" << std::endl;
+    return;
+  }
 
   std::vector<std::string> arg_split = split_command(args);
 
-  if (arg_split.size() != 2) {    // If the number of arguments is not 2, throw exception
-    // throw StartCommandArgumentException(*command_arg);
+  if (arg_split.size() != 4) {
+    // If the number of arguments is not 2 
+    std::cout << "Invalid number of arguments.\nUsage: " << *_command_arg;
+    return;
   }
 
+  for (auto c : arg_split){
+    if (validate_color(c) == false){
+      std::cout << "Invalid Color. Colors are R, G, B, Y, O and P" << std::endl;
+      return;
+    }
+  }
 
-// TODO
-std::cout << args << state.gsip;
+  TryCommunication tryComm;
+  tryComm._plid = state._player.getPlid();
+  tryComm._key = get_color_key(args);
 
-  // TODO
-  std::cout << args << state.gsip;
+  state.processRequest(tryComm);  // Send the request to the server, receiving its response
+
+
+  if (tryComm._status == "OK") {
+    std::cout << "New game has started!" << std::endl;
+    // start a new game
+  } 
+  else if (tryComm._status == "NOK") {
+    std::cout << "Player already has an ongoing game" << std::endl;
+  } 
+  else if (tryComm._status == "ERR") {
+    std::cout << "Check syntax" << std::endl;
+  }
+
 }
 
 void ShowTrialsCommand::handle(std::string args, Client &state)
 {
   // TODO
-  std::cout << args << state.gsip;
+  std::cout << args << state._player.getPlid();
 }
 
 void ScoreboardCommand::handle(std::string args, Client &state)
 {
   // TODO
-  std::cout << args << state.gsip;
+  std::cout << args << state._player.getPlid();
 }
 
 void QuitCommand::handle(std::string args, Client &state)
 {
   // TODO
-  std::cout << args << state.gsip;
+  std::cout << args << state._player.getPlid();
 }
 
 void ExitCommand::handle(std::string args, Client &state)
 {
   // TODO
-  std::cout << args << state.gsip;
+  std::cout << args << state._player.getPlid();
 }
 
 void DebugCommand::handle(std::string args, Client &state)
 {
   // TODO
-  std::cout << args << state.gsip;
+  std::cout << args << state._player.getPlid();
 }
+
 
 std::vector<std::string> split_command(std::string input)
 {

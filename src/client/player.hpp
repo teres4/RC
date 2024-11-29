@@ -8,14 +8,37 @@
 #include "../common/protocol.hpp"
 // #include "commands.hpp"
 
+
+class Player{
+  private:
+    int _plid = 0;  // The player id
+    int _nT = 0;    // The number of trial
+
+
+  public:
+    void setPlayer(int plid);
+
+    int getPlid();
+
+    int getnT();
+
+    bool activePlayer();
+
+};
+
+
+
 class Client
 {
-  public:
-    std::string gsip = DEFAULT_HOSTNAME;
-    std::string gsport = DEFAULT_PORT;
+  private:
+    std::string _gsip = DEFAULT_HOSTNAME;
+    std::string _gsport = DEFAULT_PORT;
     // char* program_path;
+  
+  public:
+    Player _player;
 
-    Client(int argc, char *argv[]);
+    Client(int argc, char **argv);
 
     void processRequest(ProtocolCommunication &comm);
 

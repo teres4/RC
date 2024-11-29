@@ -371,7 +371,7 @@ class StartCommunication : public ProtocolCommunication {
   public:
     // Request parameters:
     int _plid;       // The player ID for start request.
-    int _time;      // The password for start request.
+    int _time;      // The time for start request.
 
     // Response parameters:
     std::string _status;    // The status of the start response.
@@ -391,12 +391,12 @@ class StartCommunication : public ProtocolCommunication {
 class TryCommunication : public ProtocolCommunication {
   public:
     // Request parameters:
-    int _plid;       // The player ID for start request.
-    std::string _key;       // The password for start request.
-    int _nT;
+    int _plid;            // The player ID for try request.
+    std::string _key;     // The key for try request.
+    int _nT;              // The trial number 
 
     // Response parameters:
-    std::string _status;    // The status of the start response.
+    std::string _status;    // The status of the try response.
     std::string _nB;
     std::string _nW;
 

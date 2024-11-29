@@ -18,10 +18,10 @@
 class CommandHandler
 {
   public:
-    std::string name;                        // The name of the command
-    std::optional<std::string> alias; // The aliases of the command
-    std::optional<std::string> command_arg;  // The args of the command
-    std::optional<std::string> description; // The description of the command
+    std::string _name;                        // The name of the command
+    std::optional<std::string> _alias; // The aliases of the command
+    std::optional<std::string> _command_arg;  // The args of the command
+    std::optional<std::string> _description; // The description of the command
 
     /**
      * @brief Handles the command with the given arguments.
@@ -41,23 +41,23 @@ class CommandHandler
      */
 
 
-    CommandHandler(const std::string& __name, 
-                  const std::optional<std::string>& __alias,
-                  const std::optional<std::string>& __command_arg, 
-                  const std::string& __description)
-        : name{__name}, 
-          alias{__alias}, 
-          command_arg{__command_arg}, 
-          description{__description} {}
+    CommandHandler(const std::string& name, 
+                  const std::optional<std::string>& alias,
+                  const std::optional<std::string>& command_arg, 
+                  const std::string& description)
+        : _name{name}, 
+          _alias{alias}, 
+          _command_arg{command_arg}, 
+          _description{description} {}
 };
 
 
 class CommandManager
 {
   // list of command handlers
-  std::vector<std::shared_ptr<CommandHandler>> handlerList;
+  std::vector<std::shared_ptr<CommandHandler>> _handlerList;
   // name->handler map
-  std::unordered_map<std::string, std::shared_ptr<CommandHandler>> handlers;
+  std::unordered_map<std::string, std::shared_ptr<CommandHandler>> _handlers;
 
   public:
     // void printHelp();
