@@ -397,8 +397,8 @@ class TryCommunication : public ProtocolCommunication {
 
     // Response parameters:
     std::string _status;    // The status of the try response.
-    std::string _nB;
-    std::string _nW;
+    int _nB;
+    int _nW;
 
     std::string encodeRequest();
 

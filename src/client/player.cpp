@@ -25,9 +25,10 @@ int main(int argc, char *argv[])
 }
 
 
-void Player::setPlayer(int plid){
+void Player::newPlayer(int plid){
     _plid = plid;
     _nT = 1;
+    onGoing = true;
 }
 
 int Player::getPlid(){
@@ -39,7 +40,11 @@ int Player::getnT(){
 }
 
 bool Player::activePlayer(){
-    return _plid != 0 && _nT != 0;
+    return onGoing;
+}
+
+void Player::increaseNT(){
+    _nT++;
 }
 
 Client::Client(int argc, char **argv)
@@ -82,6 +87,7 @@ void Client::processRequest(ProtocolCommunication &comm) {
     }
 
     StreamMessage resStreamMessage(resMessage);  // Create a StreamMessage from the response
+    std::cout << resMessage;
     
     comm.decodeResponse(resStreamMessage);  // Decode the response
 }

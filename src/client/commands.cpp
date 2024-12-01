@@ -102,10 +102,11 @@ void StartCommand::handle(std::string args, Client &state)
 
   if (startComm._status == "OK") {
     std::cout << "New game has started!" << std::endl;
-    state._player.setPlayer(get_plid(PLID));
+    state._player.newPlayer(get_plid(PLID));
   } 
   else if (startComm._status == "NOK") {
     std::cout << "Player already has an ongoing game" << std::endl;
+    state._player.newPlayer(get_plid(PLID));
   } 
   else if (startComm._status == "ERR") {
     std::cout << "Check syntax" << std::endl;
@@ -118,7 +119,6 @@ void StartCommand::handle(std::string args, Client &state)
 
 
 void TryCommand::handle(std::string args, Client& state) {
-
   if (!state._player.activePlayer()){
     std::cout << "There's not an active player" << std::endl;
     return;
@@ -128,13 +128,13 @@ void TryCommand::handle(std::string args, Client& state) {
 
   if (arg_split.size() != 4) {
     // If the number of arguments is not 2 
-    std::cout << "Invalid number of arguments.\nUsage: " << *_command_arg;
+    std::cout << "Invalid number of arguments.\nUsage: " << *_command_arg << std::endl;
     return;
   }
 
   for (auto c : arg_split){
     if (validate_color(c) == false){
-      std::cout << "Invalid Color. Colors are R, G, B, Y, O and P" << std::endl;
+      std::cout << "Invalid Color." << std::endl;
       return;
     }
   }
@@ -142,20 +142,47 @@ void TryCommand::handle(std::string args, Client& state) {
   TryCommunication tryComm;
   tryComm._plid = state._player.getPlid();
   tryComm._key = get_color_key(args);
+  tryComm._nT = state._player.getnT();
 
   state.processRequest(tryComm);  // Send the request to the server, receiving its response
 
-
+  // TODO stuff if OK response? 
   if (tryComm._status == "OK") {
-    std::cout << "New game has started!" << std::endl;
-    // start a new game
+    std::cout << "Number of trial: " << state._player.getnT() << std::endl
+    << "Number of black: " << tryComm._nB << std::endl << "Number of white: " 
+    << tryComm._nW << std::endl;
+
+    if (tryComm._nB == 4){
+      std::cout << "Game won!" << std::endl; 
+    }
+
+    state._player.increaseNT();
+
+    // enunciado stuff? 
+
   } 
+  else if (tryComm._status == "DUP"){
+    std::cout << "Duplicate of a previous trial's guess " << std::endl;
+  }
+
+  else if (tryComm._status == "INV"){ //TODO - message 
+    std::cout << "" << std::endl;
+  }
   else if (tryComm._status == "NOK") {
-    std::cout << "Player already has an ongoing game" << std::endl;
+    std::cout << "Trial out of context" << std::endl;
+  } 
+  else if (tryComm._status == "ENT") {
+    std::cout << "No more attempts available. Secret key was: " << tryComm._key
+    << std::endl;
+  } 
+  else if (tryComm._status == "ETM") {
+    std::cout << "Maximum play time has been exceeded. Secret key was: " 
+    << tryComm._key << std::endl;
   } 
   else if (tryComm._status == "ERR") {
     std::cout << "Check syntax" << std::endl;
   }
+
 
 }
 

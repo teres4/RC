@@ -92,7 +92,6 @@ bool validate_color(std::string color)
 
 
 std::string get_color_key(std::string args){
-    std::cout << args;
     return args;
 }
 

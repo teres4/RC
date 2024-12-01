@@ -66,7 +66,6 @@ std::string UDPInfo::receive() {
 
     buffer[n] = '\n';  // Null-terminate the buffer to safely convert to string
 
-    // Create a string from the buffer
     return std::string(buffer, (size_t)n); 
 
 }

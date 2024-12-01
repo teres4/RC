@@ -134,8 +134,7 @@ std::string ProtocolCommunication::readKey(MessageSource &message) {
     char c3 = readChar(message);
     readSpace(message);
     char c4 = readChar(message);
-    readSpace(message);
-
+    
     return std::string(1, c1) + " " + c2 + " " + c3 + " " + c4;
 }
 
@@ -171,17 +170,15 @@ void ProtocolCommunication::writeSpace(std::string &message) {
     writeChar(message, ' ');  // write a space
 }
 
-void ProtocolCommunication::writeString(std::string &message,
-                                        std::string string) {
+void ProtocolCommunication::writeString(std::string &message, std::string string) {
     for (auto c : string) {  // write each char of the string
         writeChar(message, c);
     }
 }
 
-void ProtocolCommunication::writeNumber(std::string &message,
-                                        int number) {
-    std::string value =
-        std::to_string(number);  // convert the number to a string
+void ProtocolCommunication::writeNumber(std::string &message, int number) {
+    // convert the number to a string
+    std::string value = std::to_string(number);  
 
     writeString(message, value);  // write the string
 }
@@ -270,27 +267,47 @@ void TryCommunication::decodeRequest(MessageSource &message) {
 
 std::string TryCommunication::encodeResponse() {
     std::string message;
-    //TODO
     writeString(message, "RTR");  // write identifier "RTR"
     writeSpace(message);
     writeString(message, _status);
-    writeSpace(message);
 
-
-
+    if (_status == "OK"){
+        writeSpace(message);
+        writeNumber(message, _nT);
+        writeSpace(message);
+        writeNumber(message, _nB);
+        writeSpace(message);
+        writeNumber(message, _nW);
+    }
+    else if (_status == "ENT" || _status == "ETM"){
+        writeSpace(message);
+        writeString(message, _key);
+    }
     writeDelimiter(message);  // delimiter at the end
 
     return message;
 }
 
 void TryCommunication::decodeResponse(MessageSource &message) {
-    //TODO
     readIdentifier(message, "RTR");  // read identifier "RSG"
     readSpace(message);
 
     // Read the status, and check if it is one of the options
     _status = readString(message, {"OK", "DUP", "INV", "NOK", "ENT", "ETM", "ERR"});
-    readSpace(message);
-    
+
+    if (_status == "OK"){
+        readSpace(message);
+        _nT = readNumber(message);
+        readSpace(message);
+        _nB = readNumber(message);
+        readSpace(message);
+        _nW = readNumber(message);
+    }
+
+    else if (_status == "ENT" || _status == "ETM"){
+        readSpace(message);
+        _key = readKey(message);
+    }
+
     readDelimiter(message);  // Read the delimiter
 }
