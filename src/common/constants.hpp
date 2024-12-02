@@ -12,6 +12,7 @@
 #define BUFFER_SIZE 128
 
 #define PROTOCOL_ERROR "ERR"
+#define SOCKETS_UDP_TIMEOUT 5
 
 #define MAX_TRIALS 8
 

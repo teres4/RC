@@ -415,5 +415,59 @@ void QuitCommunication::decodeResponse(MessageSource &message)
         _key = readKey(message);
     }
 
-    readDelimiter(message); // Read the delimiter
+    readDelimiter(message);  // Read the delimiter
+}
+
+
+
+std::string DebugCommunication::encodeRequest() {
+    std::string message;
+
+    writeString(message, "DBG");  // write identifier "DBG"
+    writeSpace(message);
+    writeNumber(message, _plid);
+    writeSpace(message);
+    writeNumber(message, _time); // writes key to try
+    writeSpace(message);
+    writeString(message, _key);
+    writeDelimiter(message);  // delimiter at the end
+
+    return message;
+}
+
+void DebugCommunication::decodeRequest(MessageSource &message) {
+    // readIdentifier(message, "DBG"); The identifier is already read by the server
+    readSpace(message);
+
+    _plid = readPlid(message);
+    readSpace(message);
+
+    _time = readNumber(message);
+    readSpace(message);
+
+    _key = readKey(message);
+    readDelimiter(message);
+
+}
+
+
+std::string DebugCommunication::encodeResponse() {
+    std::string message;
+    writeString(message, "RDB");  // write identifier "RDB"
+    writeSpace(message);
+    writeString(message, _status);
+
+    writeDelimiter(message);  // delimiter at the end
+
+    return message;
+}
+
+void DebugCommunication::decodeResponse(MessageSource &message) {
+    readIdentifier(message, "RDB");  // read identifier "RDB"
+    readSpace(message);
+
+    // Read the status, and check if it is one of the options
+    _status = readString(message, {"OK", "NOK", "ERR"});
+
+    readDelimiter(message);  // Read the delimiter
 }

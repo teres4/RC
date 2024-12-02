@@ -72,14 +72,8 @@ void StartCommand::handle(std::string args, Client &state)
 {
   std::vector<std::string> arg_split = split_command(args);
 
-  std::string plid_error = "PLID must be a 6-digit number.";
-  std::string max_playtime_error = "max_playtime cannot exceed 600 seconds.";
-
-  if (arg_split.size() != 2)
-  { // If the number of arguments is not 2
-    std::cout << "Invalid number of arguments.\nUsage: " << *_command_arg
-              << std::endl
-              << plid_error << max_playtime_error << std::endl;
+  if (arg_split.size() != 2) { // If the number of arguments is not 2 
+    std::cout << "Invalid number of arguments.\nUsage: " << *_command_arg << std::endl;
     return;
   }
 
@@ -87,14 +81,13 @@ void StartCommand::handle(std::string args, Client &state)
   std::string PLID = arg_split[0];
   std::string max_playtime = arg_split[1];
 
-  if (validate_plid(PLID) == false)
-  {
-    std::cout << "Invalid PLID: " << plid_error << std::endl;
+  if (validate_plid(PLID) == false){
+    std::cout << "Invalid PLID: PLID must be a 6-digit number." << std::endl;
     return;
   }
-  if (validatePlayTime(max_playtime) == false)
-  {
-    std::cout << "Invalid max_playtime: " << max_playtime_error << std::endl;
+  if (validate_playTime(max_playtime) == false){
+    std::cout << "Invalid max_playtime: max_playtime cannot exceed 600 \
+    seconds." << std::endl;
     return;
   }
 
@@ -137,13 +130,9 @@ void TryCommand::handle(std::string args, Client &state)
     return;
   }
 
-  for (auto c : arg_split)
-  {
-    if (validate_color(c) == false)
-    {
-      std::cout << "Invalid Color." << std::endl;
+  if (validate_key(arg_split) == false){
+    std::cout << "Invalid color key." << std::endl;
       return;
-    }
   }
 
   TryCommunication tryComm;
@@ -291,8 +280,52 @@ void ExitCommand::handle(std::string args, Client &state)
 
 void DebugCommand::handle(std::string args, Client &state)
 {
-  // TODO
-  std::cout << args << state._player.getPlid();
+  std::vector<std::string> arg_split = split_command(args);
+
+  if (arg_split.size() != 6) {
+    // If the number of arguments is not 6
+    std::cout << "Invalid number of arguments.\nUsage: " << *_command_arg << std::endl;
+    return;
+  }
+
+  std::string PLID = arg_split[0];
+  std::string max_playtime = arg_split[1];
+
+  if (validate_plid(PLID) == false){
+    std::cout << "Invalid PLID: PLID must be a 6-digit number." << std::endl;
+    return;
+  }
+  if (validate_playTime(max_playtime) == false){
+    std::cout << "Invalid max_playtime - cannot exceed 600 seconds" << std::endl;
+    return;
+  }
+
+  std::vector<std::string> colorArray(arg_split.begin() + 2, std::end(arg_split));
+
+  if (validate_key(colorArray) == false){
+    std::cout << "Invalid color key." << std::endl;
+    return;
+  }
+
+  DebugCommunication dbgComm;
+  
+  dbgComm._plid = get_plid(PLID);
+  dbgComm._time = get_playtime(max_playtime);
+  dbgComm._key = get_color_key(colorArray);
+
+  state.processRequest(dbgComm); 
+
+  if (dbgComm._status == "OK") {
+    std::cout << "New game has started in debug mode with key: "<< dbgComm._key << std::endl;
+    state._player.newPlayer(get_plid(PLID));
+  } 
+  else if (dbgComm._status == "NOK") {
+    std::cout << "Player already has an ongoing game" << std::endl;
+    state._player.newPlayer(get_plid(PLID));
+  } 
+  else if (dbgComm._status == "ERR") {
+    std::cout << "Check syntax" << std::endl;
+  }
 }
 
 std::vector<std::string> split_command(std::string input)

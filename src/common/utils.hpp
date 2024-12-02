@@ -4,6 +4,7 @@
 #include <cstring>
 #include <stdexcept>
 #include <csignal>
+#include <vector>
 
 #include "constants.hpp"
 
@@ -20,13 +21,15 @@ bool is_not_numeric(std::string &str);
 
 void validate_port(std::string &port);
 bool validate_plid(std::string plid);
-bool validatePlayTime(std::string playtime);
+bool validate_playTime(std::string playtime);
 bool validate_color(std::string color);
+bool validate_key(std::vector<std::string> colors);
 
 
 int get_plid(std::string plid);
 int get_playtime(std::string playtime);
 std::string get_color_key(std::string args);
+std::string get_color_key(std::vector<std::string> args);
 
 
 

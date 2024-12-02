@@ -63,7 +63,7 @@ int get_plid(std::string plid){
     return std::stoi(plid);
 }
 
-bool validatePlayTime(std::string playtime)
+bool validate_playTime(std::string playtime)
 {
     if (is_numeric(playtime) == false)
         return false;
@@ -90,9 +90,21 @@ bool validate_color(std::string color)
 
 }
 
+bool validate_key(std::vector<std::string> colors){
+    for (auto c : colors){
+        if (validate_color(c) == false){
+            return false;
+        }
+    }
+    return true;
+}
 
 std::string get_color_key(std::string args){
     return args;
+}
+
+std::string get_color_key(std::vector<std::string> args){
+    return args[0] + " " + args[1] + " " + args[2] + " " + args[3];
 }
 
 

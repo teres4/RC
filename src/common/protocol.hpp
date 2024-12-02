@@ -420,13 +420,35 @@ public:
 
 class QuitCommunication : public ProtocolCommunication
 {
-public:
+  public:
   // Request parameters:
   int _plid; // The player ID for quit request.
 
   // Response parameters:
   std::string _status; // The status of the quit response.
   std::string _key;
+
+  std::string encodeRequest();
+
+  void decodeRequest(MessageSource &message);
+
+  std::string encodeResponse();
+
+  void decodeResponse(MessageSource &message);
+
+  bool isTcp() { return false; } 
+};
+
+
+class DebugCommunication : public ProtocolCommunication {
+  public:
+    // Request parameters:
+    int _plid;          // The player ID for debug request.
+    int _time;          // The time for game.
+    std::string _key;   // The key for debug request.
+
+    // Response parameters:
+    std::string _status;
 
   std::string encodeRequest();
 
@@ -451,12 +473,22 @@ public:
 
   void decodeRequest(MessageSource &message);
 
-  std::string encodeResponse();
+class ShowTrialsCommunication : public ProtocolCommunication {
+  public:
+    // Response parameters:
+    std::string _status;    // The status of the start response.
 
   void decodeResponse(MessageSource &message);
 
-  bool isTcp() { return true; };
-};
-*/
+    std::string encodeRequest();
+
+    void decodeRequest(MessageSource &message);
+
+    std::string encodeResponse();
+
+    void decodeResponse(MessageSource &message);
+
+    bool isTcp() { return false; };
+};*/
 
 #endif

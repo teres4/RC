@@ -21,16 +21,15 @@ UDPInfo::UDPInfo(std::string gsip, std::string gsport)
         throw SocketException();
     }
 
-    // TODO
-    // // Set the timeout of the socket
-    // struct timeval timeout;
-    // timeout.tv_sec = SOCKETS_UDP_TIMEOUT;
-    // timeout.tv_usec = 0;
+    // Set the timeout of the socket
+    struct timeval timeout;
+    timeout.tv_sec = SOCKETS_UDP_TIMEOUT;
+    timeout.tv_usec = 0;
 
-    // // Set the timeout
-    // if (setsockopt(_fd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) < 0) {
-    //     throw SocketException();
-    // }
+    // Set the timeout
+    if (setsockopt(_fd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) < 0) {
+        throw SocketException();
+    }
 }
 
 UDPInfo::~UDPInfo()
