@@ -2,6 +2,8 @@
 #include "player.hpp"
 #include <iostream>
 
+bool exit_command = false; // flag to indicate whether the application is exiting
+
 void CommandManager::addCommand(std::shared_ptr<CommandHandler> command)
 {
   _handlers[command->_name] = std::move(command);
@@ -28,6 +30,7 @@ void CommandManager::addAllCommands()
 
 void CommandManager::waitForCommand(Client &state)
 {
+
   std::cout << "> "; // Print the prompt
 
   std::string input;
@@ -234,7 +237,7 @@ void QuitCommand::handle(std::string args, Client &state)
   if (quitComm._status == "OK")
   {
     std::cout << "Game has ended." << std::endl;
-    std::cout << "The secret key:" << quitComm._key << std::endl;
+    std::cout << "The secret key: " << quitComm._key << std::endl;
     state._player.finishGame();
   }
   else if (quitComm._status == "NOK")
@@ -245,12 +248,45 @@ void QuitCommand::handle(std::string args, Client &state)
   {
     std::cout << "Check syntax" << std::endl;
   }
+
+  exit_command = true;
 }
 
 void ExitCommand::handle(std::string args, Client &state)
 {
   // TODO
   std::cout << args << state._player.getPlid();
+
+  if (args != "")
+  {
+    std::cout << "Invalid number of arguments.\nUsage: " << *_command_arg << std::endl;
+    return;
+  }
+
+  QuitCommunication quitComm;
+
+  quitComm._plid = state._player.getPlid();
+
+  state.processRequest(quitComm); // Send the request to the server, receiving its response
+
+  if (quitComm._status == "OK")
+  {
+    std::cout << "Game has ended." << std::endl;
+    std::cout << "The secret key:" << quitComm._key << std::endl;
+  }
+  else if (quitComm._status == "NOK")
+  {
+    std::cout << "Player has no ongoing game." << std::endl;
+  }
+  else if (quitComm._status == "ERR")
+  {
+    std::cout << "Check syntax" << std::endl;
+  }
+
+  // make the player programn finish
+
+  exit_command = true;
+  exit(0);
 }
 
 void DebugCommand::handle(std::string args, Client &state)

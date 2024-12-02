@@ -2,7 +2,7 @@
 #include "player.hpp"
 #include "commands.hpp"
 
-// extern bool is_exiting; // flag to indicate whether the application is exiting
+extern bool exit_command;
 
 int main(int argc, char *argv[])
 {
@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
     // player info
     // setup sockets
 
-    while (!std::cin.eof())
+    while (!std::cin.eof() && !exit_command)
     {
         commandManager.waitForCommand(client);
     }

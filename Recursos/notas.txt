@@ -2,3 +2,4 @@ The GS makes available two server applications, both with well-known port GSport
 one in UDP, used for playing the game, and the other in TCP, used to transfer the trials
 text file to the Player application.
 
+

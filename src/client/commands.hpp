@@ -14,43 +14,41 @@
 #include "../common/utils.hpp"
 #include "../common/protocol.hpp"
 
+extern bool exit_command;
 
 class CommandHandler
 {
-  public:
-    std::string _name;                        // The name of the command
-    std::optional<std::string> _alias; // The aliases of the command
-    std::optional<std::string> _command_arg;  // The args of the command
-    std::optional<std::string> _description; // The description of the command
+public:
+  std::string _name;                       // The name of the command
+  std::optional<std::string> _alias;       // The aliases of the command
+  std::optional<std::string> _command_arg; // The args of the command
+  std::optional<std::string> _description; // The description of the command
 
-    /**
-     * @brief Handles the command with the given arguments.
-     * should be implemented by derived classes
-     */
-    virtual void handle(std::string args, Client &receiver) = 0;
+  /**
+   * @brief Handles the command with the given arguments.
+   * should be implemented by derived classes
+   */
+  virtual void handle(std::string args, Client &receiver) = 0;
 
+protected:
+  /**
+   * @brief Constructs a CommandHandler object with the specified properties.
+   *
+   * @param name The name of the command.
+   * @param alias The aliases of the command
+   * @param args The args of the command.
+   * @param usage The description of the command.
+   */
 
-  protected:
-    /**
-     * @brief Constructs a CommandHandler object with the specified properties.
-     *
-     * @param name The name of the command.
-     * @param alias The aliases of the command
-     * @param args The args of the command.
-     * @param usage The description of the command.
-     */
-
-
-    CommandHandler(const std::string& name, 
-                  const std::optional<std::string>& alias,
-                  const std::optional<std::string>& command_arg, 
-                  const std::string& description)
-        : _name{name}, 
-          _alias{alias}, 
-          _command_arg{command_arg}, 
-          _description{description} {}
+  CommandHandler(const std::string &name,
+                 const std::optional<std::string> &alias,
+                 const std::optional<std::string> &command_arg,
+                 const std::string &description)
+      : _name{name},
+        _alias{alias},
+        _command_arg{command_arg},
+        _description{description} {}
 };
-
 
 class CommandManager
 {
@@ -59,103 +57,98 @@ class CommandManager
   // name->handler map
   std::unordered_map<std::string, std::shared_ptr<CommandHandler>> _handlers;
 
-  public:
-    // void printHelp();
+public:
+  // void printHelp();
 
-    /**
-     * @brief Adds a command to the command manager.
-     *
-     * @param handler The command handler to add.
-     */
-    void addCommand(std::shared_ptr<CommandHandler> handler);
+  /**
+   * @brief Adds a command to the command manager.
+   *
+   * @param handler The command handler to add.
+   */
+  void addCommand(std::shared_ptr<CommandHandler> handler);
 
-    void addAllCommands();
+  void addAllCommands();
 
-    /**
-     * @brief Waits for a command from the player and processes it.
-     *
-     * @param state A reference to a Client structure that will be 
-     * updated based on the received command.
-     */
-    void waitForCommand(Client &state);
+  /**
+   * @brief Waits for a command from the player and processes it.
+   *
+   * @param state A reference to a Client structure that will be
+   * updated based on the received command.
+   */
+  void waitForCommand(Client &state);
 };
-
-
 
 class StartCommand : public CommandHandler
 {
   void handle(std::string args, Client &state);
 
-  public:
-    StartCommand()
-        : CommandHandler("start", std::nullopt, "PLID max_playtime",
-                        "Start a new game") {}
+public:
+  StartCommand()
+      : CommandHandler("start", std::nullopt, "PLID max_playtime",
+                       "Start a new game") {}
 };
-
 
 class TryCommand : public CommandHandler
 {
   void handle(std::string args, Client &state);
 
-  public:
-    TryCommand()
-        : CommandHandler("try", std::nullopt, "C1 C2 C3 C4",
-                        "Tries a combination of colors") {}
+public:
+  TryCommand()
+      : CommandHandler("try", std::nullopt, "C1 C2 C3 C4",
+                       "Tries a combination of colors") {}
 };
 
 class ShowTrialsCommand : public CommandHandler
 {
   void handle(std::string args, Client &state);
 
-  public:
-    ShowTrialsCommand()
-        : CommandHandler(
-              "show_trials", "st", std::nullopt,
-              "Display previously made trials and respective results") {}
+public:
+  ShowTrialsCommand()
+      : CommandHandler(
+            "show_trials", "st", std::nullopt,
+            "Display previously made trials and respective results") {}
 };
 
 class ScoreboardCommand : public CommandHandler
 {
   void handle(std::string args, Client &state);
 
-  public:
-    ScoreboardCommand()
-        : CommandHandler("scoreboard", "sb", std::nullopt,
-                        "Display the scoreboard") {}
+public:
+  ScoreboardCommand()
+      : CommandHandler("scoreboard", "sb", std::nullopt,
+                       "Display the scoreboard") {}
 };
 
 class QuitCommand : public CommandHandler
 {
   void handle(std::string args, Client &state);
 
-  public:
-    QuitCommand()
-        : CommandHandler("quit", std::nullopt, std::nullopt, "Quit game") {}
+public:
+  QuitCommand()
+      : CommandHandler("quit", std::nullopt, std::nullopt, "Quit game") {}
 };
 
 class ExitCommand : public CommandHandler
 {
   void handle(std::string args, Client &state);
 
-  public:
-    ExitCommand()
-        : CommandHandler("exit", std::nullopt, std::nullopt, "Exit application")
-    {}
+public:
+  ExitCommand()
+      : CommandHandler("exit", std::nullopt, std::nullopt, "Exit application")
+  {
+  }
 };
 
 class DebugCommand : public CommandHandler
 {
   void handle(std::string args, Client &state);
 
-  public:
-    DebugCommand()
-        : CommandHandler("debug", std::nullopt, "PLID max_playtime C1 C2 C3 C4",
-                        "Start a game in debug mode") {}
+public:
+  DebugCommand()
+      : CommandHandler("debug", std::nullopt, "PLID max_playtime C1 C2 C3 C4",
+                       "Start a game in debug mode") {}
 };
 
-
-
 std::vector<std::string> split_command(std::string input);
-
 
 #endif
