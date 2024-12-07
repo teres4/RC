@@ -4,6 +4,7 @@ cli
 GS-DB
 *.o
 GS
+server
 player
 utils
 readme.txt
