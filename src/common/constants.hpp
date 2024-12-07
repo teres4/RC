@@ -9,6 +9,10 @@
 #define MAX_PLAYTIME 600
 #define MAX_PLAYTIME_DIGITS 3
 
+#define MAX_FNAME 24
+#define MAX_FSIZE 1024
+#define MAX_TRANSMISSION 4
+
 #define BUFFER_SIZE 128
 
 #define PROTOCOL_ERROR "ERR"

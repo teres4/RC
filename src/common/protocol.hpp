@@ -275,12 +275,12 @@ public:
   /**
    * @brief Reads a number from a MessageSource.
    */
-  int readNumber(MessageSource &message);
+  int readInt(MessageSource &message);
 
   /**
-   * @brief Reads a number from a MessageSource with the specified size.
+   * @brief Reads an int from a MessageSource with the specified size.
    */
-  int readNumber(MessageSource &message, size_t size);
+  int readInt(MessageSource &message, size_t size);
 
   /**
    * @brief Reads a PLID from a MessageSource.
@@ -306,47 +306,47 @@ public:
   void readIdentifier(MessageSource &message, std::string identifier);
 
   /**
-   * @brief Writes a character to stringstream.
+   * @brief Writes a character to string.
    *
-   * @param message The stringstream to write to.
+   * @param message The string to write to.
    * @param c The character to write.
    */
   void writeChar(std::string &message, char c);
 
   /**
-   * @brief Writes a delimiter to stringstream.
+   * @brief Writes a delimiter to string.
    *
-   * @param message The stringstream to write to.
+   * @param message The string to write to.
    */
   void writeDelimiter(std::string &message);
 
   /**
-   * @brief Writes a space to stringstream.
+   * @brief Writes a space to string.
    *
-   * @param message The stringstream to write to.
+   * @param message The string to write to.
    */
   void writeSpace(std::string &message);
 
   /**
-   * @brief Writes a string to stringstream.
+   * @brief Writes a string to string.
    *
-   * @param message The stringstream to write to.
+   * @param message The string to write to.
    * @param string The string to write.
    */
   void writeString(std::string &message, std::string string);
 
   /**
-   * @brief Writes a number to stringstream.
+   * @brief Writes an int to string.
    *
-   * @param message The stringstream to write to.
+   * @param message The string to write to.
    * @param number The number to write.
    */
-  void writeNumber(std::string &message, int number);
+  void writeInt(std::string &message, int number);
 
   /**
-   * @brief Writes a UID to stringstream.
+   * @brief Writes a UID to string.
    *
-   * @param message The stringstream to write to.
+   * @param message The string to write to.
    * @param uid The UID to write.
    */
   void writePlid(std::string &message, std::string uid);
@@ -461,24 +461,18 @@ class DebugCommunication : public ProtocolCommunication {
   bool isTcp() { return false; };
 };
 
-/*
-class ShowTrialsCommunication : public ProtocolCommunication
-{
-public:
-  // Response parameters:
-  std::string _status; // The status of the start response.
-  int _plid;
 
-  std::string encodeRequest();
-
-  void decodeRequest(MessageSource &message);
 
 class ShowTrialsCommunication : public ProtocolCommunication {
   public:
+    // Request parameters:
+    int _plid;  // The player ID for show trials request.
+
     // Response parameters:
     std::string _status;    // The status of the start response.
-
-  void decodeResponse(MessageSource &message);
+    std::string _Fname;     // The filename
+    int _Fsize;             // The file size, in bytes
+    std::string _Fdata;     // Thecontents of the selected file.
 
     std::string encodeRequest();
 
@@ -488,7 +482,8 @@ class ShowTrialsCommunication : public ProtocolCommunication {
 
     void decodeResponse(MessageSource &message);
 
-    bool isTcp() { return false; };
-};*/
+    bool isTcp() { return true; };
+};
+
 
 #endif

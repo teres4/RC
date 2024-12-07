@@ -101,7 +101,7 @@ std::string ProtocolCommunication::readString(MessageSource &message,
     throw ProtocolViolationException();
 }
 
-int ProtocolCommunication::readNumber(MessageSource &message)
+int ProtocolCommunication::readInt(MessageSource &message)
 {
     std::string string = readString(message);
 
@@ -114,7 +114,7 @@ int ProtocolCommunication::readNumber(MessageSource &message)
     return stoi(string); // Convert string to int
 }
 
-int ProtocolCommunication::readNumber(MessageSource &message, size_t size)
+int ProtocolCommunication::readInt(MessageSource &message, size_t size)
 {
     std::string string = readString(message, size);
 
@@ -129,14 +129,14 @@ int ProtocolCommunication::readNumber(MessageSource &message, size_t size)
 
 int ProtocolCommunication::readPlid(MessageSource &message)
 {
-    int plid = readNumber(message, PLID_MAX_SIZE); // Read a string
+    int plid = readInt(message, PLID_MAX_SIZE); // Read a string
 
     return plid;
 }
 
 int ProtocolCommunication::readTime(MessageSource &message)
 {
-    int time = readNumber(message, MAX_PLAYTIME_DIGITS); // Read a string
+    int time = readInt(message, MAX_PLAYTIME_DIGITS); // Read a string
 
     return time;
 }
@@ -204,7 +204,7 @@ void ProtocolCommunication::writeString(std::string &message, std::string string
     }
 }
 
-void ProtocolCommunication::writeNumber(std::string &message, int number)
+void ProtocolCommunication::writeInt(std::string &message, int number)
 {
     // convert the number to a string
     std::string value = std::to_string(number);
@@ -218,9 +218,9 @@ std::string StartCommunication::encodeRequest()
 
     writeString(message, "SNG"); // write identifier "SNG"
     writeSpace(message);
-    writeNumber(message, _plid);
+    writeInt(message, _plid);
     writeSpace(message);
-    writeNumber(message, _time);
+    writeInt(message, _time);
     writeDelimiter(message); // delimiter at the end
 
     return message;
@@ -269,11 +269,11 @@ std::string TryCommunication::encodeRequest()
 
     writeString(message, "TRY"); // write identifier "TRY"
     writeSpace(message);
-    writeNumber(message, _plid);
+    writeInt(message, _plid);
     writeSpace(message);
     writeString(message, _key); // writes key to try
     writeSpace(message);
-    writeNumber(message, _nT);
+    writeInt(message, _nT);
     writeDelimiter(message); // delimiter at the end
 
     return message;
@@ -290,7 +290,7 @@ void TryCommunication::decodeRequest(MessageSource &message)
     _key = readKey(message);
     readSpace(message);
 
-    _nT = readNumber(message);
+    _nT = readInt(message);
     readDelimiter(message);
 }
 
@@ -304,11 +304,11 @@ std::string TryCommunication::encodeResponse()
     if (_status == "OK")
     {
         writeSpace(message);
-        writeNumber(message, _nT);
+        writeInt(message, _nT);
         writeSpace(message);
-        writeNumber(message, _nB);
+        writeInt(message, _nB);
         writeSpace(message);
-        writeNumber(message, _nW);
+        writeInt(message, _nW);
     }
     else if (_status == "ENT" || _status == "ETM")
     {
@@ -331,11 +331,11 @@ void TryCommunication::decodeResponse(MessageSource &message)
     if (_status == "OK")
     {
         readSpace(message);
-        _nT = readNumber(message);
+        _nT = readInt(message);
         readSpace(message);
-        _nB = readNumber(message);
+        _nB = readInt(message);
         readSpace(message);
-        _nW = readNumber(message);
+        _nW = readInt(message);
     }
 
     else if (_status == "ENT" || _status == "ETM")
@@ -347,20 +347,6 @@ void TryCommunication::decodeResponse(MessageSource &message)
     readDelimiter(message); // Read the delimiter
 }
 
-/*
-std::string ShowTrialsCommunication::encodeRequest()
-{
-
-    std::string message;
-
-    writeString(message, "STR"); // write identifier "STR"
-    writeSpace(message);
-    writeNumber(message, _plid);
-    writeDelimiter(message); // delimiter at the end
-
-    return message;
-}
-*/
 
 std::string QuitCommunication::encodeRequest()
 {
@@ -368,7 +354,7 @@ std::string QuitCommunication::encodeRequest()
 
     writeString(message, "QUT"); // write identifier "QUT"
     writeSpace(message);
-    writeNumber(message, _plid);
+    writeInt(message, _plid);
     writeDelimiter(message); // delimiter at the end
 
     return message;
@@ -425,9 +411,9 @@ std::string DebugCommunication::encodeRequest() {
 
     writeString(message, "DBG");  // write identifier "DBG"
     writeSpace(message);
-    writeNumber(message, _plid);
+    writeInt(message, _plid);
     writeSpace(message);
-    writeNumber(message, _time); // writes key to try
+    writeInt(message, _time); // writes key to try
     writeSpace(message);
     writeString(message, _key);
     writeDelimiter(message);  // delimiter at the end
@@ -442,7 +428,7 @@ void DebugCommunication::decodeRequest(MessageSource &message) {
     _plid = readPlid(message);
     readSpace(message);
 
-    _time = readNumber(message);
+    _time = readInt(message);
     readSpace(message);
 
     _key = readKey(message);
@@ -468,6 +454,67 @@ void DebugCommunication::decodeResponse(MessageSource &message) {
 
     // Read the status, and check if it is one of the options
     _status = readString(message, {"OK", "NOK", "ERR"});
+
+    readDelimiter(message);  // Read the delimiter
+}
+
+
+
+std::string ShowTrialsCommunication::encodeRequest() {
+    std::string message;
+
+    writeString(message, "STR");  // write identifier "STR"
+    writeSpace(message);
+    writeInt(message, _plid);
+    writeDelimiter(message);  // delimiter at the end
+
+    return message;
+}
+
+void ShowTrialsCommunication::decodeRequest(MessageSource &message) {
+    // readIdentifier(message, "STR"); The identifier is already read by the server
+    readSpace(message);
+
+    _plid = readPlid(message);
+    
+    readDelimiter(message);
+}
+
+
+std::string ShowTrialsCommunication::encodeResponse() {
+    std::string message;
+    writeString(message, "RST");  // write identifier "RST"
+    writeSpace(message);
+    writeString(message, _status);
+    
+    if (_status == "ACT" || _status == "FIN"){ // with ongoing game or no ongoing game for player
+        writeSpace(message);
+        writeString(message, _Fname);
+        writeSpace(message);
+        writeInt(message, _Fsize);
+        writeSpace(message);
+        writeString(message, _Fdata);
+    }
+    writeDelimiter(message);  // delimiter at the end
+
+    return message;
+}
+
+void ShowTrialsCommunication::decodeResponse(MessageSource &message) {
+    readIdentifier(message, "RST");  // read identifier "RST"
+    readSpace(message);
+
+    // Read the status, and check if it is one of the options
+    _status = readString(message, {"ACT", "FIN", "NOK", "ERR"});
+
+    if (_status == "ACT" || _status == "FIN"){ // with ongoing game or no ongoing game for player
+        readSpace(message);
+        _Fname = readString(message);
+        readSpace(message);
+        _Fsize = readInt(message);
+        readSpace(message);
+        _Fdata = readString(message);
+    }
 
     readDelimiter(message);  // Read the delimiter
 }

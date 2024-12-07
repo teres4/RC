@@ -190,15 +190,50 @@ void TryCommand::handle(std::string args, Client &state)
 
 void ShowTrialsCommand::handle(std::string args, Client &state)
 {
-  // TODO
-  std::cout << args << state._player.getPlid();
-
   if (args != "")
   {
     std::cout << "Invalid number of arguments.\nUsage: " << *_command_arg << std::endl;
     return;
   }
+  
+  if (!state._player.activePlayer())
+  {
+    std::cout << "There's not an active player" << std::endl;
+    return;
+  }
+
+  ShowTrialsCommunication stComm;
+  stComm._plid = state._player.getPlid();
+
+  state.processRequest(stComm); // Send the request to the server, receiving its response
+
+
+  if (stComm._status == "ACT" || stComm._status == "FIN")
+  {
+    if (stComm._Fname.size() > MAX_FNAME){
+      std::cout << "Invalid filename - max of 24 alphanumerical characters";
+      return;
+    }
+    if (stComm._Fsize > MAX_FSIZE){
+      std::cout << "File too big.";
+      return;
+    }
+    
+  }
+
+    
+    // std::cout << "Game has ended." << std::endl;
+    // std::cout << "The secret key: " << stComm._key << std::endl;
+  //   state._player.finishGame();
+  // }
+  // else if (stComm._status == "NOK")
+  // {
+  //   std::cout << "Player has no ongoing game." << std::endl;
+  // }
+
+
 }
+
 
 void ScoreboardCommand::handle(std::string args, Client &state)
 {
@@ -208,9 +243,6 @@ void ScoreboardCommand::handle(std::string args, Client &state)
 
 void QuitCommand::handle(std::string args, Client &state)
 {
-  // TODO
-  std::cout << args << state._player.getPlid();
-
   if (args != "")
   {
     std::cout << "Invalid number of arguments.\nUsage: " << *_command_arg << std::endl;
@@ -243,9 +275,6 @@ void QuitCommand::handle(std::string args, Client &state)
 
 void ExitCommand::handle(std::string args, Client &state)
 {
-  // TODO
-  std::cout << args << state._player.getPlid();
-
   if (args != "")
   {
     std::cout << "Invalid number of arguments.\nUsage: " << *_command_arg << std::endl;
@@ -327,6 +356,10 @@ void DebugCommand::handle(std::string args, Client &state)
     std::cout << "Check syntax" << std::endl;
   }
 }
+
+
+
+
 
 std::vector<std::string> split_command(std::string input)
 {

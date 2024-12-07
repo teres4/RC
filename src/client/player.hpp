@@ -31,12 +31,14 @@ class Client
 private:
   std::string _gsip = DEFAULT_HOSTNAME;
   std::string _gsport = DEFAULT_PORT;
-  // char* program_path;
+  char* program_path;
 
 public:
   Player _player;
 
   Client(int argc, char **argv);
+
+  void writeFile(std::string fName, std::stringstream &content);
 
   void processRequest(ProtocolCommunication &comm);
 

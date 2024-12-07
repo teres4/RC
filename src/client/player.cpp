@@ -77,6 +77,32 @@ Client::Client(int argc, char **argv)
     validate_port(_gsport);
 }
 
+
+void Client::writeFile(std::string fName, std::stringstream &content) {
+    // assureDirectory();  // Assure that the directory exists
+
+    // std::ofstream file(_downloadPath +
+    //                    fName);  // Create a file with the given name
+
+    // char buffer[512];
+
+    // content.read(buffer, 512);
+
+    // ssize_t n = content.gcount();
+
+    // while (
+    //     n !=
+    //     0) {  // While there is content to be read, loops and writes to the file
+    //     file.write(buffer, n);
+
+    //     content.read(buffer, 512);
+    //     n = content.gcount();
+    // }
+
+    // file.close();  // Close the file
+}
+
+
 void Client::processRequest(ProtocolCommunication &comm)
 {
     std::string reqMessage = comm.encodeRequest();
