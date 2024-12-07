@@ -13,7 +13,8 @@
 #include <unistd.h>
 #include <cstring>
 
-#include "../common/constants.hpp"
+#include "common/constants.hpp"
+#include "common/utils.hpp"
 
 class TcpServer
 {
@@ -24,7 +25,10 @@ private:
     struct sockaddr_in _addr; // The address
 
 public:
-    TcpServer(int gsport);
+    TcpServer(std::string gsport);
+    void send(std::string &message);
+    void receive();
+    void closeServer();
 };
 
 class UdpServer
@@ -36,7 +40,10 @@ private:
     struct sockaddr_in _addr; // The address
 
 public:
-    UdpServer(int gsport);
+    UdpServer(std::string gsport);
+    void send(std::string &message);
+    void receive();
+    void closeServer();
 };
 
 #endif

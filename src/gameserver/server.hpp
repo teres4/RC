@@ -4,6 +4,7 @@
 #include "../common/constants.hpp"
 #include "../common/utils.hpp"
 #include "../common/protocol.hpp"
+#include "socket.hpp"
 
 class Server
 {
@@ -13,8 +14,9 @@ private:
 
 public:
     Server(int argc, char **argv);
-
     void InitializeServers();
+
+    bool isverbose();
 };
 
 #endif

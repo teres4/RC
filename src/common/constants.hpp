@@ -1,7 +1,6 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
-
 #define DEFAULT_HOSTNAME "localhost"
 #define DEFAULT_PORT "58013" // 5800 + GROUP NUMBER
 
@@ -19,5 +18,7 @@
 #define SOCKETS_UDP_TIMEOUT 5
 
 #define MAX_TRIALS 8
+
+#define MAX_TCP_WORKERS 100
 
 #endif
