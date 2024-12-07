@@ -8,49 +8,56 @@
 #include <string.h>
 
 #include "../common/constants.hpp"
+#include "server.hpp"
 
-int fd, errcode;
-ssize_t n;
-socklen_t addrlen;
-struct addrinfo hints, *res;
-struct sockaddr_in addr;
-char buffer[128];
-
-int main()
+int main(int argc, char *argv[])
 {
-    // fd = socket(AF_INET, SOCK_DGRAM, 0); // UDP socket
-    // if (fd == -1)                        /*error*/
-    //     exit(1);
+    setup_signal_handlers();
 
-    // memset(&hints, 0, sizeof hints);
-    // hints.ai_family = AF_INET;      // IPv4
-    // hints.ai_socktype = SOCK_DGRAM; // UDP socket
-    // hints.ai_flags = AI_PASSIVE;
+    Server server(argc, argv);
 
-    // errcode = getaddrinfo(NULL, DEFAULT_PORT, &hints, &res);
-    // if (errcode != 0) /*error*/
-    //     exit(1);
+    // open conections
 
-    // n = bind(fd, res->ai_addr, res->ai_addrlen);
-    // if (n == -1) /*error*/
-    //     exit(1);
-
-    // while (1)
-    // {
-    //     addrlen = sizeof(addr);
-    //     n = recvfrom(fd, buffer, 128, 0,
-    //                  (struct sockaddr *)&addr, &addrlen);
-    //     if (n == -1) /*error*/
-    //         exit(1);
-    //     write(1, "received: ", 10);
-    //     write(1, buffer, n);
-
-    //     n = sendto(fd, buffer, n, 0,
-    //                (struct sockaddr *)&addr, addrlen);
-    //     if (n == -1) /*error*/
-    //         exit(1);
-    // }
-    // freeaddrinfo(res);
-    // close(fd);
     return 0;
+}
+
+Server::Server(int argc, char **argv)
+{
+
+    if (argc == 4)
+    {
+        if (strcmp(argv[1], "-p"))
+        {
+            _gsport = argv[2];
+        }
+        if (strcmp(argv[3], "-v"))
+        {
+            _verbose = true;
+        }
+        else
+        {
+            std::cout << "wrong args";
+        }
+    }
+    else if (argc == 3)
+    {
+        if (strcmp(argv[1], "-p"))
+        {
+            _gsport = argv[2];
+        }
+    }
+    else if (argc == 2)
+    {
+        if (strcmp(argv[1], "-v"))
+        {
+            _verbose = true;
+        }
+    }
+    else
+        std::cout << "wrong args";
+}
+
+// setup sockets
+void Server::InitializeServers()
+{
 }

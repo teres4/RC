@@ -5,6 +5,5 @@ GS-DB
 *.o
 GS
 player
-server
 utils
 readme.txt
