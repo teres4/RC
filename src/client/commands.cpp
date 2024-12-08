@@ -188,54 +188,6 @@ void TryCommand::handle(std::string args, Client &state)
 }
 
 
-void ShowTrialsCommand::handle(std::string args, Client &state)
-{
-  if (args != "")
-  {
-    std::cout << "Invalid number of arguments.\nUsage: " << *_command_arg << std::endl;
-    return;
-  }
-  
-  if (!state._player.activePlayer())
-  {
-    std::cout << "There's not an active player" << std::endl;
-    return;
-  }
-
-  ShowTrialsCommunication stComm;
-  stComm._plid = state._player.getPlid();
-
-  state.processRequest(stComm); // Send the request to the server, receiving its response
-
-  if (stComm._status == "ACT" || stComm._status == "FIN")
-  {
-    if (stComm._Fname.size() > MAX_FNAME){
-      std::cout << "Invalid filename - max of 24 alphanumerical characters";
-      return;
-    }
-    if (stComm._Fsize > MAX_FSIZE){
-      std::cout << "File too big.";
-      return;
-    }
-    std::cout << "Information stored in " << stComm._Fname << std::endl;
-    std::cout << "Size of file (bytes): " << stComm._Fsize << std::endl;
-    std::cout << stComm._Fdata << std::endl;
-    state.writeFile(stComm._Fname, stComm._Fdata);
-  }
-
-  else if (stComm._status == "NOK")
-  {
-    std::cout << "Player has no games." << std::endl;
-  }
-}
-
-
-void ScoreboardCommand::handle(std::string args, Client &state)
-{
-  // TODO
-  std::cout << args << state._player.getPlid();
-}
-
 void QuitCommand::handle(std::string args, Client &state)
 {
   if (args != "")
@@ -272,6 +224,7 @@ void QuitCommand::handle(std::string args, Client &state)
   }
 }
 
+
 void ExitCommand::handle(std::string args, Client &state)
 {
   if (args != "")
@@ -304,12 +257,11 @@ void ExitCommand::handle(std::string args, Client &state)
     }
 
   }
-  
   // make the player programn finish
   exit_command = true;
   std::cout << "Exiting program " << std::endl;
-
 }
+
 
 void DebugCommand::handle(std::string args, Client &state)
 {
@@ -359,6 +311,77 @@ void DebugCommand::handle(std::string args, Client &state)
   else if (dbgComm._status == "ERR") {
     std::cout << "Failed debug request. Please check syntax." << std::endl;
   }
+}
+
+
+void ShowTrialsCommand::handle(std::string args, Client &state)
+{
+  if (args != "")
+  {
+    std::cout << "Invalid number of arguments.\nUsage: " << *_command_arg << std::endl;
+    return;
+  }
+  
+  if (!state._player.activePlayer())
+  {
+    std::cout << "There's not an active player" << std::endl;
+    return;
+  }
+
+  ShowTrialsCommunication stComm;
+  stComm._plid = state._player.getPlid();
+
+  state.processRequest(stComm); // Send the request to the server, receiving its response
+
+  if (stComm._status == "ACT" || stComm._status == "FIN")
+  {
+    if (stComm._Fname.size() > MAX_FNAME){
+      std::cout << "Invalid filename - max of 24 alphanumerical characters";
+      return;
+    }
+    if (stComm._Fsize > MAX_FSIZE){
+      std::cout << "File too big.";
+      return;
+    }
+    std::cout << "Information stored in " << stComm._Fname << std::endl;
+    std::cout << "Size of file (bytes): " << stComm._Fsize << std::endl;
+    std::cout << stComm._Fdata << std::endl;
+    state.writeFile(stComm._Fname, stComm._Fdata);
+  }
+
+  else if (stComm._status == "NOK")
+    std::cout << "Player has no games." << std::endl;
+}
+
+
+void ScoreboardCommand::handle(std::string args, Client &state)
+{
+  if (args != "")
+  {
+    std::cout << "Invalid number of arguments.\nUsage: " << *_command_arg << std::endl;
+    return;
+  }
+
+  ScoreboardCommunication sbComm;
+
+  state.processRequest(sbComm); // Send the request to the server, receiving its response
+
+  if (sbComm._status == "OK")
+  {
+    if (sbComm._Fname.size() > MAX_FNAME){
+      std::cout << "Invalid filename - max of 24 alphanumerical characters";
+      return;
+    }
+    if (sbComm._Fsize > MAX_FSIZE){
+      std::cout << "File too big.";
+      return;
+    }
+    std::cout << "Information stored in " << sbComm._Fname << std::endl;
+    std::cout << "Size of file (bytes): " << sbComm._Fsize << std::endl;
+    std::cout << sbComm._Fdata << std::endl;
+    state.writeFile(sbComm._Fname, sbComm._Fdata);
+  }
+
 }
 
 

@@ -121,91 +121,92 @@ public:
   };
 };
 
-/**
- * @brief Represents a TCP message source.
- *
- * This class provides functionality to read characters from a TCP socket
- * and store them in a buffer. It also allows ungetting characters from the
- * buffer.
- */
-class TcpMessage : public MessageSource
-{
-private:
-  int _fd; // The file descriptor of the TCP socket.
-  // The buffer to store characters read from the TCP socket.
-  std::deque<char> _buffer;
-  char _last; // The last character read from the buffer.
 
-public:
-  /**
-   * @brief Constructs a TcpMessage object with the given file descriptor.
-   *
-   * @param fd The file descriptor of the TCP socket.
-   */
-  TcpMessage(int fd) : _fd(fd) {};
+// /**
+//  * @brief Represents a TCP message source.
+//  *
+//  * This class provides functionality to read characters from a TCP socket
+//  * and store them in a buffer. It also allows ungetting characters from the
+//  * buffer.
+//  */
+// class TcpMessage : public MessageSource
+// {
+// private:
+//   int _fd; // The file descriptor of the TCP socket.
+//   // The buffer to store characters read from the TCP socket.
+//   std::deque<char> _buffer;
+//   char _last; // The last character read from the buffer.
 
-  /**
-   * @brief Fills the buffer with characters read from the TCP socket.
-   *
-   * This function reads characters from the TCP socket and stores them in the
-   * buffer. If an error occurs during reading, a ProtocolException is thrown.
-   */
-  void fillBuffer()
-  {
-    char buf[128];
+// public:
+//   /**
+//    * @brief Constructs a TcpMessage object with the given file descriptor.
+//    *
+//    * @param fd The file descriptor of the TCP socket.
+//    */
+//   TcpMessage(int fd) : _fd(fd) {};
 
-    ssize_t n = read(_fd, buf, 128);
+//   /**
+//    * @brief Fills the buffer with characters read from the TCP socket.
+//    *
+//    * This function reads characters from the TCP socket and stores them in the
+//    * buffer. If an error occurs during reading, a ProtocolException is thrown.
+//    */
+//   void fillBuffer()
+//   {
+//     char buf[128];
 
-    if (n <= 0)
-    {
-      throw ProtocolViolationException();
-    }
+//     ssize_t n = read(_fd, buf, 128);
 
-    for (int i = 0; i < n; i++)
-    {
-      _buffer.push_back(buf[i]);
-    }
-  }
+//     if (n <= 0)
+//     {
+//       throw ProtocolViolationException();
+//     }
 
-  /**
-   * @brief Gets the next character from the buffer.
-   *
-   * If the buffer is empty, this function calls fillBuffer() to read more
-   * characters from the TCP socket. The last character read is stored in the
-   * _last member variable.
-   *
-   * @return The next character from the buffer.
-   */
-  char get()
-  {
-    if (_buffer.size() == 0)
-    {
-      fillBuffer();
-    }
+//     for (int i = 0; i < n; i++)
+//     {
+//       _buffer.push_back(buf[i]);
+//     }
+//   }
 
-    _last = _buffer.front();
-    _buffer.pop_front();
-    return _last;
-  };
+//   /**
+//    * @brief Gets the next character from the buffer.
+//    *
+//    * If the buffer is empty, this function calls fillBuffer() to read more
+//    * characters from the TCP socket. The last character read is stored in the
+//    * _last member variable.
+//    *
+//    * @return The next character from the buffer.
+//    */
+//   char get()
+//   {
+//     if (_buffer.size() == 0)
+//     {
+//       fillBuffer();
+//     }
 
-  /**
-   * @brief Checks if the TcpMessage is in a good state.
-   *
-   * This function always returns true, indicating that the TcpMessage is in a
-   * good state.
-   *
-   * @return true if the TcpMessage is in a good state, false otherwise.
-   */
-  bool good() { return true; };
+//     _last = _buffer.front();
+//     _buffer.pop_front();
+//     return _last;
+//   };
 
-  /**
-   * @brief Puts the last character back into the buffer.
-   *
-   * This function adds the last character read back to the front of the
-   * buffer. The character can then be read again by calling get().
-   */
-  void unget() { _buffer.push_front(_last); };
-};
+//   /**
+//    * @brief Checks if the TcpMessage is in a good state.
+//    *
+//    * This function always returns true, indicating that the TcpMessage is in a
+//    * good state.
+//    *
+//    * @return true if the TcpMessage is in a good state, false otherwise.
+//    */
+//   bool good() { return true; };
+
+//   /**
+//    * @brief Puts the last character back into the buffer.
+//    *
+//    * This function adds the last character read back to the front of the
+//    * buffer. The character can then be read again by calling get().
+//    */
+//   void unget() { _buffer.push_front(_last); };
+// };
 
 /**
  * @brief The ProtocolCommunication class is an abstract base class that defines
@@ -309,14 +310,6 @@ public:
    * @param identifier The identifier to read.
    */
   void readIdentifier(MessageSource &message, std::string identifier);
-
-  /**
-   * @brief Reads the file name from the given MessageSource.
-   *
-   * @param message The MessageSource from which to read the file name.
-   * @return The file name as a std::string.
-   */
-  std::string readfileName(MessageSource &message);
 
   /**
    * @brief Writes a character to string.
@@ -473,6 +466,27 @@ class ShowTrialsCommunication : public ProtocolCommunication {
     // Request parameters:
     int _plid;  // The player ID for show trials request.
 
+    // Response parameters:
+    std::string _status;    // The status of the start response.
+    std::string _Fname;     // The filename
+    int _Fsize;             // The file size, in bytes
+    std::string _Fdata;     // Thecontents of the selected file.
+
+    std::string encodeRequest();
+
+    void decodeRequest(MessageSource &message);
+
+    std::string encodeResponse();
+
+    void decodeResponse(MessageSource &message);
+
+    bool isTcp() { return true; };
+};
+
+
+class ScoreboardCommunication : public ProtocolCommunication {
+  public:
+  
     // Response parameters:
     std::string _status;    // The status of the start response.
     std::string _Fname;     // The filename

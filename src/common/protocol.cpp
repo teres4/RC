@@ -164,7 +164,6 @@ std::string ProtocolCommunication::readKey(MessageSource &message)
 void ProtocolCommunication::readIdentifier(MessageSource &message,
                                            std::string identifier)
 {
-
     std::string identifierReceived = readString(message, 3); // Read a string
 
     if (identifierReceived == PROTOCOL_ERROR)
@@ -179,11 +178,11 @@ void ProtocolCommunication::readIdentifier(MessageSource &message,
     }
 }
 
-std::string ProtocolCommunication::readfileName(MessageSource &message) {
-    std::string filename = readString(message, MAX_FNAME);
+// std::string ProtocolCommunication::readfileName(MessageSource &message) {
+//     std::string filename = readString(message, MAX_FNAME);
 
-    return filename;
-}
+//     return filename;
+// }
 
 
 void ProtocolCommunication::writeChar(std::string &message, char c)
@@ -539,7 +538,7 @@ void ShowTrialsCommunication::decodeResponse(MessageSource &message) {
 
     if (_status == "ACT" || _status == "FIN"){ // with ongoing game or no ongoing game for player
         readSpace(message);
-        _Fname = readfileName(message);
+        _Fname = readString(message);
         readSpace(message);
         _Fsize = readInt(message);
 
@@ -557,3 +556,75 @@ void ShowTrialsCommunication::decodeResponse(MessageSource &message) {
     readDelimiter(message);  // Read the delimiter
 }
 
+
+
+std::string ScoreboardCommunication::encodeRequest() {
+    std::string message;
+
+    writeString(message, "SSB");  // write identifier "SSB"
+    writeDelimiter(message);  // delimiter at the end
+
+    return message;
+}
+
+void ScoreboardCommunication::decodeRequest(MessageSource &message) {
+    // readIdentifier(message, "SSB"); The identifier is already read by the server
+    
+    readDelimiter(message);
+}
+
+
+std::string ScoreboardCommunication::encodeResponse() {
+    std::string message;
+    writeString(message, "RSS");  // write identifier "RSS"
+    writeSpace(message);
+    writeString(message, _status);
+    
+    if (_status == "OK"){  
+        if (_Fsize > MAX_FSIZE){
+            throw ProtocolViolationException();
+        }
+        writeSpace(message);
+
+        writeFileName(message, _Fname);
+
+        writeSpace(message);
+        writeInt(message, _Fsize);
+        writeSpace(message);
+        
+        for (int i = 0; i < _Fsize; i++){
+            char c = readChar(_Fdata, (size_t)i);
+            writeChar(message, c);
+        }
+    }
+    writeDelimiter(message);  // delimiter at the end
+
+    return message;
+}
+
+void ScoreboardCommunication::decodeResponse(MessageSource &message) {
+    readIdentifier(message, "RSS");  // read identifier "RSS"
+    readSpace(message);
+
+    // Read the status, and check if it is one of the options
+    _status = readString(message, std::vector<std::string>{"EMPTY", "OK"});
+
+    if (_status == "OK"){ 
+        readSpace(message);
+        _Fname = readString(message);
+        readSpace(message);
+        _Fsize = readInt(message);
+
+        if (_Fsize > MAX_FSIZE){
+            throw ProtocolViolationException();
+        }
+        readSpace(message);
+
+        for (int i = 0; i < _Fsize; i++){
+            char c = readChar(message);
+            writeChar(_Fdata, c);
+        }
+    }
+
+    readDelimiter(message);  // Read the delimiter
+}
