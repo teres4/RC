@@ -2,6 +2,11 @@
 #define PLAYER_H
 
 #include <csignal>
+#include <iostream>
+// #include <filesystem>
+
+#include <signal.h>
+#include <sys/stat.h>
 
 #include "../common/constants.hpp"
 #include "../common/utils.hpp"
@@ -26,22 +31,24 @@ public:
   void increaseNT();
 };
 
+
 class Client
 {
 private:
   std::string _gsip = DEFAULT_HOSTNAME;
   std::string _gsport = DEFAULT_PORT;
-  char* program_path;
+  std::string _path = "./game_files/";
 
 public:
   Player _player;
 
   Client(int argc, char **argv);
 
-  void writeFile(std::string fName, std::stringstream &content);
-
   void processRequest(ProtocolCommunication &comm);
 
+  void writeFile(std::string fName, std::string &data);
+
+  void checkDir();
   // void printHelp(std::ostream& stream);
 };
 

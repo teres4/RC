@@ -6,7 +6,14 @@ bool exit_command = false; // flag to indicate whether the application is exitin
 
 void CommandManager::addCommand(std::shared_ptr<CommandHandler> command)
 {
-  _handlers[command->_name] = std::move(command);
+
+  // _handlers[command->_name] = std::move(command);
+
+  _handlers.insert({command->_name, command});
+
+  if (command->_alias != ""){
+    _handlers.insert({command->_alias, command});
+  }
 }
 
 void CommandManager::addAllCommands()
@@ -160,32 +167,27 @@ void TryCommand::handle(std::string args, Client &state)
     // enunciado stuff?
   }
   else if (tryComm._status == "DUP")
-  {
     std::cout << "Duplicate of a previous trial's guess " << std::endl;
-  }
+  
 
+  // TODO - message
   else if (tryComm._status == "INV")
-  { // TODO - message
-    std::cout << "" << std::endl;
-  }
+    std::cout << "INV" << std::endl;
+
   else if (tryComm._status == "NOK")
-  {
     std::cout << "Trial out of context" << std::endl;
-  }
+  
   else if (tryComm._status == "ENT")
-  {
     std::cout << "No more attempts available. Secret key was: " << tryComm._key
               << std::endl;
-  }
+  
   else if (tryComm._status == "ETM")
-  {
     std::cout << "Maximum play time has been exceeded. Secret key was: "
               << tryComm._key << std::endl;
-  }
+  
   else if (tryComm._status == "ERR")
-  {
     std::cout << "Check syntax" << std::endl;
-  }
+  
 }
 
 void ShowTrialsCommand::handle(std::string args, Client &state)

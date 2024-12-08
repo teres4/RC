@@ -23,6 +23,7 @@ int main(int argc, char *argv[])
     return 0;
 }
 
+
 void Player::newPlayer(int plid)
 {
     _plid = plid;
@@ -78,31 +79,6 @@ Client::Client(int argc, char **argv)
 }
 
 
-void Client::writeFile(std::string fName, std::stringstream &content) {
-    // assureDirectory();  // Assure that the directory exists
-
-    // std::ofstream file(_downloadPath +
-    //                    fName);  // Create a file with the given name
-
-    // char buffer[512];
-
-    // content.read(buffer, 512);
-
-    // ssize_t n = content.gcount();
-
-    // while (
-    //     n !=
-    //     0) {  // While there is content to be read, loops and writes to the file
-    //     file.write(buffer, n);
-
-    //     content.read(buffer, 512);
-    //     n = content.gcount();
-    // }
-
-    // file.close();  // Close the file
-}
-
-
 void Client::processRequest(ProtocolCommunication &comm)
 {
     std::string reqMessage = comm.encodeRequest();
@@ -128,4 +104,25 @@ void Client::processRequest(ProtocolCommunication &comm)
     std::cout << resMessage;
 
     comm.decodeResponse(resStreamMessage); // Decode the response
+}
+
+
+void Client::writeFile(std::string fName, std::string &data) {
+    checkDir();  // Assure that the directory exists
+
+    std::ofstream file(_path + fName);  // Create a file with the given name
+
+    ssize_t n = (ssize_t) data.length();
+
+    file.write(data.c_str(), n);
+
+    file.close();  // Close the file
+}
+
+void Client::checkDir() {
+    if (mkdir(_path.c_str(), 0777) == -1) {  // If the directory doesn't exist, create it
+        if (errno != EEXIST) { // The named file exists.
+            throw std::runtime_error("Couldn't write file");
+        }
+    }
 }

@@ -40,13 +40,10 @@ UDPInfo::~UDPInfo()
 
 void UDPInfo::send(std::string &message)
 {
-    size_t n = message.size();
-    if (n <= 0)
-    {
-        throw TimeoutException();
-    }
+    size_t n = message.length();
+
     // Send the message
-    if (sendto(_fd, message.c_str(), (size_t)n, 0, _res->ai_addr, _res->ai_addrlen) <= 0)
+    if (sendto(_fd, message.c_str(), n, 0, _res->ai_addr, _res->ai_addrlen) <= 0)
     {
         throw SocketException();
     }

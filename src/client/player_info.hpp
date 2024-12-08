@@ -97,49 +97,6 @@ class TCPInfo {
 
 
 
-// class Player_Info
-// {
-//     // the sockets
-// public:
-//     int udpSockFD = -1;
-//     int tcpSockFD = -1;
-//     struct addrinfo *serverUdpAddr = NULL;
-//     struct addrinfo *serverTcpAddr = NULL;
-
-//     void setupSockets();
-//     void setupServerAddr(std::string &hostname, std::string &port);
-
-
-//     void sendUdpPacket(UdpPacket& packet);
-//     void waitForUdpPacket(UdpPacket& packet);
-
-
-//     void openTcpSocket();
-//     void sendTcpPacket(TcpPacket& packet);
-//     void waitForTcpPacket(TcpPacket& packet);
-//     void closeTcpSocket();
-
-// public:
-//     Player_Info(std::string &hostname, std::string &port);
-//     // ~PlayerState();
-
-//     // bool hasActiveGame();
-//     // bool hasGame();
-
-//     int plid; // The player id
-//     int max_playtime = 0;
-//     bool hasActiveGame = false;
-//     int num_trials = 0;
-//     // a map for the players' attempts?
-
-//     // Player_Info(int plid);
-// };
-
-
-
-
-
-
 /**
  * @class SocketException
  * @brief Represents an exception that is thrown when a network error occurs.

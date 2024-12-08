@@ -20,7 +20,7 @@ class CommandHandler
 {
 public:
   std::string _name;                       // The name of the command
-  std::optional<std::string> _alias;       // The aliases of the command
+  std::string _alias;                      // The alias of the command
   std::optional<std::string> _command_arg; // The args of the command
   std::optional<std::string> _description; // The description of the command
 
@@ -41,7 +41,7 @@ protected:
    */
 
   CommandHandler(const std::string &name,
-                 const std::optional<std::string> &alias,
+                 const std::string &alias,
                  const std::optional<std::string> &command_arg,
                  const std::string &description)
       : _name{name},
@@ -53,7 +53,7 @@ protected:
 class CommandManager
 {
   // list of command handlers
-  std::vector<std::shared_ptr<CommandHandler>> _handlerList;
+  // std::vector<std::shared_ptr<CommandHandler>> _handlerList;
   // name->handler map
   std::unordered_map<std::string, std::shared_ptr<CommandHandler>> _handlers;
 
@@ -84,7 +84,7 @@ class StartCommand : public CommandHandler
 
 public:
   StartCommand()
-      : CommandHandler("start", std::nullopt, "PLID max_playtime",
+      : CommandHandler("start", "", "PLID max_playtime",
                        "Start a new game") {}
 };
 
@@ -94,7 +94,7 @@ class TryCommand : public CommandHandler
 
 public:
   TryCommand()
-      : CommandHandler("try", std::nullopt, "C1 C2 C3 C4",
+      : CommandHandler("try", "", "C1 C2 C3 C4",
                        "Tries a combination of colors") {}
 };
 
@@ -125,7 +125,7 @@ class QuitCommand : public CommandHandler
 
 public:
   QuitCommand()
-      : CommandHandler("quit", std::nullopt, std::nullopt, "Quit game") {}
+      : CommandHandler("quit", "", std::nullopt, "Quit game") {}
 };
 
 class ExitCommand : public CommandHandler
@@ -134,7 +134,7 @@ class ExitCommand : public CommandHandler
 
 public:
   ExitCommand()
-      : CommandHandler("exit", std::nullopt, std::nullopt, "Exit application")
+      : CommandHandler("exit", "", std::nullopt, "Exit application")
   {
   }
 };
@@ -145,7 +145,7 @@ class DebugCommand : public CommandHandler
 
 public:
   DebugCommand()
-      : CommandHandler("debug", std::nullopt, "PLID max_playtime C1 C2 C3 C4",
+      : CommandHandler("debug", "", "PLID max_playtime C1 C2 C3 C4",
                        "Start a game in debug mode") {}
 };
 
