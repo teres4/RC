@@ -6,8 +6,8 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <string.h>
+#include <stdexcept>
 
-#include "../common/constants.hpp"
 #include "server.hpp"
 
 int main(int argc, char *argv[])
@@ -60,27 +60,7 @@ Server::Server(int argc, char **argv)
 
 // setup sockets
 void Server::InitializeServers()
-{ /*
-  try {                                       // Try to start the server
-      UdpServer udpServer(server.getPort());  // Initialize the UDP server
-      TcpServer tcpServer(server.getPort());  // Initialize the TCP server
-
-      // Display the server information if verbose mode is enabled
-      server.logPush("Listening on port " + server.getPort());
-      if ((pid = fork()) == -1) {  // Fork the process
-          exit(1);
-      } else if (pid == 0) {  // If the process is a child process
-          tcpServer.close();  // Close the TCP server
-          server.logPush("UDP server started");   // Display a message if
-                                                  // verbose mode is enabled
-          UDPServer(udpServer, manager, server);  // Start the UDP server
-      } else {                // If the process is a parent process
-          udpServer.close();  // Close the UDP server
-          server.logPush("TCP server started");   // Display a message if
-                                                  // verbose mode is enabled
-          TCPServer(tcpServer, manager, server);  // Start the TCP server
-      }
-  */
+{
     try
     {
         UdpServer UdpServer(_gsport);
@@ -94,7 +74,7 @@ void Server::InitializeServers()
         }
         else if (pid == 0) // child process
         {
-            UdpServer.closeServer();
+            TcpServer.closeServer();
         }
         else // fork failed
         {

@@ -12,6 +12,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <cstring>
+#include <stdexcept>
 
 #include "common/constants.hpp"
 #include "common/utils.hpp"
@@ -27,8 +28,9 @@ private:
 public:
     TcpServer(std::string gsport);
     void send(std::string &message);
-    void receive();
+    std::string receive(int fd);
     void closeServer();
+    int accept()
 };
 
 class UdpServer
@@ -42,7 +44,7 @@ private:
 public:
     UdpServer(std::string gsport);
     void send(std::string &message);
-    void receive();
+    std::string receive();
     void closeServer();
 };
 

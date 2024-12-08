@@ -42,8 +42,15 @@ void UdpServer::send(std::string &message)
     }
 }
 
-void UdpServer::receive()
+std::string UdpServer::receive()
 {
+    char buffer[BUFFER_SIZE];
+    ssize_t bytes_received = recvfrom(_fd, buffer, BUFFER_SIZE, 0, _res->ai_addr, &_res->ai_addrlen);
+    if (bytes_received == -1)
+    {
+        throw SocketException();
+    }
+    return std::string(buffer, bytes_received);
 }
 
 UdpServer::~UdpServer()
@@ -107,6 +114,30 @@ void TcpServer::send(std::string &message)
         }
         total_sent += (size_t)bytes_sent;
     }
+}
+
+std::string TcpServer::receive(int fd)
+{
+    // between the initialization of TcpServer and receive(), there is an accept() call
+    char buffer[BUFFER_SIZE];
+    ssize_t bytes_received = read(fd, buffer, BUFFER_SIZE);
+    if (bytes_received == -1)
+    {
+        throw SocketException();
+    }
+    return std::string(buffer, bytes_received);
+}
+
+int TcpServer::accept()
+{
+    struct sockaddr_storage client_addr;
+    socklen_t addr_size = sizeof(client_addr);
+    int client_fd = ::accept(_fd, (struct sockaddr *)&client_addr, &addr_size);
+    if (client_fd == -1)
+    {
+        throw SocketException();
+    }
+    return client_fd;
 }
 
 TcpServer::~TcpServer()
