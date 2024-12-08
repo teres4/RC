@@ -1,0 +1,10 @@
+
+     Active game found for player 105991
+Game initiated: 2024-12-08 19:21:45 with 123 seconds to be completed
+
+     --- Transactions found: 2 ---
+
+Trial: GGPB, nB: 0, nW: 1 at   3s
+Trial: PPPP, nB: 0, nW: 0 at   5s
+
+  -- 117 seconds remaining to be completed -- 

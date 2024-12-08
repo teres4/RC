@@ -6,9 +6,6 @@ bool exit_command = false; // flag to indicate whether the application is exitin
 
 void CommandManager::addCommand(std::shared_ptr<CommandHandler> command)
 {
-
-  // _handlers[command->_name] = std::move(command);
-
   _handlers.insert({command->_name, command});
 
   if (command->_alias != ""){
@@ -187,8 +184,9 @@ void TryCommand::handle(std::string args, Client &state)
   
   else if (tryComm._status == "ERR")
     std::cout << "Check syntax" << std::endl;
-  
+    
 }
+
 
 void ShowTrialsCommand::handle(std::string args, Client &state)
 {
@@ -209,7 +207,6 @@ void ShowTrialsCommand::handle(std::string args, Client &state)
 
   state.processRequest(stComm); // Send the request to the server, receiving its response
 
-
   if (stComm._status == "ACT" || stComm._status == "FIN")
   {
     if (stComm._Fname.size() > MAX_FNAME){
@@ -220,20 +217,16 @@ void ShowTrialsCommand::handle(std::string args, Client &state)
       std::cout << "File too big.";
       return;
     }
-    
+    std::cout << "Information stored in " << stComm._Fname << std::endl;
+    std::cout << "Size of file (bytes): " << stComm._Fsize << std::endl;
+    std::cout << stComm._Fdata << std::endl;
+    state.writeFile(stComm._Fname, stComm._Fdata);
   }
 
-    
-    // std::cout << "Game has ended." << std::endl;
-    // std::cout << "The secret key: " << stComm._key << std::endl;
-  //   state._player.finishGame();
-  // }
-  // else if (stComm._status == "NOK")
-  // {
-  //   std::cout << "Player has no ongoing game." << std::endl;
-  // }
-
-
+  else if (stComm._status == "NOK")
+  {
+    std::cout << "Player has no games." << std::endl;
+  }
 }
 
 
@@ -271,8 +264,6 @@ void QuitCommand::handle(std::string args, Client &state)
   {
     std::cout << "Check syntax" << std::endl;
   }
-
-  exit_command = true;
 }
 
 void ExitCommand::handle(std::string args, Client &state)
@@ -374,4 +365,17 @@ std::vector<std::string> split_command(std::string input)
     command_split.push_back(temp);
 
   return command_split;
+}
+
+
+
+void display_file(std::string filename) {
+  std::ifstream f(filename);
+  if (f.is_open()) {
+    std::cout << f.rdbuf() << std::endl;
+  } else {
+    std::cout
+        << "Failed to open file to display. Please open the file manually:"
+        << filename << std::endl;
+  }
 }

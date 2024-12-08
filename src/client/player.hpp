@@ -17,7 +17,7 @@ class Player
 {
 private:
   int _plid = 0; // The player id
-  int _nT = 1;   // The number of trial
+  int _nT;   // The number of trial
   bool onGoing = false;
 
 public:
@@ -37,7 +37,7 @@ class Client
 private:
   std::string _gsip = DEFAULT_HOSTNAME;
   std::string _gsport = DEFAULT_PORT;
-  std::string _path = "./game_files/";
+  std::string _path = "./src/game_files/";
 
 public:
   Player _player;

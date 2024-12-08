@@ -35,7 +35,7 @@ class ProtocolViolationException : public ProtocolException
 };
 
 /**
- * @brief Exception class for protocol message errors.
+ * @brief Exception class for protocol message errors - when its ERR.
  */
 class ProtocolMessageErrorException : public ProtocolException
 {
@@ -227,6 +227,11 @@ public:
   // General purpose methods to allow parsing and encoding.
 
   /**
+   * @brief Reads character from position pos from a string.
+   */
+  char readChar(std::string &message, size_t pos);
+
+  /**
    * @brief Reads a character from a MessageSource.
    */
   char readChar(MessageSource &message);
@@ -306,6 +311,14 @@ public:
   void readIdentifier(MessageSource &message, std::string identifier);
 
   /**
+   * @brief Reads the file name from the given MessageSource.
+   *
+   * @param message The MessageSource from which to read the file name.
+   * @return The file name as a std::string.
+   */
+  std::string readfileName(MessageSource &message);
+
+  /**
    * @brief Writes a character to string.
    *
    * @param message The string to write to.
@@ -342,14 +355,6 @@ public:
    * @param number The number to write.
    */
   void writeInt(std::string &message, int number);
-
-  /**
-   * @brief Writes a UID to string.
-   *
-   * @param message The string to write to.
-   * @param uid The UID to write.
-   */
-  void writePlid(std::string &message, std::string uid);
 
   /**
    * @brief Writes the file name to the given message.

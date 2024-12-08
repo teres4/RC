@@ -54,6 +54,7 @@ class CommandManager
 {
   // list of command handlers
   // std::vector<std::shared_ptr<CommandHandler>> _handlerList;
+  
   // name->handler map
   std::unordered_map<std::string, std::shared_ptr<CommandHandler>> _handlers;
 

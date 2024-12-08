@@ -1,5 +1,10 @@
 #include "protocol.hpp"
 
+char ProtocolCommunication::readChar(std::string &message, size_t pos)
+{
+    return message[pos];   
+}
+
 char ProtocolCommunication::readChar(MessageSource &message)
 {
     char c = (char)message.get(); // get() returns an int, so we need to cast it to char
@@ -174,6 +179,13 @@ void ProtocolCommunication::readIdentifier(MessageSource &message,
     }
 }
 
+std::string ProtocolCommunication::readfileName(MessageSource &message) {
+    std::string filename = readString(message, MAX_FNAME);
+
+    return filename;
+}
+
+
 void ProtocolCommunication::writeChar(std::string &message, char c)
 {
     try
@@ -211,6 +223,15 @@ void ProtocolCommunication::writeInt(std::string &message, int number)
 
     writeString(message, value); // write the string
 }
+
+
+void ProtocolCommunication::writeFileName(std::string &message, std::string fileName){
+    if (fileName.length() > MAX_FNAME) 
+        throw ProtocolViolationException();
+
+    writeString(message, fileName);
+}
+
 
 std::string StartCommunication::encodeRequest()
 {
@@ -488,12 +509,21 @@ std::string ShowTrialsCommunication::encodeResponse() {
     writeString(message, _status);
     
     if (_status == "ACT" || _status == "FIN"){ // with ongoing game or no ongoing game for player
+        if (_Fsize > MAX_FSIZE){
+            throw ProtocolViolationException();
+        }
         writeSpace(message);
-        writeString(message, _Fname);
+
+        writeFileName(message, _Fname);
+
         writeSpace(message);
         writeInt(message, _Fsize);
         writeSpace(message);
-        writeString(message, _Fdata);
+        
+        for (int i = 0; i < _Fsize; i++){
+            char c = readChar(_Fdata, (size_t)i);
+            writeChar(message, c);
+        }
     }
     writeDelimiter(message);  // delimiter at the end
 
@@ -505,16 +535,25 @@ void ShowTrialsCommunication::decodeResponse(MessageSource &message) {
     readSpace(message);
 
     // Read the status, and check if it is one of the options
-    _status = readString(message, {"ACT", "FIN", "NOK", "ERR"});
+    _status = readString(message, {"ACT", "FIN", "NOK"});
 
     if (_status == "ACT" || _status == "FIN"){ // with ongoing game or no ongoing game for player
         readSpace(message);
-        _Fname = readString(message);
+        _Fname = readfileName(message);
         readSpace(message);
         _Fsize = readInt(message);
+
+        if (_Fsize > MAX_FSIZE){
+            throw ProtocolViolationException();
+        }
         readSpace(message);
-        _Fdata = readString(message);
+
+        for (int i = 0; i < _Fsize; i++){
+            char c = readChar(message);
+            writeChar(_Fdata, c);
+        }
     }
 
     readDelimiter(message);  // Read the delimiter
 }
+

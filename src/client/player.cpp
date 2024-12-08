@@ -55,7 +55,7 @@ void Player::finishGame()
 {
     onGoing = false;
     _nT = 1;
-    _plid = -1;
+    _plid = 0;
 }
 
 Client::Client(int argc, char **argv)
@@ -84,24 +84,23 @@ void Client::processRequest(ProtocolCommunication &comm)
     std::string reqMessage = comm.encodeRequest();
     std::string resMessage;
 
-    std::cout << "processReq message: " << reqMessage;
-
-    if (comm.isTcp())
-    { // If the communication is TCP, use TCP
+    if (comm.isTcp())   // If the communication is TCP, use TCP
+    { 
         TCPInfo tcp(_gsip, _gsport);
         tcp.send(reqMessage);       // send request message
         resMessage = tcp.receive(); // receive response
     }
 
-    else
-    { // If the communication is UDP, use UDP
+    else    // If the communication is UDP, use UDP
+    { 
         UDPInfo udp(_gsip, _gsport);
         udp.send(reqMessage);       // request
         resMessage = udp.receive(); // receive response
     }
 
     StreamMessage resStreamMessage(resMessage); // Create a StreamMessage from the response
-    std::cout << resMessage;
+
+    // std::cout << resMessage;
 
     comm.decodeResponse(resStreamMessage); // Decode the response
 }
@@ -113,11 +112,11 @@ void Client::writeFile(std::string fName, std::string &data) {
     std::ofstream file(_path + fName);  // Create a file with the given name
 
     ssize_t n = (ssize_t) data.length();
-
     file.write(data.c_str(), n);
 
     file.close();  // Close the file
 }
+
 
 void Client::checkDir() {
     if (mkdir(_path.c_str(), 0777) == -1) {  // If the directory doesn't exist, create it
