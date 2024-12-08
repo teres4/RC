@@ -113,7 +113,7 @@ void StartCommand::handle(std::string args, Client &state)
   }
   else if (startComm._status == "ERR")
   {
-    std::cout << "Check syntax" << std::endl;
+    std::cout << "Game has failed to start. Please check syntax. " << std::endl;
   }
 }
 
@@ -183,7 +183,7 @@ void TryCommand::handle(std::string args, Client &state)
               << tryComm._key << std::endl;
   
   else if (tryComm._status == "ERR")
-    std::cout << "Check syntax" << std::endl;
+    std::cout << "Failed at try request. Please check syntax. " << std::endl;
     
 }
 
@@ -243,7 +243,13 @@ void QuitCommand::handle(std::string args, Client &state)
     std::cout << "Invalid number of arguments.\nUsage: " << *_command_arg << std::endl;
     return;
   }
-
+  
+  if (!state._player.activePlayer())
+  {
+    std::cout << "There's not an active player" << std::endl;
+    return;
+  }
+  
   QuitCommunication quitComm;
 
   quitComm._plid = state._player.getPlid();
@@ -258,11 +264,11 @@ void QuitCommand::handle(std::string args, Client &state)
   }
   else if (quitComm._status == "NOK")
   {
-    std::cout << "Player has no ongoing game." << std::endl;
+    std::cout << "Player had no ongoing game." << std::endl;
   }
   else if (quitComm._status == "ERR")
   {
-    std::cout << "Check syntax" << std::endl;
+    std::cout << "Failed to quit." << std::endl;
   }
 }
 
@@ -274,30 +280,35 @@ void ExitCommand::handle(std::string args, Client &state)
     return;
   }
 
-  QuitCommunication quitComm;
-
-  quitComm._plid = state._player.getPlid();
-
-  state.processRequest(quitComm); // Send the request to the server, receiving its response
-
-  if (quitComm._status == "OK")
+  if (state._player.activePlayer())
   {
-    std::cout << "Game has ended." << std::endl;
-    std::cout << "The secret key:" << quitComm._key << std::endl;
-  }
-  else if (quitComm._status == "NOK")
-  {
-    std::cout << "Player has no ongoing game." << std::endl;
-  }
-  else if (quitComm._status == "ERR")
-  {
-    std::cout << "Check syntax" << std::endl;
-  }
+    QuitCommunication quitComm;
 
+    quitComm._plid = state._player.getPlid();
+
+    state.processRequest(quitComm); // Send the request to the server, receiving its response
+
+    if (quitComm._status == "OK")
+    {
+      std::cout << "Game has ended." << std::endl;
+      std::cout << "The secret key:" << quitComm._key << std::endl;
+      state._player.finishGame();
+    }
+    else if (quitComm._status == "NOK")
+    {
+      std::cout << "Player had no ongoing game." << std::endl;
+    }
+    else if (quitComm._status == "ERR")
+    {
+      std::cout << "Failed to exit." << std::endl;
+    }
+
+  }
+  
   // make the player programn finish
-
   exit_command = true;
-  exit(0);
+  std::cout << "Exiting program " << std::endl;
+
 }
 
 void DebugCommand::handle(std::string args, Client &state)
@@ -346,11 +357,9 @@ void DebugCommand::handle(std::string args, Client &state)
     state._player.newPlayer(get_plid(PLID));
   } 
   else if (dbgComm._status == "ERR") {
-    std::cout << "Check syntax" << std::endl;
+    std::cout << "Failed debug request. Please check syntax." << std::endl;
   }
 }
-
-
 
 
 
@@ -365,17 +374,4 @@ std::vector<std::string> split_command(std::string input)
     command_split.push_back(temp);
 
   return command_split;
-}
-
-
-
-void display_file(std::string filename) {
-  std::ifstream f(filename);
-  if (f.is_open()) {
-    std::cout << f.rdbuf() << std::endl;
-  } else {
-    std::cout
-        << "Failed to open file to display. Please open the file manually:"
-        << filename << std::endl;
-  }
 }
