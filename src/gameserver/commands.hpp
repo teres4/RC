@@ -16,54 +16,39 @@
 class CommandHandler
 {
 public:
-    std::string _name;                       // The name of the command
-    std::string _alias;                      // The alias of the command
-    std::optional<std::string> _command_arg; // The args of the command
-    std::optional<std::string> _description; // The description of the command
+    std::string _name;    // The name of the command
+    bool _isTCP;          // Specifies whether command is tcp or udp      
 
     /**
      * @brief Handles the command with the given arguments.
      * should be implemented by derived classes
      */
-    virtual void handle(std::string &message,
-                        Server &receiver) = 0;
+    virtual void handle(std::string &message, Server &receiver) = 0;
 
 protected:
     /**
      * @brief Constructs a CommandHandler object with the specified properties.
      *
      * @param name The name of the command.
-     * @param alias The aliases of the command
-     * @param args The args of the command.
-     * @param usage The description of the command.
      */
 
-    CommandHandler(const std::string &name,
-                   const std::string &alias,
-                   const std::optional<std::string> &command_arg,
-                   const std::string &description)
+    CommandHandler(const std::string &name, bool isTCP)
         : _name{name},
-          _alias{alias},
-          _command_arg{command_arg},
-          _description{description} {}
+        _isTCP {isTCP} {}
 };
 
 class CommandManager
 {
-    // list of command handlers
-    // std::vector<std::shared_ptr<CommandHandler>> _handlerList;
-    // name->handler map
-    std::unordered_map<std::string, std::shared_ptr<CommandHandler>> _handlers;
-
+    std::unordered_map<std::string, std::shared_ptr<CommandHandler>> _handlersUDP;
+    std::unordered_map<std::string, std::shared_ptr<CommandHandler>> _handlersTCP;
+    
 public:
-    // void printHelp();
-
     /**
      * @brief Adds a command to the command manager.
      *
      * @param handler The command handler to add.
      */
-    void addCommand(std::shared_ptr<CommandHandler> handler);
+    void addCommand(std::shared_ptr<CommandHandler> handle);
 
     void addAllCommands();
 
@@ -81,9 +66,7 @@ class StartCommand : public CommandHandler
     void handle(std::string &args, Server &server);
 
 public:
-    StartCommand()
-        : CommandHandler("start", "", "PLID max_playtime",
-                         "Start a new game") {}
+    StartCommand(): CommandHandler("LIN", false) {}
 };
 
 class TryCommand : public CommandHandler
@@ -91,9 +74,7 @@ class TryCommand : public CommandHandler
     void handle(std::string &args, Server &server);
 
 public:
-    TryCommand()
-        : CommandHandler("try", "", "C1 C2 C3 C4",
-                         "Tries a combination of colors") {}
+    TryCommand(): CommandHandler("TRY", false) {}
 };
 
 class ShowTrialsCommand : public CommandHandler
@@ -101,10 +82,7 @@ class ShowTrialsCommand : public CommandHandler
     void handle(std::string &args, Server &server);
 
 public:
-    ShowTrialsCommand()
-        : CommandHandler(
-              "show_trials", "st", std::nullopt,
-              "Display previously made trials and respective results") {}
+    ShowTrialsCommand(): CommandHandler("STR", true) {}
 };
 
 class ScoreboardCommand : public CommandHandler
@@ -112,9 +90,7 @@ class ScoreboardCommand : public CommandHandler
     void handle(std::string &args, Server &server);
 
 public:
-    ScoreboardCommand()
-        : CommandHandler("scoreboard", "sb", std::nullopt,
-                         "Display the scoreboard") {}
+    ScoreboardCommand(): CommandHandler("SSB", true) {}
 };
 
 class QuitCommand : public CommandHandler
@@ -122,8 +98,7 @@ class QuitCommand : public CommandHandler
     void handle(std::string &args, Server &server);
 
 public:
-    QuitCommand()
-        : CommandHandler("quit", "", std::nullopt, "Quit game") {}
+    QuitCommand(): CommandHandler("QUT", false) {}
 };
 
 class ExitCommand : public CommandHandler
@@ -131,10 +106,7 @@ class ExitCommand : public CommandHandler
     void handle(std::string &args, Server &server);
 
 public:
-    ExitCommand()
-        : CommandHandler("exit", "", std::nullopt, "Exit application")
-    {
-    }
+    ExitCommand(): CommandHandler("QUT", false) {}
 };
 
 class DebugCommand : public CommandHandler
@@ -142,9 +114,7 @@ class DebugCommand : public CommandHandler
     void handle(std::string &args, Server &server);
 
 public:
-    DebugCommand()
-        : CommandHandler("debug", "", "PLID max_playtime C1 C2 C3 C4",
-                         "Start a game in debug mode") {}
+    DebugCommand(): CommandHandler("DBG", false) {}
 };
 
 std::vector<std::string> split_command(std::string input);

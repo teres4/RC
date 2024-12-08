@@ -14,7 +14,7 @@ private:
 
 public:
     Server(int argc, char **argv);
-    void InitializeServers();
+    void initializeServers();
 
     bool isverbose();
 };

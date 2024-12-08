@@ -49,6 +49,8 @@ void UDPInfo::send(std::string &message)
     }
 }
 
+
+// TODO tries before timeout implementation
 std::string UDPInfo::receive()
 {
     char buffer[BUFFER_SIZE + 1];

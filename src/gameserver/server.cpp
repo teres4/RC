@@ -9,6 +9,7 @@
 #include <stdexcept>
 
 #include "server.hpp"
+#include "commands.cpp"
 
 int main(int argc, char *argv[])
 {
@@ -17,14 +18,17 @@ int main(int argc, char *argv[])
     Server server(argc, argv);
 
     // open conections
-    server.InitializeServers();
+    server.initializeServers();
+
+    // CommandManager commandManager; // create a new command manager
+    // commandManager.addAllCommands();
 
     return 0;
 }
 
+
 Server::Server(int argc, char **argv)
 {
-
     if (argc == 4)
     {
         if (strcmp(argv[1], "-p"))
@@ -56,25 +60,26 @@ Server::Server(int argc, char **argv)
     }
     else
         std::cout << "Wrong args/n Correct usage: [-p GSport] [-v]";
+    validate_port(_gsport);
 }
 
 // setup sockets
-void Server::InitializeServers()
+void Server::initializeServers()
 {
     try
     {
-        UdpServer UdpServer(_gsport);
-        TcpServer TcpServer(_gsport);
+        UdpServer udpServer(_gsport);
+        TcpServer tcpServer(_gsport);
 
         int pid = fork();
         if (pid > 0) // parent process
         {
             // udp
-            UdpServer.closeServer();
+            udpServer.closeServer();
         }
         else if (pid == 0) // child process
         {
-            TcpServer.closeServer();
+            tcpServer.closeServer();
         }
         else // fork failed
         {

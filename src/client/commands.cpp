@@ -146,7 +146,6 @@ void TryCommand::handle(std::string args, Client &state)
 
   state.processRequest(tryComm); // Send the request to the server, receiving its response
 
-  // TODO stuff if OK response?
   if (tryComm._status == "OK")
   {
     std::cout << "Number of trial: " << state._player.getnT() << std::endl

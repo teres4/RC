@@ -151,16 +151,3 @@ void TcpServer::closeServer()
     freeaddrinfo(_res);
     close(_fd);
 }
-
-/**
- * @class SocketException
- * @brief Represents an exception that is thrown when a network error occurs.
- */
-class SocketException : public std::runtime_error
-{
-public:
-    /**
-     * @brief Constructs a SocketException object.
-     */
-    SocketException() : std::runtime_error("A network error has occurred.") {};
-};

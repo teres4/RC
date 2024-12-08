@@ -85,8 +85,7 @@ class StartCommand : public CommandHandler
 
 public:
   StartCommand()
-      : CommandHandler("start", "", "PLID max_playtime",
-                       "Start a new game") {}
+      : CommandHandler("start", "", "PLID max_playtime", "Start a new game") {}
 };
 
 class TryCommand : public CommandHandler
@@ -95,8 +94,7 @@ class TryCommand : public CommandHandler
 
 public:
   TryCommand()
-      : CommandHandler("try", "", "C1 C2 C3 C4",
-                       "Tries a combination of colors") {}
+      : CommandHandler("try", "", "C1 C2 C3 C4", "Tries a combination of colors") {}
 };
 
 class ShowTrialsCommand : public CommandHandler
@@ -105,8 +103,7 @@ class ShowTrialsCommand : public CommandHandler
 
 public:
   ShowTrialsCommand()
-      : CommandHandler(
-            "show_trials", "st", std::nullopt,
+      : CommandHandler("show_trials", "st", std::nullopt,
             "Display previously made trials and respective results") {}
 };
 
@@ -116,8 +113,7 @@ class ScoreboardCommand : public CommandHandler
 
 public:
   ScoreboardCommand()
-      : CommandHandler("scoreboard", "sb", std::nullopt,
-                       "Display the scoreboard") {}
+      : CommandHandler("scoreboard", "sb", std::nullopt, "Display the scoreboard") {}
 };
 
 class QuitCommand : public CommandHandler

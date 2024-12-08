@@ -2,15 +2,12 @@
 
 void CommandManager::addCommand(std::shared_ptr<CommandHandler> command)
 {
-
-    // _handlers[command->_name] = std::move(command);
-
-    _handlers.insert({command->_name, command});
-
-    if (command->_alias != "")
-    {
-        _handlers.insert({command->_alias, command});
+    if (command->_isTCP){
+        _handlersTCP.insert({command->_name, command});
+        return;
     }
+    _handlersUDP.insert({command->_name, command});
+    return;
 }
 
 void CommandManager::addAllCommands()

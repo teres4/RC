@@ -30,7 +30,7 @@ public:
     void send(std::string &message);
     std::string receive(int fd);
     void closeServer();
-    int accept()
+    int accept();
 };
 
 class UdpServer
@@ -46,6 +46,20 @@ public:
     void send(std::string &message);
     std::string receive();
     void closeServer();
+};
+
+
+/**
+ * @class SocketException
+ * @brief Represents an exception that is thrown when a network error occurs.
+ */
+class SocketException : public std::runtime_error
+{
+public:
+    /**
+     * @brief Constructs a SocketException object.
+     */
+    SocketException() : std::runtime_error("A network error has occurred.") {};
 };
 
 #endif
