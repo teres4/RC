@@ -16,8 +16,8 @@
 class CommandHandler
 {
 public:
-    std::string _name;    // The name of the command
-    bool _isTCP;          // Specifies whether command is tcp or udp      
+    std::string _name; // The name of the command
+    bool _isTCP;       // Specifies whether command is tcp or udp
 
     /**
      * @brief Handles the command with the given arguments.
@@ -34,14 +34,13 @@ protected:
 
     CommandHandler(const std::string &name, bool isTCP)
         : _name{name},
-        _isTCP {isTCP} {}
+          _isTCP{isTCP} {}
 };
 
 class CommandManager
 {
-    std::unordered_map<std::string, std::shared_ptr<CommandHandler>> _handlersUDP;
-    std::unordered_map<std::string, std::shared_ptr<CommandHandler>> _handlersTCP;
-    
+    std::unordered_map<std::string, std::shared_ptr<CommandHandler>> _handlers;
+
 public:
     /**
      * @brief Adds a command to the command manager.
@@ -51,6 +50,7 @@ public:
     void addCommand(std::shared_ptr<CommandHandler> handle);
 
     void addAllCommands();
+    std::string handleCommand(std::string message, Server &server);
 
     /**
      * @brief Waits for a command from the player and processes it.
@@ -66,7 +66,7 @@ class StartCommand : public CommandHandler
     void handle(std::string &args, Server &server);
 
 public:
-    StartCommand(): CommandHandler("LIN", false) {}
+    StartCommand() : CommandHandler("LIN", false) {}
 };
 
 class TryCommand : public CommandHandler
@@ -74,7 +74,7 @@ class TryCommand : public CommandHandler
     void handle(std::string &args, Server &server);
 
 public:
-    TryCommand(): CommandHandler("TRY", false) {}
+    TryCommand() : CommandHandler("TRY", false) {}
 };
 
 class ShowTrialsCommand : public CommandHandler
@@ -82,7 +82,7 @@ class ShowTrialsCommand : public CommandHandler
     void handle(std::string &args, Server &server);
 
 public:
-    ShowTrialsCommand(): CommandHandler("STR", true) {}
+    ShowTrialsCommand() : CommandHandler("STR", true) {}
 };
 
 class ScoreboardCommand : public CommandHandler
@@ -90,7 +90,7 @@ class ScoreboardCommand : public CommandHandler
     void handle(std::string &args, Server &server);
 
 public:
-    ScoreboardCommand(): CommandHandler("SSB", true) {}
+    ScoreboardCommand() : CommandHandler("SSB", true) {}
 };
 
 class QuitCommand : public CommandHandler
@@ -98,7 +98,7 @@ class QuitCommand : public CommandHandler
     void handle(std::string &args, Server &server);
 
 public:
-    QuitCommand(): CommandHandler("QUT", false) {}
+    QuitCommand() : CommandHandler("QUT", false) {}
 };
 
 class ExitCommand : public CommandHandler
@@ -106,7 +106,7 @@ class ExitCommand : public CommandHandler
     void handle(std::string &args, Server &server);
 
 public:
-    ExitCommand(): CommandHandler("QUT", false) {}
+    ExitCommand() : CommandHandler("QUT", false) {}
 };
 
 class DebugCommand : public CommandHandler
@@ -114,7 +114,7 @@ class DebugCommand : public CommandHandler
     void handle(std::string &args, Server &server);
 
 public:
-    DebugCommand(): CommandHandler("DBG", false) {}
+    DebugCommand() : CommandHandler("DBG", false) {}
 };
 
 std::vector<std::string> split_command(std::string input);

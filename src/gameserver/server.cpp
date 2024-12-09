@@ -26,7 +26,6 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-
 Server::Server(int argc, char **argv)
 {
     if (argc == 4)
@@ -75,11 +74,11 @@ void Server::initializeServers()
         if (pid > 0) // parent process
         {
             // udp
-            udpServer.closeServer();
+            tcpServer.closeServer();
         }
         else if (pid == 0) // child process
         {
-            tcpServer.closeServer();
+            udpServer.closeServer();
         }
         else // fork failed
         {
@@ -95,4 +94,18 @@ void Server::initializeServers()
 bool Server::isverbose()
 {
     return _verbose;
+}
+
+void UDPServer(UdpServer udpServer, CommandManager commandManager, Server &server)
+{
+    bool verbose = server.isverbose();
+    while (true)
+    {
+        std::string message = udpServer.receive();
+        std::string response = commandManager.handleCommand(message, server);
+        if (verbose)
+        {
+            std::cout << udpServer.ClientIP() << ":" << udpServer.ClientPort() << std::endl;
+        }
+    }
 }

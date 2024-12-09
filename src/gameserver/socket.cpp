@@ -53,6 +53,18 @@ std::string UdpServer::receive()
     return std::string(buffer, bytes_received);
 }
 
+std::string UdpServer::ClientIP()
+{
+    struct sockaddr_in *addr = (struct sockaddr_in *)_res->ai_addr;
+    return inet_ntoa(addr->sin_addr);
+}
+
+std::string UdpServer::ClientPort()
+{
+    struct sockaddr_in *addr = (struct sockaddr_in *)_res->ai_addr;
+    return std::to_string(ntohs(addr->sin_port));
+}
+
 UdpServer::~UdpServer()
 {
     freeaddrinfo(_res); // Free the address info
@@ -150,4 +162,16 @@ void TcpServer::closeServer()
 {
     freeaddrinfo(_res);
     close(_fd);
+}
+
+std::string TcpServer::ClientIP()
+{
+    struct sockaddr_in *addr = (struct sockaddr_in *)_res->ai_addr;
+    return inet_ntoa(addr->sin_addr);
+}
+
+std::string TcpServer::ClientPort()
+{
+    struct sockaddr_in *addr = (struct sockaddr_in *)_res->ai_addr;
+    return std::to_string(ntohs(addr->sin_port));
 }
