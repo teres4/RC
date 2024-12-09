@@ -50,7 +50,6 @@ void UDPInfo::send(std::string &message)
 }
 
 
-// TODO tries before timeout implementation
 std::string UDPInfo::receive()
 {
     char buffer[BUFFER_SIZE + 1];
@@ -72,11 +71,43 @@ std::string UDPInfo::receive()
     return std::string(buffer, (size_t)n);
 }
 
+
+std::string UDPInfo::sendAndReceive(std::string &message){
+  int triesLeft = RESEND_TRIES;
+  while (triesLeft > 0) {
+    --triesLeft;
+    try {
+      send(message);
+      receive();
+      return;
+    } catch (...) {
+      if (triesLeft == 0) {
+        throw;
+      }
+    }
+  }
+}
+
+
+
 TCPInfo::TCPInfo(std::string gsip, std::string gsport)
 {
     _fd = socket(AF_INET, SOCK_STREAM, 0); // Create a TCP socket
     if (_fd == -1)
     {
+        throw SocketException();
+    }
+
+    struct timeval read_timeout;
+    read_timeout.tv_sec = TCP_READ_TIMEOUT;
+    read_timeout.tv_usec = 0;
+    if (setsockopt(_fd, SOL_SOCKET, SO_RCVTIMEO, &read_timeout, sizeof(read_timeout)) < 0) {
+        throw SocketException();
+    }
+    struct timeval write_timeout;
+    write_timeout.tv_sec = TCP_WRITE_TIMEOUT;
+    write_timeout.tv_usec = 0;
+    if (setsockopt(_fd, SOL_SOCKET, SO_SNDTIMEO, &write_timeout, sizeof(write_timeout)) < 0) {
         throw SocketException();
     }
 
@@ -147,4 +178,27 @@ std::string TCPInfo::receive()
     }
 
     return message;
+}
+
+
+void TCPInfo::closeTcpSocket() {
+  if (close(_fd) != 0) {
+    if (errno == EBADF)   // was already closed
+      return;
+
+    throw SocketException();
+  }
+}
+
+
+// TODO
+std::string TCPInfo::sendAndReceive(std::string &message){
+    try {
+        send(message);
+        receive();
+    } catch (...) {
+        closeTcpSocket();
+        return;
+    }
+    closeTcpSocket();
 }

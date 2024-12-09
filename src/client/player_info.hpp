@@ -53,6 +53,9 @@ class UDPInfo {
      * @return The received message as a string.
      */
     std::string receive();
+
+
+    std::string sendAndReceive(std::string &message);
 };
 
 
@@ -92,6 +95,11 @@ class TCPInfo {
      * @return The received message as a string.
      */
     std::string receive();
+
+    void closeTcpSocket();
+
+    std::string sendAndReceive(std::string &message);
+
 };
 
 
