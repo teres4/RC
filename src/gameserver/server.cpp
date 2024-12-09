@@ -74,6 +74,7 @@ void Server::initializeServers()
         if (pid > 0) // parent process
         {
             // udp
+            UDPServer(udpServer, CommandManager(), *this);
             tcpServer.closeServer();
         }
         else if (pid == 0) // child process
@@ -107,5 +108,6 @@ void UDPServer(UdpServer udpServer, CommandManager commandManager, Server &serve
         {
             std::cout << udpServer.ClientIP() << ":" << udpServer.ClientPort() << std::endl;
         }
+        udpServer.send(response);
     }
 }
