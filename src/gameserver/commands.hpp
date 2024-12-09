@@ -50,7 +50,8 @@ public:
     void addCommand(std::shared_ptr<CommandHandler> handle);
 
     void addAllCommands();
-    std::string handleCommand(std::string message, Server &server);
+
+    std::string handleCommand(std::string message, Server &receiver);
 
     /**
      * @brief Waits for a command from the player and processes it.
@@ -58,12 +59,12 @@ public:
      * @param state A reference to a Client structure that will be
      * updated based on the received command.
      */
-    void waitForCommand(Server &server);
+    void waitForCommand(Server &receiver);
 };
 
 class StartCommand : public CommandHandler
 {
-    void handle(std::string &args, Server &server);
+    void handle(std::string &args, Server &receiver);
 
 public:
     StartCommand() : CommandHandler("LIN", false) {}
@@ -71,7 +72,7 @@ public:
 
 class TryCommand : public CommandHandler
 {
-    void handle(std::string &args, Server &server);
+    void handle(std::string &args, Server &receiver);
 
 public:
     TryCommand() : CommandHandler("TRY", false) {}
@@ -79,7 +80,7 @@ public:
 
 class ShowTrialsCommand : public CommandHandler
 {
-    void handle(std::string &args, Server &server);
+    void handle(std::string &args, Server &receiver);
 
 public:
     ShowTrialsCommand() : CommandHandler("STR", true) {}
@@ -87,7 +88,7 @@ public:
 
 class ScoreboardCommand : public CommandHandler
 {
-    void handle(std::string &args, Server &server);
+    void handle(std::string &args, Server &receiver);
 
 public:
     ScoreboardCommand() : CommandHandler("SSB", true) {}
@@ -95,7 +96,7 @@ public:
 
 class QuitCommand : public CommandHandler
 {
-    void handle(std::string &args, Server &server);
+    void handle(std::string &args, Server &receiver);
 
 public:
     QuitCommand() : CommandHandler("QUT", false) {}
@@ -103,7 +104,7 @@ public:
 
 class ExitCommand : public CommandHandler
 {
-    void handle(std::string &args, Server &server);
+    void handle(std::string &args, Server &receiver);
 
 public:
     ExitCommand() : CommandHandler("QUT", false) {}
@@ -111,7 +112,7 @@ public:
 
 class DebugCommand : public CommandHandler
 {
-    void handle(std::string &args, Server &server);
+    void handle(std::string &args, Server &receiver);
 
 public:
     DebugCommand() : CommandHandler("DBG", false) {}

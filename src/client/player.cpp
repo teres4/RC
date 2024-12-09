@@ -87,13 +87,31 @@ void Client::processRequest(ProtocolCommunication &comm)
     if (comm.isTcp())   // If the communication is TCP, use TCP
     { 
         TCPInfo tcp(_gsip, _gsport);
-        resMessage = tcp.sendAndReceive(reqMessage);    // send request message and wait for response
+        try {
+            tcp.send(reqMessage);           // send request message
+            resMessage = tcp.receive();     // receive response
+        } catch (...) {
+            tcp.closeTcpSocket();
+        }
+        tcp.closeTcpSocket();
     }
 
     else    // If the communication is UDP, use UDP
     { 
         UDPInfo udp(_gsip, _gsport);
-        resMessage = udp.sendAndReceive(reqMessage); // send req message and wait for response
+        int triesLeft = RESEND_TRIES;
+        while (triesLeft > 0) {
+            --triesLeft;
+            try {
+                udp.send(reqMessage);           // send request message
+                resMessage = udp.receive();     // receive response
+            }
+            catch (...) {
+                if (triesLeft == 0)
+                    throw;
+            }
+        }
+
     }
 
     StreamMessage resStreamMessage(resMessage); // Create a StreamMessage from the response

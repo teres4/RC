@@ -72,24 +72,6 @@ std::string UDPInfo::receive()
 }
 
 
-std::string UDPInfo::sendAndReceive(std::string &message){
-  int triesLeft = RESEND_TRIES;
-  while (triesLeft > 0) {
-    --triesLeft;
-    try {
-      send(message);
-      receive();
-      return;
-    } catch (...) {
-      if (triesLeft == 0) {
-        throw;
-      }
-    }
-  }
-}
-
-
-
 TCPInfo::TCPInfo(std::string gsip, std::string gsport)
 {
     _fd = socket(AF_INET, SOCK_STREAM, 0); // Create a TCP socket
@@ -188,17 +170,4 @@ void TCPInfo::closeTcpSocket() {
 
     throw SocketException();
   }
-}
-
-
-// TODO
-std::string TCPInfo::sendAndReceive(std::string &message){
-    try {
-        send(message);
-        receive();
-    } catch (...) {
-        closeTcpSocket();
-        return;
-    }
-    closeTcpSocket();
 }
