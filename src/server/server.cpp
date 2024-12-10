@@ -9,7 +9,7 @@
 #include <stdexcept>
 
 #include "server.hpp"
-#include "commands.cpp"
+
 
 int main(int argc, char *argv[])
 {
@@ -18,10 +18,11 @@ int main(int argc, char *argv[])
     Server server(argc, argv);
 
     // open conections
-    server.initializeServers();
-
+    
     // CommandManager commandManager; // create a new command manager
     // commandManager.addAllCommands();
+    
+    server.initializeServers();
 
     return 0;
 }

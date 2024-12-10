@@ -5,6 +5,7 @@
 #include "../common/utils.hpp"
 #include "../common/protocol.hpp"
 #include "socket.hpp"
+#include "commands.cpp"
 
 class Server
 {
@@ -18,5 +19,8 @@ public:
 
     bool isverbose();
 };
+
+
+
 
 #endif

@@ -3,6 +3,7 @@
 cli
 GS-DB
 *.o
+*.d
 GS
 player
 utils
