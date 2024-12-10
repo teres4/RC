@@ -164,10 +164,11 @@ std::string TCPInfo::receive()
 
 
 void TCPInfo::closeTcpSocket() {
-  if (close(_fd) != 0) {
-    if (errno == EBADF)   // was already closed
-      return;
+    freeaddrinfo(_res);
+    if (close(_fd) != 0) {
+        if (errno == EBADF)   // was already closed
+            return;
 
-    throw SocketException();
+        throw SocketException();
   }
 }

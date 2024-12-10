@@ -58,21 +58,39 @@ void Player::finishGame()
     _plid = 0;
 }
 
+
 Client::Client(int argc, char **argv)
 {
-    if (argc == 3)
-    { // check if -n or -p
-        if (strcmp(argv[1], "-n") == 0)
-            _gsip = argv[2];
-
-        else if (strcmp(argv[1], "-p") == 0)
-            _gsport = argv[2];
-    }
-
-    if (argc == 5)
-    {
-        _gsip = argv[2];
-        _gsport = argv[4];
+    switch (argc) {
+        case 1:
+            return;
+        case 3:
+            if (strcmp(argv[1], "-n") == 0)
+                _gsip = argv[2];
+            else if (strcmp(argv[1], "-p") == 0)
+                _gsport = argv[2];
+            else {
+                std::cout << "Wrong args\nCorrect usage: [-n GSIP] [-p GSport]\n";
+                return;
+            }
+            break;
+        case 5:
+            if (strcmp(argv[1], "-n") == 0)
+                _gsip = argv[2];
+            else {
+                std::cout << "Wrong args\nCorrect usage: [-n GSIP] [-p GSport]\n";
+                return;
+            }
+            if (strcmp(argv[3], "-p") == 0)
+                _gsport = argv[4];
+            else {
+                std::cout << "Wrong args\nCorrect usage: [-n GSIP] [-p GSport]\n";
+                return;
+            }
+            break;
+        default:
+            throw UnrecoverableError("Invalid arguments.\nCorrect usage: [-n GSIP] [-p GSport]\n");
+            return;
     }
 
     validate_port(_gsport);

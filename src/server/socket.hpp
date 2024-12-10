@@ -23,10 +23,13 @@ private:
     int _fd;                  // The file descriptor of the socket
     struct addrinfo _hints;   // The address flags
     struct addrinfo *_res;    // The address info
-    struct sockaddr_in _addr; // The address
+    // struct sockaddr_in _addr; // The address
+
+    bool _closed = false;  // Flag indicating whether the server has been closed
 
 public:
     TcpServer(std::string gsport);
+    ~TcpServer();
     void send(std::string &message);
     std::string receive(int fd);
     void closeServer();

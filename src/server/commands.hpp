@@ -1,5 +1,5 @@
-#ifndef SCOMMANDS_H
-#define SCOMMANDS_H
+#ifndef COMMANDS_H
+#define COMMANDS_H
 
 #include <iostream>
 #include <memory>

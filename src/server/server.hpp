@@ -5,7 +5,7 @@
 #include "../common/utils.hpp"
 #include "../common/protocol.hpp"
 #include "socket.hpp"
-#include "commands.cpp"
+#include "commands.hpp"
 
 class Server
 {

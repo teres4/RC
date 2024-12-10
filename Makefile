@@ -5,23 +5,23 @@ LD = g++
 INCLUDE_DIRS := src/client src/server src/
 INCLUDES = $(addprefix -I, $(INCLUDE_DIRS))
 
-TARGETS = src/client/player src/server/server 
+TARGETS = src/client/player src/server/server
 TARGET_EXECS = player GS
 
 CLIENT_SOURCES := $(wildcard src/client/*.cpp)
 COMMON_SOURCES := $(wildcard src/common/*.cpp)
 SERVER_SOURCES := $(wildcard src/server/*.cpp)
-SOURCES :=  $(COMMON_SOURCES) $(SERVER_SOURCES) $(CLIENT_SOURCES)
+SOURCES := $(CLIENT_SOURCES) $(COMMON_SOURCES) $(SERVER_SOURCES)
 
 CLIENT_HEADERS := $(wildcard src/client/*.hpp)
 COMMON_HEADERS := $(wildcard src/common/*.hpp)
 SERVER_HEADERS := $(wildcard src/server/*.hpp)
-HEADERS :=  $(COMMON_HEADERS) $(SERVER_HEADERS) $(CLIENT_HEADERS)
+HEADERS := $(CLIENT_HEADERS) $(COMMON_HEADERS) $(SERVER_HEADERS)
 
 CLIENT_OBJECTS := $(CLIENT_SOURCES:.cpp=.o)
 COMMON_OBJECTS := $(COMMON_SOURCES:.cpp=.o)
 SERVER_OBJECTS := $(SERVER_SOURCES:.cpp=.o)
-OBJECTS :=  $(COMMON_OBJECTS) $(SERVER_OBJECTS) $(CLIENT_OBJECTS)
+OBJECTS := $(CLIENT_OBJECTS) $(COMMON_OBJECTS) $(SERVER_OBJECTS)
 
 CXXFLAGS = -std=c++17
 LDFLAGS = -std=c++17
@@ -64,12 +64,16 @@ CXXFLAGS += -Wunreachable-code
 CXXFLAGS += -Wunused
 LDFLAGS += -pthread
 
-# Dependency files
-DEPS := $(OBJECTS:.o=.d)
 
 .PHONY: all clean fmt fmt-check package
 
 all: $(TARGET_EXECS)
+
+fmt: $(SOURCES) $(HEADERS)
+	clang-format -i $^
+
+fmt-check: $(SOURCES) $(HEADERS)
+	clang-format -n --Werror $^
 
 src/server/server: $(SERVER_OBJECTS) $(SERVER_HEADERS) $(COMMON_OBJECTS) $(COMMON_HEADERS)
 src/client/player: $(CLIENT_OBJECTS) $(CLIENT_HEADERS) $(COMMON_OBJECTS) $(COMMON_HEADERS)
@@ -80,16 +84,11 @@ player: src/client/player
 	cp src/client/player player
 
 clean:
-	rm -f $(OBJECTS) $(DEPS) $(TARGETS) $(TARGET_EXECS) project.zip
+	rm -f $(OBJECTS) $(TARGETS) $(TARGET_EXECS) project.zip
 
+clean-gamedata:
+	rm -rf .gamedata
 
 package:
 	cp README.md readme.txt
 	zip project.zip $(SOURCES) $(HEADERS) Makefile .clang-format readme.txt *.xlsx
-
-# Rule to generate dependencies
-%.d: %.cpp
-	@$(CXX) -M $(CXXFLAGS) $< > $@
-
-# Include the dependency files to ensure headers trigger recompilation
--include $(DEPS)

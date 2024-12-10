@@ -77,6 +77,8 @@ void UdpServer::closeServer()
     close(_fd);
 }
 
+
+
 TcpServer::TcpServer(std::string gsport)
 {
     int errcode;
@@ -128,17 +130,17 @@ void TcpServer::send(std::string &message)
     }
 }
 
-// std::string TcpServer::receive(int fd)
-// {
-//     // between the initialization of TcpServer and receive(), there is an accept() call
-//     char buffer[BUFFER_SIZE];
-//     ssize_t bytes_received = read(fd, buffer, BUFFER_SIZE);
-//     if (bytes_received == -1)
-//     {
-//         throw SocketException();
-//     }
-//     return std::string(buffer, bytes_received);
-// }
+std::string TcpServer::receive(int fd)
+{
+    // between the initialization of TcpServer and receive(), there is an accept() call
+    char buffer[BUFFER_SIZE];
+    ssize_t bytes_received = read(fd, buffer, BUFFER_SIZE);
+    if (bytes_received == -1)
+    {
+        throw SocketException();
+    }
+    return std::string(buffer, (size_t)bytes_received);
+}
 
 int TcpServer::accept()
 {
@@ -152,11 +154,11 @@ int TcpServer::accept()
     return client_fd;
 }
 
-// TcpServer::~TcpServer()
-// {
-//     freeaddrinfo(_res); // Free the address info
-//     close(_fd);         // Close the socket
-// }
+TcpServer::~TcpServer()
+{
+    freeaddrinfo(_res); // Free the address info
+    close(_fd);         // Close the socket
+}
 
 void TcpServer::closeServer()
 {
