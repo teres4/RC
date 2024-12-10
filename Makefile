@@ -2,26 +2,26 @@ CC = g++
 CXX = g++
 LD = g++
 
-INCLUDE_DIRS := src/client src/gameserver src/
+INCLUDE_DIRS := src/client src/server src/
 INCLUDES = $(addprefix -I, $(INCLUDE_DIRS))
 
-TARGETS = src/client/player src/gameserver/server
+TARGETS = src/client/player src/server/server
 TARGET_EXECS = player GS
 
 CLIENT_SOURCES := $(wildcard src/client/*.cpp)
 COMMON_SOURCES := $(wildcard src/common/*.cpp)
-GAMESERVER_SOURCES := $(wildcard src/gameserver/*.cpp)
-SOURCES := $(CLIENT_SOURCES) $(COMMON_SOURCES) $(GAMESERVER_SOURCES)
+SERVER_SOURCES := $(wildcard src/server/*.cpp)
+SOURCES := $(CLIENT_SOURCES) $(COMMON_SOURCES) $(SERVER_SOURCES)
 
 CLIENT_HEADERS := $(wildcard src/client/*.hpp)
 COMMON_HEADERS := $(wildcard src/common/*.hpp)
-GAMESERVER_HEADERS := $(wildcard src/gameserver/*.hpp)
-HEADERS := $(CLIENT_HEADERS) $(COMMON_HEADERS) $(GAMESERVER_HEADERS)
+SERVER_HEADERS := $(wildcard src/server/*.hpp)
+HEADERS := $(CLIENT_HEADERS) $(COMMON_HEADERS) $(SERVER_HEADERS)
 
 CLIENT_OBJECTS := $(CLIENT_SOURCES:.cpp=.o)
 COMMON_OBJECTS := $(COMMON_SOURCES:.cpp=.o)
-GAMESERVER_OBJECTS := $(SERVER_SOURCES:.cpp=.o)
-OBJECTS := $(CLIENT_OBJECTS) $(COMMON_OBJECTS) $(GAMESERVER_OBJECTS)
+SERVER_OBJECTS := $(SERVER_SOURCES:.cpp=.o)
+OBJECTS := $(CLIENT_OBJECTS) $(COMMON_OBJECTS) $(SERVER_OBJECTS)
 
 CXXFLAGS = -std=c++17
 LDFLAGS = -std=c++17
@@ -75,11 +75,11 @@ fmt: $(SOURCES) $(HEADERS)
 fmt-check: $(SOURCES) $(HEADERS)
 	clang-format -n --Werror $^
 
-src/gameserver/server: $(GAMESERVER_OBJECTS) $(GAMESERVER_HEADERS) $(COMMON_OBJECTS) $(COMMON_HEADERS)
+src/server/server: $(SERVER_OBJECTS) $(SERVER_HEADERS) $(COMMON_OBJECTS) $(COMMON_HEADERS)
 src/client/player: $(CLIENT_OBJECTS) $(CLIENT_HEADERS) $(COMMON_OBJECTS) $(COMMON_HEADERS)
 
-GS: src/gameserver/server
-	cp src/gameserver/server GS
+GS: src/server/server
+	cp src/server/server GS
 player: src/client/player
 	cp src/client/player player
 

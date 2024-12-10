@@ -9,7 +9,7 @@
 class Server
 {
 private:
-    std::string _gsport = DEFAULT_HOSTNAME;
+    std::string _gsport = DEFAULT_PORT;
     bool _verbose = false;
 
 public:
