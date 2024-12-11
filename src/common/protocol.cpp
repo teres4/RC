@@ -248,7 +248,7 @@ std::string StartCommunication::encodeRequest()
 
 void StartCommunication::decodeRequest(MessageSource &message)
 {
-    // readIdentifier(message, "SNG"); The identifier is already read by the server
+    readIdentifier(message, "SNG");
     readSpace(message);
 
     _plid = readPlid(message);
@@ -301,7 +301,7 @@ std::string TryCommunication::encodeRequest()
 
 void TryCommunication::decodeRequest(MessageSource &message)
 {
-    // readIdentifier(message, "TRY"); The identifier is already read by the server
+    readIdentifier(message, "TRY");
     readSpace(message);
 
     _plid = readPlid(message);
@@ -399,7 +399,7 @@ std::string QuitCommunication::encodeResponse()
 
 void QuitCommunication::decodeRequest(MessageSource &message)
 {
-    // readIdentifier(message, "QUT"); The identifier is already read by the server
+    readIdentifier(message, "QUT"); 
     readSpace(message);
 
     _plid = readPlid(message);
@@ -442,7 +442,7 @@ std::string DebugCommunication::encodeRequest() {
 }
 
 void DebugCommunication::decodeRequest(MessageSource &message) {
-    // readIdentifier(message, "DBG"); The identifier is already read by the server
+    readIdentifier(message, "DBG"); 
     readSpace(message);
 
     _plid = readPlid(message);
@@ -492,7 +492,7 @@ std::string ShowTrialsCommunication::encodeRequest() {
 }
 
 void ShowTrialsCommunication::decodeRequest(MessageSource &message) {
-    // readIdentifier(message, "STR"); The identifier is already read by the server
+    readIdentifier(message, "STR");
     readSpace(message);
 
     _plid = readPlid(message);
@@ -568,8 +568,7 @@ std::string ScoreboardCommunication::encodeRequest() {
 }
 
 void ScoreboardCommunication::decodeRequest(MessageSource &message) {
-    // readIdentifier(message, "SSB"); The identifier is already read by the server
-    
+    readIdentifier(message, "SSB"); 
     readDelimiter(message);
 }
 

@@ -119,7 +119,7 @@ std::string generateRandomKey()
     std::vector<std::string> colors = {"R", "G", "B", "Y", "O", "P"};
     for (int i = 0; i < 4; i++)
     {
-        key += colors[rand() % 6];
+        key += colors[(size_t)(rand() % 6)];
     }
     if (validate_key(colors))
     {

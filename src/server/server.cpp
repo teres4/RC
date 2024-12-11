@@ -9,16 +9,19 @@
 #include <stdexcept>
 
 #include "server.hpp"
+#include "commands.hpp"
 
-extern bool exiting;
+
+void UDPServer(UdpServer &udpServer, CommandManager &manager, Server &server);
+
+void TCPServer(TcpServer &tcpServer, CommandManager &manager, Server &server);
+
 
 int main(int argc, char *argv[])
 {
     setup_signal_handlers();
 
     Server server(argc, argv);
-
-    exiting = false;
 
     // open conections
 
@@ -142,37 +145,37 @@ std::string Server::getPort()
 void UDPServer(UdpServer &udpServer, CommandManager &manager, Server &server)
 {
     bool verbose = server.isverbose();
-    std::cout << "in udpserver\n";
+
     while (true)
     {
-        std::cout << "in udpserver loop\n";
         std::string message = udpServer.receive();
         std::cout << "in udpserver received: " << message;
-        std::string response = manager.handleCommand(message);
+        std::string response = manager.handleCommand(message, server);
         if (verbose)
         {
             std::cout << udpServer.getClientIP() << ":" << udpServer.getClientPort() << std::endl;
         }
+        std::cout << "udp response: " << response << std::endl;
         udpServer.send(response);
     }
 }
 
-void TCPServer(TcpServer &tcpServer, CommandManager &manager, Server &server)
-{
-    std::cout << "in tcpserver\n";
+
+
+void TCPServer(TcpServer &tcpServer, CommandManager &manager, Server &server){
     bool verbose = server.isverbose();
     tcpServer.accept();
-    std::cout << "accepted\n";
+
     while (true)
     {
-        std::cout << "in tcpserver loop\n";
         std::string message = tcpServer.receive();
-        std::cout << "in tcpserver received: ";
-        std::string response = manager.handleCommand(message);
+        std::cout << "in tcpserver received: " << message;
+        std::string response = manager.handleCommand(message, server);
         if (verbose)
         {
             std::cout << tcpServer.getClientIP() << ":" << tcpServer.getClientPort() << std::endl;
         }
+        std::cout << "tcp response: " << response << std::endl;
         tcpServer.send(response);
     }
 }

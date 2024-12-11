@@ -1,10 +1,8 @@
 #include "database.hpp"
 
-DatabaseManager::DatabaseManager(const std::string &rootDir) : m_rootDir(rootDir)
-{
-}
 
-bool DatabaseManager::openFile(std::fstream &fileStream, const std::string &filePath, std::ios_base::openmode mode)
+bool DatabaseManager::openFile(std::fstream &fileStream, 
+                const std::string &filePath, std::ios_base::openmode mode)
 {
     fileStream.open(filePath, mode);
     if (!fileStream.is_open())
@@ -21,7 +19,7 @@ bool DatabaseManager::closeFile(std::fstream &fileStream)
     return true;
 }
 
-bool DatabaseManager::CreateDirectory(std::string path)
+bool DatabaseManager::createDirectory(std::string path)
 {
     if (mkdir(path.c_str(), 0777) == -1)
     {
@@ -31,7 +29,7 @@ bool DatabaseManager::CreateDirectory(std::string path)
     return true;
 }
 
-bool DatabaseManager::CreateFile(std::string path)
+bool DatabaseManager::createFile(std::string path)
 {
     std::fstream fileStream;
     if (!openFile(fileStream, path, std::ios::out))
@@ -42,7 +40,7 @@ bool DatabaseManager::CreateFile(std::string path)
     return true;
 }
 
-bool DatabaseManager::AppendToFile(std::string path, std::string content)
+bool DatabaseManager::appendToFile(std::string path, std::string content)
 {
     std::fstream fileStream;
     if (!openFile(fileStream, path, std::ios::app))
@@ -68,6 +66,3 @@ bool GamedataManager::hasOngoingGame(std::string PLID)
     return true;
 }
 
-GamedataManager::GamedataManager(const std::string rootDir) : DatabaseManager(rootDir)
-{
-}

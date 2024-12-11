@@ -160,6 +160,7 @@ int TcpServer::accept()
 {
     struct sockaddr_storage client_addr;
     socklen_t addr_size = sizeof(client_addr);
+
     int client_fd = ::accept(_fd, (struct sockaddr *)&client_addr, &addr_size);
     if (client_fd == -1)
     {
@@ -199,15 +200,3 @@ void TcpServer::closeServer() {
     }
 }
 
-
-// std::string TcpServer::ClientIP()
-// {
-//     struct sockaddr_in *addr = (struct sockaddr_in *)_res->ai_addr;
-//     return inet_ntoa(addr->sin_addr);
-// }
-
-// std::string TcpServer::ClientPort()
-// {
-//     struct sockaddr_in *addr = (struct sockaddr_in *)_res->ai_addr;
-//     return std::to_string(ntohs(addr->sin_port));
-// }

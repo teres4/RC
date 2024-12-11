@@ -1,7 +1,5 @@
 #include "commands.hpp"
 
-bool exiting = false;
-
 void CommandManager::registerCommand(std::shared_ptr<CommandHandler> command)
 {
     try
@@ -26,7 +24,8 @@ void CommandManager::registerAllCommands()
     this->registerCommand(std::make_shared<DebugCommand>());
 }
 
-std::string CommandManager::handleCommand(std::string message)
+
+std::string CommandManager::handleCommand(std::string message, Server &receiver)
 {
     std::cout << "handleCommand: " << message << std::endl;
 
@@ -54,76 +53,76 @@ std::string CommandManager::handleCommand(std::string message)
 
     std::string response;
 
-    handler->second->handle(message, response);
+    handler->second->handle(message, response, receiver);
 
     return response;
 }
 
-void StartCommand::handle(std::string &message, std::string &response)
+void StartCommand::handle(std::string &args, std::string &response, Server &receiver)
 {
     // TODO check verbose
 
-    std::cout << "in start command: " << message << response << std::endl;
+    std::cout << "in start command: " << args << response << std::endl;
 
     StartCommunication startComm;
     std::string result;
 
-    try
-    {
-        StreamMessage reqMessage(message);
-        startComm.decodeRequest(reqMessage); // Decode the request
-
-        // check if player has an ongoing game
+    try {
+        StreamMessage reqMessage(args);
+        startComm.decodeRequest(reqMessage);  // Decode the request
+        // check database if player has an ongoing game
         // database add player
         // startComm._status = "OK" or "NOK"
-    }
-    catch (ProtocolException const &e)
-    { // If the protocol is not valid, status = "ERR"
+        // if "OK" start new game and create a secret key
+        std::cout << receiver.getPort();
+
+
+    } catch (ProtocolException const &e) {  // If the protocol is not valid, status = "ERR"
         startComm._status = "ERR";
         result = "Protocol Error";
     }
     response = startComm.encodeResponse(); // Encode the response
 }
 
-void TryCommand::handle(std::string &args, std::string &response)
+void TryCommand::handle(std::string &args, std::string &response, Server &receiver)
 {
     //     // TODO check verbose
 
-    std::cout << args << response;
+    std::cout << args << response << receiver.isverbose();
 }
 
-void ShowTrialsCommand::handle(std::string &args, std::string &response)
+void ShowTrialsCommand::handle(std::string &args, std::string &response, Server &receiver)
 {
     //     // TODO check verbose
 
-    std::cout << args << response;
+    std::cout << args << response << receiver.isverbose();
 }
 
-void ScoreboardCommand::handle(std::string &args, std::string &response)
+void ScoreboardCommand::handle(std::string &args, std::string &response, Server &receiver)
 {
     //     // TODO check verbose
-    std::cout << args << response;
+    std::cout << args << response << receiver.isverbose();
 }
 
-void QuitCommand::handle(std::string &args, std::string &response)
+void QuitCommand::handle(std::string &args, std::string &response, Server &receiver)
 {
     //     // TODO check verbose
 
-    std::cout << args << response;
+    std::cout << args << response << receiver.isverbose();
 }
 
-void ExitCommand::handle(std::string &args, std::string &response)
+void ExitCommand::handle(std::string &args, std::string &response, Server &receiver)
 {
     //     // TODO check verbose
 
-    std::cout << args << response;
+    std::cout << args << response << receiver.isverbose();
 }
 
-void DebugCommand::handle(std::string &args, std::string &response)
+void DebugCommand::handle(std::string &args, std::string &response, Server &receiver)
 {
     //     // TODO check verbose
 
-    std::cout << args << response;
+    std::cout << args << response << receiver.isverbose();
 }
 
 std::vector<std::string> split_command(std::string input)

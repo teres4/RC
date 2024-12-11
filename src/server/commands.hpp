@@ -11,7 +11,7 @@
 
 #include "../common/utils.hpp"
 #include "../common/protocol.hpp"
-
+#include "server.hpp"
 
 class CommandHandler
 {
@@ -23,7 +23,7 @@ public:
      * @brief Handles the command with the given arguments.
      * should be implemented by derived classes
      */
-    virtual void handle(std::string &args, std::string &response) = 0;
+    virtual void handle(std::string &args, std::string &response, Server &receiver) = 0;
 
 protected:
     /**
@@ -51,13 +51,13 @@ public:
 
     void registerAllCommands();
 
-    std::string handleCommand(std::string message);
+    std::string handleCommand(std::string message, Server &receiver);
 
 };
 
 class StartCommand : public CommandHandler
 {
-    void handle(std::string &args, std::string &response);
+    void handle(std::string &args, std::string &response, Server &receiver);
 
 public:
     StartCommand() : CommandHandler("SNG", false) {}
@@ -65,7 +65,7 @@ public:
 
 class TryCommand : public CommandHandler
 {
-    void handle(std::string &args, std::string &response);
+    void handle(std::string &args, std::string &response, Server &receiver);
 
 public:
     TryCommand() : CommandHandler("TRY", false) {}
@@ -73,7 +73,7 @@ public:
 
 class ShowTrialsCommand : public CommandHandler
 {
-    void handle(std::string &args, std::string &response);
+    void handle(std::string &args, std::string &response, Server &receiver);
 
 public:
     ShowTrialsCommand() : CommandHandler("STR", true) {}
@@ -81,7 +81,7 @@ public:
 
 class ScoreboardCommand : public CommandHandler
 {
-    void handle(std::string &args, std::string &response);
+    void handle(std::string &args, std::string &response, Server &receiver);
 
 public:
     ScoreboardCommand() : CommandHandler("SSB", true) {}
@@ -89,7 +89,7 @@ public:
 
 class QuitCommand : public CommandHandler
 {
-    void handle(std::string &args, std::string &response);
+    void handle(std::string &args, std::string &response, Server &receiver);
 
 public:
     QuitCommand() : CommandHandler("QUT", false) {}
@@ -97,7 +97,7 @@ public:
 
 class ExitCommand : public CommandHandler
 {
-    void handle(std::string &args, std::string &response);
+    void handle(std::string &args, std::string &response, Server &receiver);
 
 public:
     ExitCommand() : CommandHandler("QUT", false) {}
@@ -105,7 +105,7 @@ public:
 
 class DebugCommand : public CommandHandler
 {
-    void handle(std::string &args, std::string &response);
+    void handle(std::string &args, std::string &response, Server &receiver);
 
 public:
     DebugCommand() : CommandHandler("DBG", false) {}

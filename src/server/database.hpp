@@ -9,6 +9,7 @@
 #include <sys/stat.h>
 
 #include "../common/utils.hpp"
+
 /*A directoria GAMES contém um ficheiro por cada jogo em curso contendo o estado do jogo, e ainda as directorias de jogadores, contendo
 cada uma delas os resumos de todos os jogos já terminados para um dado jogador.
 
@@ -28,16 +29,15 @@ protected:
     // Helper methods
 
 public:
-    DatabaseManager(const std::string &rootDir);
-    ~DatabaseManager();
 
     bool openFile(std::fstream &fileStream, const std::string &filePath, std::ios_base::openmode mode);
     bool closeFile(std::fstream &fileStream);
-    bool CreateDirectory(std::string path);
-    bool CreateFile(std::string path);
-    bool AppendToFile(std::string path, std::string content);
-    bool WriteToFile(std::string path, std::string content);
+    bool createDirectory(std::string path);
+    bool createFile(std::string path);
+    bool appendToFile(std::string path, std::string content);
+    bool writeToFile(std::string path, std::string content);
 };
+
 
 class GamedataManager : public DatabaseManager
 {
@@ -46,11 +46,11 @@ public:
 
     bool hasOngoingGame(std::string PLID);
 
-    void CreateGame(std::string PLID, char mode, int time, tm startdate, int timestart);
+    void createGame(std::string PLID, char mode, int time, tm startdate, int timestart);
 
-    int FindTopScores();
+    int findTopScores();
 
-    int FindLastGame(std::string PLID, std::string fname);
+    int findLastGame(std::string PLID, std::string fname);
 };
 
 #endif
