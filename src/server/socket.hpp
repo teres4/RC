@@ -31,9 +31,13 @@ public:
     TcpServer(std::string gsport);
     ~TcpServer();
     void send(std::string &message);
-    std::string receive(int fd);
+    std::string receive();
     void closeServer();
     int accept();
+
+    std::string getClientIP();
+    std::string getClientPort();
+
 };
 
 class UdpServer
@@ -46,9 +50,13 @@ private:
 
 public:
     UdpServer(std::string gsport);
+    ~UdpServer();
     void send(std::string &message);
     std::string receive();
     void closeServer();
+
+    std::string getClientIP();
+    std::string getClientPort();
 };
 
 

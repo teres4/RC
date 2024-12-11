@@ -18,9 +18,13 @@ public:
     void initializeServers();
 
     bool isverbose();
+
+    std::string getPort();
 };
 
 
+void UDPServer(UdpServer &udpServer, CommandManager &manager, Server &server);
 
+void TCPServer(TcpServer &tcpServer, CommandManager &manager, Server &server);
 
 #endif

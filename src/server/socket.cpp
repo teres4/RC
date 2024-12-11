@@ -4,29 +4,33 @@ UdpServer::UdpServer(std::string gsport)
 {
     int errcode;
 
-    _fd = socket(AF_INET, SOCK_DGRAM, 0);
-    if (_fd == -1) /*error*/
-    {
+    _fd = socket(AF_INET, SOCK_DGRAM, 0); // create udp socket
+    if (_fd == -1) {
         throw SocketException();
     }
 
     memset(&_hints, 0, sizeof(_hints));
-    _hints.ai_family = AF_INET;      // IPv4
-    _hints.ai_socktype = SOCK_DGRAM; // UDP socket
+    _hints.ai_family = AF_INET;
+    _hints.ai_socktype = SOCK_DGRAM;
     _hints.ai_flags = AI_PASSIVE;
 
     errcode = getaddrinfo(NULL, gsport.c_str(), &_hints, &_res);
-    if (errcode != 0) /*error*/
-    {
+    if (errcode != 0) {
         throw SocketException();
     }
 
+    // Set the socket option to reuse the address to avoid "address already in use" errors
+    int opt = 1;
+    setsockopt(_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+
     errcode = bind(_fd, _res->ai_addr, _res->ai_addrlen);
-    if (errcode == -1) /*error*/
-    {
+    if (errcode == -1) {
         throw SocketException();
     }
+    std::cout << "UDP server initialized on port " << gsport << std::endl;
 }
+
+
 
 void UdpServer::send(std::string &message)
 {
@@ -42,39 +46,47 @@ void UdpServer::send(std::string &message)
     }
 }
 
-// std::string UdpServer::receive()
-// {
-//     char buffer[BUFFER_SIZE];
-//     ssize_t bytes_received = recvfrom(_fd, buffer, BUFFER_SIZE, 0, _res->ai_addr, &_res->ai_addrlen);
-//     if (bytes_received == -1)
-//     {
-//         throw SocketException();
-//     }
-//     return std::string(buffer, bytes_received);
-// }
+std::string UdpServer::receive()
+{
+    char buffer[BUFFER_SIZE];
+    ssize_t bytes_received = recvfrom(_fd, buffer, BUFFER_SIZE, 0, _res->ai_addr, &_res->ai_addrlen);
+    if (bytes_received == -1)
+    {
+        throw SocketException();
+    }
+    return std::string(buffer, (size_t)bytes_received);
+}
 
-// std::string UdpServer::ClientIP()
-// {
-//     struct sockaddr_in *addr = (struct sockaddr_in *)_res->ai_addr;
-//     return inet_ntoa(addr->sin_addr);
-// }
 
-// std::string UdpServer::ClientPort()
-// {
-//     struct sockaddr_in *addr = (struct sockaddr_in *)_res->ai_addr;
-//     return std::to_string(ntohs(addr->sin_port));
-// }
+std::string UdpServer::getClientIP()
+{
+    struct sockaddr_in *addr = (struct sockaddr_in *)_res->ai_addr;
+    return inet_ntoa(addr->sin_addr);
+}
 
-// UdpServer::~UdpServer()
-// {
-//     freeaddrinfo(_res); // Free the address info
-//     close(_fd);         // Close the socket
-// }
+
+std::string UdpServer::getClientPort()
+{
+    struct sockaddr_in *addr = (struct sockaddr_in *)_res->ai_addr;
+    return std::to_string(ntohs(addr->sin_port));
+}
+
+
+UdpServer::~UdpServer()
+{
+    freeaddrinfo(_res); // Free the address info
+    close(_fd);         // Close the socket
+}
+
 
 void UdpServer::closeServer()
 {
-    freeaddrinfo(_res);
-    close(_fd);
+    if (close(_fd) != 0) {
+        if (errno == EBADF) {  // was already closed
+            return;
+        }
+        throw SocketException();
+    }
 }
 
 
@@ -110,7 +122,9 @@ TcpServer::TcpServer(std::string gsport)
     {
         throw SocketException();
     }
+    std::cout << "TCP server initialized on port " << gsport << std::endl;
 }
+
 
 void TcpServer::send(std::string &message)
 {
@@ -130,11 +144,11 @@ void TcpServer::send(std::string &message)
     }
 }
 
-std::string TcpServer::receive(int fd)
+std::string TcpServer::receive()
 {
     // between the initialization of TcpServer and receive(), there is an accept() call
     char buffer[BUFFER_SIZE];
-    ssize_t bytes_received = read(fd, buffer, BUFFER_SIZE);
+    ssize_t bytes_received = read(_fd, buffer, BUFFER_SIZE);
     if (bytes_received == -1)
     {
         throw SocketException();
@@ -154,6 +168,22 @@ int TcpServer::accept()
     return client_fd;
 }
 
+
+std::string TcpServer::getClientIP()
+{
+    struct sockaddr_in *addr = (struct sockaddr_in *)_res->ai_addr;
+    return inet_ntoa(addr->sin_addr);
+}
+
+
+std::string TcpServer::getClientPort()
+{
+    struct sockaddr_in *addr = (struct sockaddr_in *)_res->ai_addr;
+    return std::to_string(ntohs(addr->sin_port));
+}
+
+
+
 TcpServer::~TcpServer()
 {
     freeaddrinfo(_res); // Free the address info
@@ -165,9 +195,8 @@ void TcpServer::closeServer() {
     if (close(_fd) != 0) {
         if (errno == EBADF)   // was already closed
             return;
-
         throw SocketException();
-  }
+    }
 }
 
 

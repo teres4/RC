@@ -26,11 +26,42 @@ int main(int argc, char *argv[])
     CommandManager commandManager; // create a new command manager
     commandManager.registerAllCommands();
     
-    server.initializeServers();
+    // server.initializeServers();
+    try
+    {
+        UdpServer udpServer(server.getPort());
+        TcpServer tcpServer(server.getPort());
 
-    while (!std::cin.eof() && !exiting){
-        // commandManager.handleCommand();
+        int pid = fork();
+
+        if (pid < 0) // fork failed
+            exit(1);
+
+        else if (pid == 0) // child process
+        {
+            tcpServer.closeServer();
+            std::cout << "closed tcp server\n";
+            // udp
+            UDPServer(udpServer, commandManager, server); // start udp server
+            std::cout << "here after closed tcp\n";
+        }
+        else // parent process
+        {
+            udpServer.closeServer();
+            std::cout << "closed udp server\n";
+            TCPServer(tcpServer, commandManager, server);
+            std::cout << "here after closed udp\n";
+        }
+
     }
+    catch (SocketException &e)
+    {
+        std::cerr << "Error: " << e.what() << std::endl;
+    }
+
+    // while (!std::cin.eof() && !exiting){
+    //     // commandManager.handleCommand();
+    // }
 
 
     return 0;
@@ -108,17 +139,48 @@ bool Server::isverbose()
     return _verbose;
 }
 
-// void UDPServer(UdpServer udpServer, CommandManager commandManager, Server &server)
-// {
-//     bool verbose = server.isverbose();
-//     while (true)
-//     {
-//         std::string message = udpServer.receive();
-//         std::string response = commandManager.handleCommand(message, server);
-//         if (verbose)
-//         {
-//             std::cout << udpServer.ClientIP() << ":" << udpServer.ClientPort() << std::endl;
-//         }
-//         udpServer.send(response);
-//     }
-// }
+
+std::string Server::getPort(){
+    return _gsport;
+}
+
+
+
+void UDPServer(UdpServer &udpServer, CommandManager &manager, Server &server)
+{
+    bool verbose = server.isverbose();
+    std::cout << "in udpserver\n";
+    while (true)
+    {
+        std::cout << "in udpserver loop\n";
+        std::string message = udpServer.receive();
+        std::cout << "in udpserver received: " << message;
+        std::string response = manager.handleCommand(message);
+        if (verbose)
+        {
+            std::cout << udpServer.getClientIP() << ":" << udpServer.getClientPort() << std::endl;
+        }
+        udpServer.send(response);
+    }
+}
+
+
+
+void TCPServer(TcpServer &tcpServer, CommandManager &manager, Server &server){
+    std::cout << "in tcpserver\n";
+    bool verbose = server.isverbose();
+    tcpServer.accept();
+    std::cout << "accepted\n";
+    while (true)
+    {
+        std::cout << "in tcpserver loop\n";
+        std::string message = tcpServer.receive();
+        std::cout << "in tcpserver received: ";
+        std::string response = manager.handleCommand(message);
+        if (verbose)
+        {
+            std::cout << tcpServer.getClientIP() << ":" << tcpServer.getClientPort() << std::endl;
+        }
+        tcpServer.send(response);
+    }
+}
