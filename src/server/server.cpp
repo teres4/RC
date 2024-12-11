@@ -11,18 +11,27 @@
 #include "server.hpp"
 
 
+extern bool exiting;
+
 int main(int argc, char *argv[])
 {
     setup_signal_handlers();
 
     Server server(argc, argv);
 
+    exiting = false;
+
     // open conections
     
-    // CommandManager commandManager; // create a new command manager
-    // commandManager.addAllCommands();
+    CommandManager commandManager; // create a new command manager
+    commandManager.registerAllCommands();
     
     server.initializeServers();
+
+    while (!std::cin.eof() && !exiting){
+        // commandManager.handleCommand();
+    }
+
 
     return 0;
 }

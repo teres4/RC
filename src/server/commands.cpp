@@ -1,5 +1,6 @@
 #include "commands.hpp"
 
+bool exiting = false;
 
 void CommandManager::registerCommand(std::shared_ptr<CommandHandler> command)
 {
@@ -24,6 +25,7 @@ void CommandManager::registerAllCommands()
     this->registerCommand(std::make_shared<ExitCommand>());
     this->registerCommand(std::make_shared<DebugCommand>());
 }
+
 
 std::string CommandManager::handleCommand(std::string message)
 {
@@ -133,4 +135,19 @@ void DebugCommand::handle(MessageSource &args, std::string &response)
     //     // TODO check verbose
 
     std::cout << args.get() << response;
+}
+
+
+
+std::vector<std::string> split_command(std::string input)
+{
+  std::stringstream ss(input); // Create a stringstream object
+  std::string temp;
+  std::vector<std::string> command_split;
+
+  // Splitting the input string by space
+  while (std::getline(ss, temp, ' '))
+    command_split.push_back(temp);
+
+  return command_split;
 }

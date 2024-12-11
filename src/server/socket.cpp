@@ -160,11 +160,16 @@ TcpServer::~TcpServer()
     close(_fd);         // Close the socket
 }
 
-void TcpServer::closeServer()
-{
-    freeaddrinfo(_res);
-    close(_fd);
+
+void TcpServer::closeServer() {
+    if (close(_fd) != 0) {
+        if (errno == EBADF)   // was already closed
+            return;
+
+        throw SocketException();
+  }
 }
+
 
 // std::string TcpServer::ClientIP()
 // {
