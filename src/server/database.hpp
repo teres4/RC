@@ -5,6 +5,8 @@
 #include <vector>
 #include <fstream>
 #include <iostream>
+#include <ctime>
+#include <sys/stat.h>
 
 /*A directoria GAMES contém um ficheiro por cada jogo em curso contendo o estado do jogo, e ainda as directorias de jogadores, contendo
 cada uma delas os resumos de todos os jogos já terminados para um dado jogador.
@@ -27,16 +29,28 @@ private:
     bool closeFile(std::fstream &fileStream);
 
 public:
-    DatabaseManager(/* args */);
+    DatabaseManager(const std::string &rootDir);
     ~DatabaseManager();
 
     bool CreateDirectory(std::string path);
     bool CreateFile(std::string path);
     bool AppendToFile(std::string path, std::string content);
+    bool WriteToFile(std::string path, std::string content);
 };
 
-DatabaseManager::DatabaseManager(/* args */)
+class GamedataManager : public DatabaseManager
 {
+
+public:
+    GamedataManager();
+
+    bool hasOngoingGame(std::string PLID);
+
+    void CreateGame(std::string PLID, char mode, int time, tm startdate, int timestart);
+
+    int FindTopScores();
+
+    int FindLastGame(std::string PLID, std::string fname);
 }
 
 #endif
