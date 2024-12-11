@@ -6,6 +6,7 @@
 #include "../common/protocol.hpp"
 #include "socket.hpp"
 #include "commands.hpp"
+#include "database.hpp"
 
 class Server
 {
@@ -21,7 +22,6 @@ public:
 
     std::string getPort();
 };
-
 
 void UDPServer(UdpServer &udpServer, CommandManager &manager, Server &server);
 

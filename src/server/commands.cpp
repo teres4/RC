@@ -26,7 +26,6 @@ void CommandManager::registerAllCommands()
     this->registerCommand(std::make_shared<DebugCommand>());
 }
 
-
 std::string CommandManager::handleCommand(std::string message)
 {
     std::cout << "handleCommand: " << message << std::endl;
@@ -62,27 +61,28 @@ std::string CommandManager::handleCommand(std::string message)
 
 void StartCommand::handle(std::string &message, std::string &response)
 {
-        // TODO check verbose
+    // TODO check verbose
 
     std::cout << "in start command: " << message << response << std::endl;
 
     StartCommunication startComm;
     std::string result;
 
-    try {
+    try
+    {
         StreamMessage reqMessage(message);
-        startComm.decodeRequest(reqMessage);  // Decode the request
+        startComm.decodeRequest(reqMessage); // Decode the request
 
         // check if player has an ongoing game
         // database add player
         // startComm._status = "OK" or "NOK"
-        
-    } catch (ProtocolException const &e) {  // If the protocol is not valid, status = "ERR"
+    }
+    catch (ProtocolException const &e)
+    { // If the protocol is not valid, status = "ERR"
         startComm._status = "ERR";
         result = "Protocol Error";
     }
-    response = startComm.encodeResponse();  // Encode the response
-    
+    response = startComm.encodeResponse(); // Encode the response
 }
 
 void TryCommand::handle(std::string &args, std::string &response)
@@ -126,17 +126,15 @@ void DebugCommand::handle(std::string &args, std::string &response)
     std::cout << args << response;
 }
 
-
-
 std::vector<std::string> split_command(std::string input)
 {
-  std::stringstream ss(input); // Create a stringstream object
-  std::string temp;
-  std::vector<std::string> command_split;
+    std::stringstream ss(input); // Create a stringstream object
+    std::string temp;
+    std::vector<std::string> command_split;
 
-  // Splitting the input string by space
-  while (std::getline(ss, temp, ' '))
-    command_split.push_back(temp);
+    // Splitting the input string by space
+    while (std::getline(ss, temp, ' '))
+        command_split.push_back(temp);
 
-  return command_split;
+    return command_split;
 }

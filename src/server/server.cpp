@@ -10,7 +10,6 @@
 
 #include "server.hpp"
 
-
 extern bool exiting;
 
 int main(int argc, char *argv[])
@@ -22,10 +21,10 @@ int main(int argc, char *argv[])
     exiting = false;
 
     // open conections
-    
+
     CommandManager commandManager; // create a new command manager
     commandManager.registerAllCommands();
-    
+
     // server.initializeServers();
     try
     {
@@ -52,7 +51,6 @@ int main(int argc, char *argv[])
             TCPServer(tcpServer, commandManager, server);
             std::cout << "here after closed udp\n";
         }
-
     }
     catch (SocketException &e)
     {
@@ -63,46 +61,43 @@ int main(int argc, char *argv[])
     //     // commandManager.handleCommand();
     // }
 
-
     return 0;
 }
 
-
 Server::Server(int argc, char **argv)
 {
-    switch (argc){
-        case 1: // no arguments
-            return;
-        case 2: // with -v
-            if (strcmp(argv[1], "-v") == 0)
-                _verbose = true;
-            else
-                std::cout << "Wrong args\nCorrect usage: [-p GSport] [-v]\n";
-            return;
-        case 3: // with -p [GSport]
-            if (strcmp(argv[1], "-p") == 0)
-                _gsport = argv[2];
-            else 
-                std::cout << "Wrong args\nCorrect usage: [-p GSport] [-v]\n";
-            break;
-        case 4: // with -p [GSport] -v
-            if (strcmp(argv[1], "-p") == 0)
-                _gsport = argv[2];
-            
-            if (strcmp(argv[3], "-v") == 0)
-                _verbose = true;
-            else
-                std::cout << "Wrong args\nCorrect usage: [-p GSport] [-v]\n";
-            break;
-        default: 
+    switch (argc)
+    {
+    case 1: // no arguments
+        return;
+    case 2: // with -v
+        if (strcmp(argv[1], "-v") == 0)
+            _verbose = true;
+        else
             std::cout << "Wrong args\nCorrect usage: [-p GSport] [-v]\n";
-            return;
+        return;
+    case 3: // with -p [GSport]
+        if (strcmp(argv[1], "-p") == 0)
+            _gsport = argv[2];
+        else
+            std::cout << "Wrong args\nCorrect usage: [-p GSport] [-v]\n";
+        break;
+    case 4: // with -p [GSport] -v
+        if (strcmp(argv[1], "-p") == 0)
+            _gsport = argv[2];
+
+        if (strcmp(argv[3], "-v") == 0)
+            _verbose = true;
+        else
+            std::cout << "Wrong args\nCorrect usage: [-p GSport] [-v]\n";
+        break;
+    default:
+        std::cout << "Wrong args\nCorrect usage: [-p GSport] [-v]\n";
+        return;
     }
-        
+
     validate_port(_gsport);
 }
-
-
 
 // setup sockets
 void Server::initializeServers()
@@ -139,12 +134,10 @@ bool Server::isverbose()
     return _verbose;
 }
 
-
-std::string Server::getPort(){
+std::string Server::getPort()
+{
     return _gsport;
 }
-
-
 
 void UDPServer(UdpServer &udpServer, CommandManager &manager, Server &server)
 {
@@ -164,9 +157,8 @@ void UDPServer(UdpServer &udpServer, CommandManager &manager, Server &server)
     }
 }
 
-
-
-void TCPServer(TcpServer &tcpServer, CommandManager &manager, Server &server){
+void TCPServer(TcpServer &tcpServer, CommandManager &manager, Server &server)
+{
     std::cout << "in tcpserver\n";
     bool verbose = server.isverbose();
     tcpServer.accept();

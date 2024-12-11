@@ -53,3 +53,21 @@ bool DatabaseManager::AppendToFile(std::string path, std::string content)
     closeFile(fileStream);
     return true;
 }
+
+bool GamedataManager::hasOngoingGame(std::string PLID)
+{
+
+    // ongoing games are stored in the GAMES directory
+    std::string path = m_rootDir + gameFileName(PLID);
+    std::fstream fileStream;
+    if (!openFile(fileStream, path, std::ios::in))
+    {
+        return false;
+    }
+    closeFile(fileStream);
+    return true;
+}
+
+GamedataManager::GamedataManager(const std::string rootDir) : DatabaseManager(rootDir)
+{
+}

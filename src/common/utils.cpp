@@ -5,7 +5,8 @@
 
 int is_exiting = 0;
 
-bool is_numeric(std::string &str){
+bool is_numeric(std::string &str)
+{
     for (char c : str)
     {
         if (!std::isdigit(static_cast<unsigned char>(c)))
@@ -16,14 +17,13 @@ bool is_numeric(std::string &str){
     return true;
 }
 
-
-bool is_not_numeric(std::string &str){
+bool is_not_numeric(std::string &str)
+{
     if (is_numeric(str) == true)
         return false;
 
     return true;
 }
-
 
 void validate_port(std::string &port)
 {
@@ -43,7 +43,6 @@ void validate_port(std::string &port)
     }
 }
 
-
 /**
  * Check if the plid is valid
  */
@@ -59,7 +58,8 @@ bool validate_plid(std::string plid)
     return true;
 }
 
-int get_plid(std::string plid){
+int get_plid(std::string plid)
+{
     return std::stoi(plid);
 }
 
@@ -79,37 +79,61 @@ bool validate_playTime(std::string playtime)
 bool validate_color(std::string color)
 {
     std::vector<std::string> colors = {"R", "G", "B", "Y", "O", "P"};
-    
-    for (auto c : colors) {
+
+    for (auto c : colors)
+    {
         // Check if the read string is one of the options
-        if (c == color) {
+        if (c == color)
+        {
             return true;
         }
     }
     return false;
-
 }
 
-bool validate_key(std::vector<std::string> colors){
-    for (auto c : colors){
-        if (validate_color(c) == false){
+bool validate_key(std::vector<std::string> colors)
+{
+    for (auto c : colors)
+    {
+        if (validate_color(c) == false)
+        {
             return false;
         }
     }
     return true;
 }
 
-std::string get_color_key(std::string args){
+std::string get_color_key(std::string args)
+{
     return args;
 }
 
-std::string get_color_key(std::vector<std::string> args){
+std::string get_color_key(std::vector<std::string> args)
+{
     return args[0] + " " + args[1] + " " + args[2] + " " + args[3];
 }
 
+std::string generateRandomKey()
+{
+    std::string key = "";
+    std::vector<std::string> colors = {"R", "G", "B", "Y", "O", "P"};
+    for (int i = 0; i < 4; i++)
+    {
+        key += colors[rand() % 6];
+    }
+    if (validate_key(colors))
+    {
+        return key;
+    }
+    else
+    {
+        printf("Error generating key\n");
+        return key;
+    }
+}
 
-
-int get_playtime(std::string playtime){
+int get_playtime(std::string playtime)
+{
     return std::stoi(playtime);
 }
 
@@ -147,4 +171,9 @@ void terminate_signal_handler(int sig)
         exit(EXIT_SUCCESS);
 
     is_exiting = true;
+}
+
+std::string gameFileName(std::string PLID)
+{
+    return "/GAMES/GAME_(" + PLID + ").txt";
 }

@@ -8,6 +8,7 @@
 #include <ctime>
 #include <sys/stat.h>
 
+#include "../common/utils.hpp"
 /*A directoria GAMES contém um ficheiro por cada jogo em curso contendo o estado do jogo, e ainda as directorias de jogadores, contendo
 cada uma delas os resumos de todos os jogos já terminados para um dado jogador.
 
@@ -21,17 +22,17 @@ PPPPPP M CCCC T YYYY-MM-DD HH:MM:SS s*/
 
 class DatabaseManager
 {
-private:
+protected:
     std::string m_rootDir; // Root directory for all data files
 
     // Helper methods
-    bool openFile(std::fstream &fileStream, const std::string &filePath, std::ios_base::openmode mode);
-    bool closeFile(std::fstream &fileStream);
 
 public:
     DatabaseManager(const std::string &rootDir);
     ~DatabaseManager();
 
+    bool openFile(std::fstream &fileStream, const std::string &filePath, std::ios_base::openmode mode);
+    bool closeFile(std::fstream &fileStream);
     bool CreateDirectory(std::string path);
     bool CreateFile(std::string path);
     bool AppendToFile(std::string path, std::string content);
@@ -40,9 +41,8 @@ public:
 
 class GamedataManager : public DatabaseManager
 {
-
 public:
-    GamedataManager();
+    GamedataManager(const std::string rootDir);
 
     bool hasOngoingGame(std::string PLID);
 
