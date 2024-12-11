@@ -42,17 +42,13 @@ int main(int argc, char *argv[])
         else if (pid == 0) // child process
         {
             tcpServer.closeServer();
-            std::cout << "closed tcp server\n";
             // udp
             UDPServer(udpServer, commandManager, server); // start udp server
-            std::cout << "here after closed tcp\n";
         }
         else // parent process
         {
             udpServer.closeServer();
-            std::cout << "closed udp server\n";
             TCPServer(tcpServer, commandManager, server);
-            std::cout << "here after closed udp\n";
         }
     }
     catch (SocketException &e)
@@ -155,7 +151,7 @@ void UDPServer(UdpServer &udpServer, CommandManager &manager, Server &server)
         {
             std::cout << udpServer.getClientIP() << ":" << udpServer.getClientPort() << std::endl;
         }
-        std::cout << "udp response: " << response << std::endl;
+        std::cout << "udp response: " << response;
         udpServer.send(response);
     }
 }
@@ -175,7 +171,7 @@ void TCPServer(TcpServer &tcpServer, CommandManager &manager, Server &server){
         {
             std::cout << tcpServer.getClientIP() << ":" << tcpServer.getClientPort() << std::endl;
         }
-        std::cout << "tcp response: " << response << std::endl;
+        std::cout << "tcp response: " << response;
         tcpServer.send(response);
     }
 }

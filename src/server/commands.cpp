@@ -27,7 +27,7 @@ void CommandManager::registerAllCommands()
 
 std::string CommandManager::handleCommand(std::string message, Server &receiver)
 {
-    std::cout << "handleCommand: " << message << std::endl;
+    std::cout << "handleCommand: " << message;
 
     std::vector<std::string> command_split = split_command(message);
 
