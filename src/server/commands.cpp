@@ -29,6 +29,8 @@ void CommandManager::registerAllCommands()
 
 std::string CommandManager::handleCommand(std::string message)
 {
+    std::cout << "handleCommand: " << message << std::endl;
+
     std::vector<std::string> command_split = split_command(message);
 
     if (command_split.size() == 0)
@@ -36,7 +38,7 @@ std::string CommandManager::handleCommand(std::string message)
 
     std::string commandName = command_split[0]; // The name of the command
 
-    if (commandName.length() == 0)
+    if (commandName.length() == 0 || commandName.length() != 3)
         return "ERR";
 
     auto handler = _handlers.find(commandName); // find handler of the command
@@ -51,90 +53,77 @@ std::string CommandManager::handleCommand(std::string message)
         }
     }
 
-    std::string args = "";
-    if (command_split.size() > 1)
-        args = command_split[1];
-
     std::string response;
 
-    StreamMessage smessage(args);
-
-    handler->second->handle(smessage, response);
+    handler->second->handle(message, response);
 
     return response;
 }
 
-void StartCommand::handle(MessageSource &args, std::string &response)
+void StartCommand::handle(std::string &message, std::string &response)
 {
-    //     // TODO check verbose
+        // TODO check verbose
 
-    std::cout << args.get() << response;
+    std::cout << "in start command: " << message << response << std::endl;
 
-    //     StartCommunication startComm;
-    //     std::string result;
+    StartCommunication startComm;
+    std::string result;
 
-    //     try {
-    //         startComm.decodeRequest(message);  // Decode the request
+    try {
+        StreamMessage reqMessage(message);
+        startComm.decodeRequest(reqMessage);  // Decode the request
 
-    //         if (!receiver._database->loginUser(startComm._uid, startComm._password)) {  // Check if the user is registered
-    //             startComm._status = "OK";
-    //             result = "Login Sucessful";
-    //         } else {  // If the user is not registered, register the user
-    //             startComm._status = "REG";
-    //             result = "Registration Sucessful";
-    //         }
-    //     } catch (LoginException const &e) {  // If the login fails, set the status to NOK
-    //         startComm._status = "NOK";
-    //         result = "Login Failed";
-    //     } catch (ProtocolException const
-    //                  &e) {  // If the protocol is not valid, set the status to ERR
-    //         startComm._status = "ERR";
-    //         result = "Protocol Error";
-    //     }
-    //     response = startComm.encodeResponse();  // Encode the response
-    //     receiver.log(Message::ServerRequestDetails(loginCommunication._uid, "Login",
-    //                                                result));  // Display the message
+        // check if player has an ongoing game
+        // database add player
+        // startComm._status = "OK" or "NOK"
+        
+    } catch (ProtocolException const &e) {  // If the protocol is not valid, status = "ERR"
+        startComm._status = "ERR";
+        result = "Protocol Error";
+    }
+    response = startComm.encodeResponse();  // Encode the response
+    
 }
 
-void TryCommand::handle(MessageSource &args, std::string &response)
+void TryCommand::handle(std::string &args, std::string &response)
 {
     //     // TODO check verbose
 
-    std::cout << args.get() << response;
+    std::cout << args << response;
 }
 
-void ShowTrialsCommand::handle(MessageSource &args, std::string &response)
+void ShowTrialsCommand::handle(std::string &args, std::string &response)
 {
     //     // TODO check verbose
 
-    std::cout << args.get() << response;
+    std::cout << args << response;
 }
 
-void ScoreboardCommand::handle(MessageSource &args, std::string &response)
+void ScoreboardCommand::handle(std::string &args, std::string &response)
 {
     //     // TODO check verbose
-    std::cout << args.get() << response;
+    std::cout << args << response;
 }
 
-void QuitCommand::handle(MessageSource &args, std::string &response)
+void QuitCommand::handle(std::string &args, std::string &response)
 {
     //     // TODO check verbose
 
-    std::cout << args.get() << response;
+    std::cout << args << response;
 }
 
-void ExitCommand::handle(MessageSource &args, std::string &response)
+void ExitCommand::handle(std::string &args, std::string &response)
 {
     //     // TODO check verbose
 
-    std::cout << args.get() << response;
+    std::cout << args << response;
 }
 
-void DebugCommand::handle(MessageSource &args, std::string &response)
+void DebugCommand::handle(std::string &args, std::string &response)
 {
     //     // TODO check verbose
 
-    std::cout << args.get() << response;
+    std::cout << args << response;
 }
 
 

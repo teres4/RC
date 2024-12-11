@@ -23,7 +23,7 @@ public:
      * @brief Handles the command with the given arguments.
      * should be implemented by derived classes
      */
-    virtual void handle(MessageSource &message, std::string &response) = 0;
+    virtual void handle(std::string &args, std::string &response) = 0;
 
 protected:
     /**
@@ -57,15 +57,15 @@ public:
 
 class StartCommand : public CommandHandler
 {
-    void handle(MessageSource &message, std::string &response);
+    void handle(std::string &args, std::string &response);
 
 public:
-    StartCommand() : CommandHandler("LIN", false) {}
+    StartCommand() : CommandHandler("SNG", false) {}
 };
 
 class TryCommand : public CommandHandler
 {
-    void handle(MessageSource &message, std::string &response);
+    void handle(std::string &args, std::string &response);
 
 public:
     TryCommand() : CommandHandler("TRY", false) {}
@@ -73,7 +73,7 @@ public:
 
 class ShowTrialsCommand : public CommandHandler
 {
-    void handle(MessageSource &message, std::string &response);
+    void handle(std::string &args, std::string &response);
 
 public:
     ShowTrialsCommand() : CommandHandler("STR", true) {}
@@ -81,7 +81,7 @@ public:
 
 class ScoreboardCommand : public CommandHandler
 {
-    void handle(MessageSource &message, std::string &response);
+    void handle(std::string &args, std::string &response);
 
 public:
     ScoreboardCommand() : CommandHandler("SSB", true) {}
@@ -89,7 +89,7 @@ public:
 
 class QuitCommand : public CommandHandler
 {
-    void handle(MessageSource &message, std::string &response);
+    void handle(std::string &args, std::string &response);
 
 public:
     QuitCommand() : CommandHandler("QUT", false) {}
@@ -97,7 +97,7 @@ public:
 
 class ExitCommand : public CommandHandler
 {
-    void handle(MessageSource &message, std::string &response);
+    void handle(std::string &args, std::string &response);
 
 public:
     ExitCommand() : CommandHandler("QUT", false) {}
@@ -105,7 +105,7 @@ public:
 
 class DebugCommand : public CommandHandler
 {
-    void handle(MessageSource &message, std::string &response);
+    void handle(std::string &args, std::string &response);
 
 public:
     DebugCommand() : CommandHandler("DBG", false) {}

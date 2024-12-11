@@ -51,6 +51,6 @@ public:
     int FindTopScores();
 
     int FindLastGame(std::string PLID, std::string fname);
-}
+};
 
 #endif
