@@ -92,6 +92,7 @@ void StartCommand::handle(std::string &args, std::string &response, Server &rece
         result = "Protocol Error";
     }
     response = startComm.encodeResponse(); // Encode the response
+    return;
 }
 
 void TryCommand::handle(std::string &args, std::string &response, Server &receiver)

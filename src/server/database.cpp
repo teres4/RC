@@ -70,7 +70,7 @@ GamedataManager::GamedataManager(const std::string rootDir)
     m_rootDir = rootDir;
 }
 
-void GamedataManager::createGame(std::string PLID, char mode, int time, tm startdate, int timestart)
+void GamedataManager::createGame(std::string PLID, char mode, int time, tm startdate, long int timestart)
 {
     std::string path = m_rootDir + gameFileName(PLID);
 

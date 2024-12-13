@@ -94,8 +94,6 @@ Server::Server(int argc, char **argv)
     }
 
     validate_port(_gsport);
-
-    GamedataManager _DB(FILE_DIR);
 }
 
 // setup sockets

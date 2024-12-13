@@ -16,7 +16,7 @@ private:
     bool _verbose = false;
 
 public:
-    GamedataManager _DB;
+    GamedataManager _DB = GamedataManager("gamedata");
     Server(int argc, char **argv);
     void initializeServers();
 
