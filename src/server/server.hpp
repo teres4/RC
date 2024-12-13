@@ -7,7 +7,7 @@
 #include "socket.hpp"
 
 // #include "commands.hpp"
-// #include "database.hpp"
+#include "database.hpp"
 
 class Server
 {
@@ -16,6 +16,7 @@ private:
     bool _verbose = false;
 
 public:
+    GamedataManager _DB;
     Server(int argc, char **argv);
     void initializeServers();
 
@@ -23,6 +24,5 @@ public:
 
     std::string getPort();
 };
-
 
 #endif

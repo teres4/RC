@@ -11,11 +11,9 @@
 #include "server.hpp"
 #include "commands.hpp"
 
-
 void UDPServer(UdpServer &udpServer, CommandManager &manager, Server &server);
 
 void TCPServer(TcpServer &tcpServer, CommandManager &manager, Server &server);
-
 
 int main(int argc, char *argv[])
 {
@@ -96,6 +94,8 @@ Server::Server(int argc, char **argv)
     }
 
     validate_port(_gsport);
+
+    GamedataManager _DB(FILE_DIR);
 }
 
 // setup sockets
@@ -156,9 +156,8 @@ void UDPServer(UdpServer &udpServer, CommandManager &manager, Server &server)
     }
 }
 
-
-
-void TCPServer(TcpServer &tcpServer, CommandManager &manager, Server &server){
+void TCPServer(TcpServer &tcpServer, CommandManager &manager, Server &server)
+{
     bool verbose = server.isverbose();
     tcpServer.accept();
 

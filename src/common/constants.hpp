@@ -4,7 +4,6 @@
 #define DEFAULT_HOSTNAME "localhost"
 #define DEFAULT_PORT "58013" // 5800 + GROUP NUMBER
 
-
 #define MAX_TRIALS 8
 #define PLID_MAX_SIZE 6
 #define MAX_PLAYTIME 600
@@ -18,13 +17,12 @@
 
 #define PROTOCOL_ERROR "ERR"
 
-
 #define SOCKETS_UDP_TIMEOUT 5
 #define RESEND_TRIES 3
 #define TCP_READ_TIMEOUT 30
 #define TCP_WRITE_TIMEOUT 300
 
-
+#define FILE_DIR "gamedata/"
 
 #define MAX_TCP_WORKERS 100
 

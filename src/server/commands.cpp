@@ -24,7 +24,6 @@ void CommandManager::registerAllCommands()
     this->registerCommand(std::make_shared<DebugCommand>());
 }
 
-
 std::string CommandManager::handleCommand(std::string message, Server &receiver)
 {
     std::cout << "handleCommand: " << message;
@@ -61,23 +60,34 @@ std::string CommandManager::handleCommand(std::string message, Server &receiver)
 void StartCommand::handle(std::string &args, std::string &response, Server &receiver)
 {
     // TODO check verbose
+    GamedataManager DB = receiver._DB;
 
     std::cout << "in start command: " << args << response << std::endl;
 
     StartCommunication startComm;
     std::string result;
 
-    try {
+    try
+    {
         StreamMessage reqMessage(args);
-        startComm.decodeRequest(reqMessage);  // Decode the request
-        // check database if player has an ongoing game
-        // database add player
-        // startComm._status = "OK" or "NOK"
-        // if "OK" start new game and create a secret key
-        std::cout << receiver.getPort();
+        startComm.decodeRequest(reqMessage); // Decode the request
 
-
-    } catch (ProtocolException const &e) {  // If the protocol is not valid, status = "ERR"
+        bool hasGame = DB.hasOngoingGame(std::to_string(startComm._plid)); // check database if player has an ongoing game
+        if (hasGame)
+        {
+            startComm._status = "NOK";
+            result = "Player has an ongoing game";
+        }
+        else
+        {
+            startComm._status = "OK";
+            result = "Player does not have an ongoing game";
+            // need: PLID MODE TIME STARTDATE TIMESTART
+            DB.createGame(std::to_string(startComm._plid), 'P', startComm._time, tm(), time(NULL));
+        }
+    }
+    catch (ProtocolException const &e)
+    { // If the protocol is not valid, status = "ERR"
         startComm._status = "ERR";
         result = "Protocol Error";
     }

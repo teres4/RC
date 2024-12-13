@@ -1,8 +1,7 @@
 #include "database.hpp"
 
-
-bool DatabaseManager::openFile(std::fstream &fileStream, 
-                const std::string &filePath, std::ios_base::openmode mode)
+bool DatabaseManager::openFile(std::fstream &fileStream,
+                               const std::string &filePath, std::ios_base::openmode mode)
 {
     fileStream.open(filePath, mode);
     if (!fileStream.is_open())
@@ -66,3 +65,17 @@ bool GamedataManager::hasOngoingGame(std::string PLID)
     return true;
 }
 
+GamedataManager::GamedataManager(const std::string rootDir)
+{
+    m_rootDir = rootDir;
+}
+
+void GamedataManager::createGame(std::string PLID, char mode, int time, tm startdate, int timestart)
+{
+    std::string path = m_rootDir + gameFileName(PLID);
+
+    std::string code = generateRandomKey();
+    std::string content = PLID + " " + mode + " " + code + " " + std::to_string(time) + " " + dateToString(startdate) + " " + std::to_string(timestart) + "\n";
+    createFile(path);
+    appendToFile(path, content);
+}
