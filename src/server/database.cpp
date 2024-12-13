@@ -75,7 +75,19 @@ void GamedataManager::createGame(std::string PLID, char mode, int time, tm start
     std::string path = m_rootDir + gameFileName(PLID);
 
     std::string code = generateRandomKey();
-    std::string content = PLID + " " + mode + " " + code + " " + std::to_string(time) + " " + dateToString(startdate) + " " + std::to_string(timestart) + "\n";
+    std::string content = PLID + " " + mode + " " + code + " " + std::to_string(time) + " " + dateToString(startdate) + " " + HourtoString(startdate) + std::to_string(timestart) + "\n";
     createFile(path);
     appendToFile(path, content);
+}
+
+std::string GamedataManager::HourtoString(tm time)
+{
+    std::string timeString = std::to_string(time.tm_hour) + ":" + std::to_string(time.tm_min) + ":" + std::to_string(time.tm_sec);
+    return timeString;
+}
+
+std::string GamedataManager::dateToString(tm date)
+{
+    std::string dateString = std::to_string(date.tm_year) + "-" + std::to_string(date.tm_mon) + "-" + std::to_string(date.tm_mday);
+    return dateString;
 }

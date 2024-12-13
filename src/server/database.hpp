@@ -29,7 +29,6 @@ protected:
     // Helper methods
 
 public:
-
     bool openFile(std::fstream &fileStream, const std::string &filePath, std::ios_base::openmode mode);
     bool closeFile(std::fstream &fileStream);
     bool createDirectory(std::string path);
@@ -37,7 +36,6 @@ public:
     bool appendToFile(std::string path, std::string content);
     bool writeToFile(std::string path, std::string content);
 };
-
 
 class GamedataManager : public DatabaseManager
 {
@@ -51,6 +49,9 @@ public:
     int findTopScores();
 
     int findLastGame(std::string PLID, std::string fname);
+
+    std::string HourtoString(tm time);
+    std::string dateToString(tm time);
 };
 
 #endif
