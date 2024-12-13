@@ -26,8 +26,6 @@ void CommandManager::registerAllCommands()
 
 std::string CommandManager::handleCommand(std::string message, Server &receiver)
 {
-    std::cout << "handleCommand: " << message;
-
     std::vector<std::string> command_split = split_command(message);
 
     if (command_split.size() == 0)
@@ -61,8 +59,6 @@ void StartCommand::handle(std::string &args, std::string &response, Server &rece
 {
     // TODO check verbose
     GamedataManager DB = receiver._DB;
-
-    std::cout << "in start command: " << args << response;
 
     StartCommunication startComm;
     std::string result;
@@ -134,9 +130,41 @@ void ExitCommand::handle(std::string &args, std::string &response, Server &recei
 
 void DebugCommand::handle(std::string &args, std::string &response, Server &receiver)
 {
-    //     // TODO check verbose
+    // TODO check verbose
+    GamedataManager DB = receiver._DB;
 
-    std::cout << args << response << receiver.isverbose();
+    DebugCommunication dbgComm;
+    std::string result;
+
+    try
+    {
+        StreamMessage reqMessage(args);
+        dbgComm.decodeRequest(reqMessage); // Decode the request
+
+        // check database if player has an ongoing game
+        bool hasGame = DB.hasOngoingGame(std::to_string(dbgComm._plid)); 
+        if (hasGame)
+        {
+            dbgComm._status = "NOK";
+            result = "Player has an ongoing game";
+        }
+        else
+        {
+            dbgComm._status = "OK";
+            result = "Player does not have an ongoing game";
+            // need: PLID MODE TIME STARTDATE TIMESTART
+            std::string current_datetime = currentDateTime();
+            DB.createGame(std::to_string(dbgComm._plid), 'D', dbgComm._key, dbgComm._time, 
+                            current_datetime, time_t(&current_datetime));
+        }
+    }
+    catch (ProtocolException const &e)
+    { // If the protocol is not valid, status = "ERR"
+        dbgComm._status = "ERR";
+        result = "Protocol Error";
+    }
+    response = dbgComm.encodeResponse(); // Encode the response
+    return;
 }
 
 

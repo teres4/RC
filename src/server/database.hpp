@@ -9,6 +9,7 @@
 #include <sys/stat.h>
 
 #include "../common/utils.hpp"
+#include "../common/protocol.hpp"
 
 /*A directoria GAMES contém um ficheiro por cada jogo em curso contendo o estado do jogo, e ainda as directorias de jogadores, contendo
 cada uma delas os resumos de todos os jogos já terminados para um dado jogador.
@@ -42,14 +43,17 @@ class GamedataManager : public DatabaseManager
 public:
     GamedataManager(const std::string rootDir);
 
-    bool hasOngoingGame(std::string PLID);
+    bool hasOngoingGame(std::string plid);
 
-    void createGame(std::string PLID, char mode, int duration, 
+    void createGame(std::string plid, char mode, int duration, 
+                        std::string dateTime, time_t time);
+
+    void createGame(std::string plid, char mode, std::string key, int duration, 
                         std::string dateTime, time_t time);
 
     int findTopScores();
 
-    int findLastGame(std::string PLID, std::string fname);
+    int findLastGame(std::string plid, std::string fname);
 
     std::string hourtoString(tm time);
     std::string dateToString(tm time);

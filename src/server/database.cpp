@@ -25,13 +25,14 @@ void DatabaseManager::createFile(std::string path) {
 
     if (mkdir(directory.c_str(), 0777) == -1) { // Check if the directory portion is not empty.
         if (errno != EEXIST) {
-            throw std::runtime_error("Failed to create directory: " + std::string(strerror(errno)));
+            throw ProtocolException();
         }
     }
 }
 
 void DatabaseManager::writeToFile(std::string path, std::string content)
 {
+    try {
     createFile(path);  // Assure that the directory exists
 
     std::ofstream file(path);  // Create a file with the given name
@@ -40,16 +41,24 @@ void DatabaseManager::writeToFile(std::string path, std::string content)
     file.write(content.c_str(), n);
 
     file.close();  // Close the file
+    }
+    catch (...) {
+        throw ProtocolException();
+    }
 }
 
 
-bool GamedataManager::hasOngoingGame(std::string PLID)
+bool GamedataManager::hasOngoingGame(std::string plid)
 {
+    if (!validate_plid(plid)){
+        throw ProtocolException();
+        return false;
+    }
     // ongoing games are stored in the GAMES directory
-    std::string path = _m_rootDir + gameFileName(PLID);
+    std::string path = _m_rootDir + gameFileName(plid);
     std::fstream fileStream;
     if (!openFile(fileStream, path, std::ios::in))
-    {
+    {   
         return false;
     }
     closeFile(fileStream);
@@ -63,20 +72,35 @@ GamedataManager::GamedataManager(const std::string rootDir)
 
 
 
-void GamedataManager::createGame(std::string PLID, char mode, int duration, 
+void GamedataManager::createGame(std::string plid, char mode, int duration, 
                                     std::string dateTime, time_t time)
 {
-    std::string path = _m_rootDir + gameFileName(PLID);
+    std::string path = _m_rootDir + gameFileName(plid);
     
     std::string code = generateRandomKey();
 
-    std::string content = PLID + " " + mode + " " + code + " " + 
+    std::string content = plid + " " + mode + " " + code + " " + 
                 std::to_string(duration) + " " + dateTime + " " +
                 std::to_string(time) + "\n";
 
 
     writeToFile(path, content);
 }
+
+
+void GamedataManager::createGame(std::string plid, char mode, std::string key, int duration, 
+                        std::string dateTime, time_t time)
+{
+    std::string path = _m_rootDir + gameFileName(plid);
+    
+    std::string content = plid + " " + mode + " " + key + " " + 
+                std::to_string(duration) + " " + dateTime + " " +
+                std::to_string(time) + "\n";
+
+
+    writeToFile(path, content);
+}
+
 
 
 // std::string GamedataManager::hourtoString(tm time)
