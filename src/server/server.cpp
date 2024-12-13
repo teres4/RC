@@ -94,37 +94,9 @@ Server::Server(int argc, char **argv)
     }
 
     validate_port(_gsport);
+    
 }
 
-// setup sockets
-void Server::initializeServers()
-{
-    try
-    {
-        UdpServer udpServer(_gsport);
-        TcpServer tcpServer(_gsport);
-
-        int pid = fork();
-        if (pid > 0) // parent process
-        {
-            // udp
-            // UDPServer(udpServer, CommandManager(), *this);
-            tcpServer.closeServer();
-        }
-        else if (pid == 0) // child process
-        {
-            udpServer.closeServer();
-        }
-        else // fork failed
-        {
-            exit(1);
-        }
-    }
-    catch (SocketException &e)
-    {
-        std::cerr << "Error: " << e.what() << std::endl;
-    }
-}
 
 bool Server::isverbose()
 {

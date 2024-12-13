@@ -37,7 +37,7 @@ class Client
 private:
   std::string _gsip = DEFAULT_HOSTNAME;
   std::string _gsport = DEFAULT_PORT;
-  std::string _path = "./src/game_files/";
+  std::string _path = GAME_FILES_DIR;
 
 public:
   Player _player;

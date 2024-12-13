@@ -62,7 +62,7 @@ void StartCommand::handle(std::string &args, std::string &response, Server &rece
     // TODO check verbose
     GamedataManager DB = receiver._DB;
 
-    std::cout << "in start command: " << args << response << std::endl;
+    std::cout << "in start command: " << args << response;
 
     StartCommunication startComm;
     std::string result;
@@ -72,7 +72,8 @@ void StartCommand::handle(std::string &args, std::string &response, Server &rece
         StreamMessage reqMessage(args);
         startComm.decodeRequest(reqMessage); // Decode the request
 
-        bool hasGame = DB.hasOngoingGame(std::to_string(startComm._plid)); // check database if player has an ongoing game
+        // check database if player has an ongoing game
+        bool hasGame = DB.hasOngoingGame(std::to_string(startComm._plid)); 
         if (hasGame)
         {
             startComm._status = "NOK";

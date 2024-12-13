@@ -175,5 +175,5 @@ void terminate_signal_handler(int sig)
 
 std::string gameFileName(std::string PLID)
 {
-    return "/GAMES/GAME_(" + PLID + ").txt";
+    return "GAME_" + PLID + ".txt";
 }

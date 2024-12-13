@@ -24,17 +24,17 @@ PPPPPP M CCCC T YYYY-MM-DD HH:MM:SS s*/
 class DatabaseManager
 {
 protected:
-    std::string m_rootDir; // Root directory for all data files
+    std::string _m_rootDir; // Root directory for all data files
 
     // Helper methods
 
 public:
     bool openFile(std::fstream &fileStream, const std::string &filePath, std::ios_base::openmode mode);
     bool closeFile(std::fstream &fileStream);
-    bool createDirectory(std::string path);
-    bool createFile(std::string path);
-    bool appendToFile(std::string path, std::string content);
-    bool writeToFile(std::string path, std::string content);
+
+    void createFile(std::string path);
+    void appendToFile(std::string path, std::string content);
+    void writeToFile(std::string path, std::string content);
 };
 
 class GamedataManager : public DatabaseManager
@@ -50,7 +50,7 @@ public:
 
     int findLastGame(std::string PLID, std::string fname);
 
-    std::string HourtoString(tm time);
+    std::string hourtoString(tm time);
     std::string dateToString(tm time);
 };
 

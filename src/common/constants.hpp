@@ -18,11 +18,12 @@
 #define PROTOCOL_ERROR "ERR"
 
 #define SOCKETS_UDP_TIMEOUT 5
-#define RESEND_TRIES 3
+#define RESEND_TRIES 5
 #define TCP_READ_TIMEOUT 30
 #define TCP_WRITE_TIMEOUT 300
 
-#define FILE_DIR "gamedata/"
+#define GAME_FILES_DIR "./src/game_files/"
+#define GAMES_DIR "./src/GAMES/"
 
 #define MAX_TCP_WORKERS 100
 

@@ -100,7 +100,7 @@ Client::Client(int argc, char **argv)
 void Client::processRequest(ProtocolCommunication &comm)
 {
     std::string reqMessage = comm.encodeRequest();
-    std::string resMessage;
+    std::string resMessage = "";
 
     if (comm.isTcp())   // If the communication is TCP, use TCP
     { 
@@ -123,6 +123,8 @@ void Client::processRequest(ProtocolCommunication &comm)
             try {
                 udp.send(reqMessage);           // send request message
                 resMessage = udp.receive();     // receive response
+                if (resMessage != "")           // response received
+                    break;
             }
             catch (...) {
                 if (triesLeft == 0)
