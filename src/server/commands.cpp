@@ -84,7 +84,9 @@ void StartCommand::handle(std::string &args, std::string &response, Server &rece
             startComm._status = "OK";
             result = "Player does not have an ongoing game";
             // need: PLID MODE TIME STARTDATE TIMESTART
-            DB.createGame(std::to_string(startComm._plid), 'P', startComm._time, tm(), time(NULL));
+            std::string current_datetime = currentDateTime();
+            DB.createGame(std::to_string(startComm._plid), 'P', startComm._time, 
+                            current_datetime, time_t(&current_datetime));
         }
     }
     catch (ProtocolException const &e)
@@ -137,6 +139,7 @@ void DebugCommand::handle(std::string &args, std::string &response, Server &rece
     std::cout << args << response << receiver.isverbose();
 }
 
+
 std::vector<std::string> split_command(std::string input)
 {
     std::stringstream ss(input); // Create a stringstream object
@@ -148,4 +151,20 @@ std::vector<std::string> split_command(std::string input)
         command_split.push_back(temp);
 
     return command_split;
+}
+
+
+std::string currentDateTime(){
+    time_t fulltime;
+    struct tm *current_time;
+    char time_str[50];
+
+    time(&fulltime);
+    current_time = gmtime(&fulltime);
+    sprintf(time_str, "%4d-%02d-%02d %02d:%02d:%02d", current_time->tm_year + 1900, 
+                        current_time->tm_mon + 1, current_time->tm_mday, 
+                        current_time->tm_hour, current_time->tm_min, current_time->tm_sec);
+
+
+    return time_str;
 }

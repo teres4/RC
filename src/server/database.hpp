@@ -44,7 +44,8 @@ public:
 
     bool hasOngoingGame(std::string PLID);
 
-    void createGame(std::string PLID, char mode, int time, tm startdate, long int timestart);
+    void createGame(std::string PLID, char mode, int duration, 
+                        std::string dateTime, time_t time);
 
     int findTopScores();
 

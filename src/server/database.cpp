@@ -45,7 +45,6 @@ void DatabaseManager::writeToFile(std::string path, std::string content)
 
 bool GamedataManager::hasOngoingGame(std::string PLID)
 {
-
     // ongoing games are stored in the GAMES directory
     std::string path = _m_rootDir + gameFileName(PLID);
     std::fstream fileStream;
@@ -64,36 +63,38 @@ GamedataManager::GamedataManager(const std::string rootDir)
 
 
 
-void GamedataManager::createGame(std::string PLID, char mode, int time, 
-                                    tm startdate, long int timestart)
+void GamedataManager::createGame(std::string PLID, char mode, int duration, 
+                                    std::string dateTime, time_t time)
 {
     std::string path = _m_rootDir + gameFileName(PLID);
-
-    std::cout << "the path in createGame: " << path << std::endl;
     
     std::string code = generateRandomKey();
 
     std::string content = PLID + " " + mode + " " + code + " " + 
-                std::to_string(time) + " " + dateToString(startdate) + 
-                " " + hourtoString(startdate) + std::to_string(timestart) + "\n";
+                std::to_string(duration) + " " + dateTime + " " +
+                std::to_string(time) + "\n";
 
 
     writeToFile(path, content);
 }
 
 
-std::string GamedataManager::hourtoString(tm time)
-{
-    std::string timeString = std::to_string(time.tm_hour) + ":" + 
-                    std::to_string(time.tm_min) + ":" + 
-                    std::to_string(time.tm_sec);
-    return timeString;
-}
+// std::string GamedataManager::hourtoString(tm time)
+// {
+//     std::string timeString = std::to_string(time.tm_hour) + ":" + 
+//                     std::to_string(time.tm_min) + ":" + 
+//                     std::to_string(time.tm_sec);
 
-std::string GamedataManager::dateToString(tm date)
-{
-    std::string dateString = std::to_string(date.tm_year) + "-" + 
-                    std::to_string(date.tm_mon) + "-" + 
-                    std::to_string(date.tm_mday);
-    return dateString;
-}
+//     std::cout << "time string: " << timeString << std::endl;
+//     return timeString;
+// }
+
+// std::string GamedataManager::dateToString(tm date)
+// {
+//     std::string dateString = std::to_string(date.tm_year) + "-" + 
+//                     std::to_string(date.tm_mon) + "-" + 
+//                     std::to_string(date.tm_mday);
+
+//     std::cout << "date string: " << dateString << std::endl;
+//     return dateString;
+// }
