@@ -27,7 +27,7 @@ void DatabaseManager::createFile(std::string path)
     { // Check if the directory portion is not empty.
         if (errno != EEXIST)
         {
-            throw std::runtime_error("Error creating file");
+            throw std::runtime_error("Error: Unable to create file");
         }
     }
 }
@@ -51,6 +51,14 @@ void DatabaseManager::writeToFile(std::string path, std::string content)
     }
 }
 
+void DatabaseManager::deleteFile(std::string path) {       
+    if (std::remove(path.c_str()) != 0) {  // Try to delete the file
+        throw std::runtime_error("Error: Unable to delete file '" + path + "'.");
+    }
+}
+
+
+
 bool GamedataManager::hasOngoingGame(std::string plid)
 {
     try
@@ -72,6 +80,13 @@ bool GamedataManager::hasOngoingGame(std::string plid)
         return false;
     }
 }
+
+void GamedataManager::quitGame(std::string plid){
+    std::string path = GAMES_DIR + gameFileName(plid);
+    deleteFile(path);
+
+}
+
 
 GamedataManager::GamedataManager(const std::string rootDir)
 {

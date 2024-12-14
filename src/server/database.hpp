@@ -32,7 +32,7 @@ protected:
 public:
     bool openFile(std::fstream &fileStream, const std::string &filePath, std::ios_base::openmode mode);
     bool closeFile(std::fstream &fileStream);
-
+    void deleteFile(std::string path);
     void createFile(std::string path);
     void appendToFile(std::string path, std::string content);
     void writeToFile(std::string path, std::string content);
@@ -55,6 +55,8 @@ public:
 
     void createGame(std::string plid, char mode, std::string key, int duration,
                     std::string dateTime, time_t time);
+
+    void quitGame(std::string plid);
 
     int findTopScores();
 

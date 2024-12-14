@@ -161,9 +161,10 @@ void QuitCommand::handle(std::string &args, std::string &response, Server &recei
         bool hasGame = DB.hasOngoingGame(std::to_string(quitComm._plid));
         if (hasGame) // exit game
         {
-            // EXIT THE GAME
-            quitComm._status = "OK";  // Set the status to OK if everything goes right
             quitComm._key = DB.getsecretKey(std::to_string(quitComm._plid));
+            DB.quitGame(std::to_string(quitComm._plid));
+
+            quitComm._status = "OK";  // Set the status to OK if everything goes right
             result = "Game has ended sucessfully";
         }
         else
@@ -185,33 +186,34 @@ void ExitCommand::handle(std::string &args, std::string &response, Server &recei
 {
     GamedataManager DB = receiver._DB;
 
-    QuitCommunication quitComm; 
+    QuitCommunication exitComm;
     std::string result;
-    try {
+    try
+    {
         StreamMessage reqMessage(args);
-        quitComm.decodeRequest(reqMessage);  // Decode the request
+        exitComm.decodeRequest(reqMessage); // Decode the request
 
-        bool hasGame = DB.hasOngoingGame(std::to_string(quitComm._plid)); 
+        bool hasGame = DB.hasOngoingGame(std::to_string(exitComm._plid));
         if (hasGame) // exit game
         {
-            // EXIT THE GAME
-            quitComm._status = "OK";  // Set the status to OK if everything goes right
-            // TODO quitComm._key = 
+            exitComm._key = DB.getsecretKey(std::to_string(exitComm._plid));
+            DB.quitGame(std::to_string(exitComm._plid));
+
+            exitComm._status = "OK";  // Set the status to OK if everything goes right
             result = "Game has ended sucessfully";
         }
         else
         {
-            quitComm._status = "NOK";
+            exitComm._status = "NOK";
             result = "Player does not have an ongoing game";
-
         }
-    
-    } catch (ProtocolException &e) {  // If the protocol is not valid, set the status to ERR
-        quitComm._status = "ERR";
+    }
+    catch (ProtocolException &e)
+    { // If the protocol is not valid, set the status to ERR
+        exitComm._status = "ERR";
         result = "Protocol Error";
     }
-    response = quitComm.encodeResponse();  // Encode the response
-    // DELETE ALL INFO FROM PLAYER
+    response = exitComm.encodeResponse(); // Encode the response
     return;
 }
 
