@@ -52,7 +52,6 @@ public:
     void registerAllCommands();
 
     std::string handleCommand(std::string message, Server &receiver);
-
 };
 
 class StartCommand : public CommandHandler

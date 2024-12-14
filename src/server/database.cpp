@@ -1,6 +1,8 @@
 #include "database.hpp"
 #include <filesystem>
 
+#include <ctime>
+
 bool DatabaseManager::openFile(std::fstream &fileStream,
                                const std::string &filePath, std::ios_base::openmode mode)
 {
@@ -51,13 +53,27 @@ void DatabaseManager::writeToFile(std::string path, std::string content)
     }
 }
 
-void DatabaseManager::deleteFile(std::string path) {       
-    if (std::remove(path.c_str()) != 0) {  // Try to delete the file
+void DatabaseManager::deleteFile(std::string path)
+{
+    if (std::remove(path.c_str()) != 0)
+    { // Try to delete the file
         throw std::runtime_error("Error: Unable to delete file '" + path + "'.");
     }
 }
 
-
+void DatabaseManager::appendToFile(std::string path, std::string content)
+{
+    try
+    {
+        std::ofstream fstream;
+        fstream.open(path, std::ios_base::app);
+        fstream << content;
+    }
+    catch (const std::exception &e)
+    {
+        throw std::runtime_error("Couldn't append to file: " + path + " with content: " + content);
+    }
+}
 
 bool GamedataManager::hasOngoingGame(std::string plid)
 {
@@ -81,12 +97,11 @@ bool GamedataManager::hasOngoingGame(std::string plid)
     }
 }
 
-void GamedataManager::quitGame(std::string plid){
+void GamedataManager::quitGame(std::string plid)
+{
     std::string path = GAMES_DIR + gameFileName(plid);
     deleteFile(path);
-
 }
-
 
 GamedataManager::GamedataManager(const std::string rootDir)
 {
@@ -144,25 +159,24 @@ std::string GamedataManager::getsecretKey(std::string plid)
 
     key = getiword(line, 3);
 
-
     return formatSecretKey(key);
 }
 
-
-std::string GamedataManager::formatSecretKey(std::string key){
+std::string GamedataManager::formatSecretKey(std::string key)
+{
     std::string result;
 
-    for (size_t i = 0; i < key.length(); ++i) {
+    for (size_t i = 0; i < key.length(); ++i)
+    {
         result += key[i];
-        if (i != key.length() - 1) { // Add space if not the last character
+        if (i != key.length() - 1)
+        { // Add space if not the last character
             result += ' ';
         }
     }
 
     return result;
-
 }
-
 
 std::string GamedataManager::getiword(std::string line, int n)
 {
@@ -199,6 +213,66 @@ bool GamedataManager::isRepeatedTrial(std::string plid, std::string key)
     }
 
     return false;
+}
+
+int GamedataManager::expectedNT(std::string PLID)
+{
+    std::string path = GAMES_DIR + gameFileName(PLID);
+    std::string line;
+
+    std::fstream fileStream;
+    fileStream.open(path, std::ios::in);
+
+    if (!fileStream.is_open())
+    {
+        throw std::runtime_error("Error opening file");
+    }
+    int i = 0;
+    std::getline(fileStream, line); // ignore first line
+
+    while (std::getline(fileStream, line))
+    {
+        i++;
+    }
+    i++; // increment to get the expected number of trials
+
+    return i;
+}
+
+long int GamedataManager::getOngoingGameTime(std::string plid)
+{
+    std::string path = GAMES_DIR + gameFileName(plid);
+    std::string line;
+
+    std::fstream fileStream;
+    fileStream.open(path, std::ios::in);
+    if (!fileStream.is_open())
+    {
+        throw std::runtime_error("Error opening file");
+    }
+
+    std::getline(fileStream, line);
+    std::string word = getiword(line, 7); // get the time()
+    std::cout << "time: " << word << std::endl;
+
+    return std::stol(word);
+}
+
+long int GamedataManager::timeSinceStart(std::string plid)
+{
+    std::string path = GAMES_DIR + gameFileName(plid);
+    long int starttime = getOngoingGameTime(plid);
+
+    time_t now = time(NULL);
+
+    return starttime - (long int)now;
+}
+
+void GamedataManager::registerTry(std::string plid, std::string key, int B, int W)
+{
+    std::string path = GAMES_DIR + gameFileName(plid);
+    std::string content = "T: " + key + " " + std::to_string(B) + " " + std::to_string(W) + " " + std::to_string(timeSinceStart(plid)) + "\n";
+    appendToFile(path, content);
 }
 
 // std::string GamedataManager::hourtoString(tm time)

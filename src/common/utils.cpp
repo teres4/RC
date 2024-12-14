@@ -197,3 +197,33 @@ std::string gameFileName(std::string PLID)
 {
     return "GAME_" + PLID + ".txt";
 }
+
+int black(const std::string key, const std::string guess)
+{
+    int count = 0;
+    for (std::string::size_type i = 0; i < key.size(); i++)
+    {
+        if (key[i] == guess[i])
+        {
+            count++;
+        }
+    }
+    return count;
+}
+
+int white(const std::string key, const std::string guess)
+{
+    int count = 0;
+    for (std::string::size_type i = 0; i < key.size(); i++)
+    {
+        for (std::string::size_type j = 0; j < key.size(); j++)
+        {
+            if (key[i] == guess[j])
+            {
+                count++;
+                break;
+            }
+        }
+    }
+    return count;
+}

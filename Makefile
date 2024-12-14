@@ -23,6 +23,8 @@ COMMON_OBJECTS := $(COMMON_SOURCES:.cpp=.o)
 SERVER_OBJECTS := $(SERVER_SOURCES:.cpp=.o)
 OBJECTS := $(CLIENT_OBJECTS) $(COMMON_OBJECTS) $(SERVER_OBJECTS)
 
+GAME_DATA := $(wildcard src/gamedata/GAMES/*.txt)
+
 CXXFLAGS = -std=c++17
 LDFLAGS = -std=c++17
 
@@ -87,7 +89,7 @@ clean:
 	rm -f $(OBJECTS) $(TARGETS) $(TARGET_EXECS) project.zip
 
 clean-gamedata:
-	rm -rf .gamedata
+	rm -rf $(GAME_DATA)
 
 package:
 	cp README.md readme.txt

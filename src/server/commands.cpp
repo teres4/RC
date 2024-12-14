@@ -82,7 +82,7 @@ void StartCommand::handle(std::string &args, std::string &response, Server &rece
             DB.createGame(std::to_string(startComm._plid), 'P', startComm._time,
                           current_datetime, time_t(&current_datetime));
             startComm._status = "OK";
-            result = "Player started a game. ";              
+            result = "Player started a game. ";
         }
     }
     catch (ProtocolException &e)
@@ -117,20 +117,60 @@ void TryCommand::handle(std::string &args, std::string &response, Server &receiv
 
         // check database if player has an ongoing game
         bool hasGame = DB.hasOngoingGame(std::to_string(tryComm._plid));
-        if (hasGame)
+        if (!hasGame)
         {
             tryComm._status = "NOK";
-            result = "Player has an ongoing game";
+            result = "Player doesnt have ongoing game";
         }
         else
         {
+            if (DB.isRepeatedTrial(std::to_string(tryComm._plid), removeSpaces(tryComm._key)))
+            {
+                tryComm._status = "DUP";
+                result = "Repeated trial";
+            }
+            else
+            {
+
+                int expectedNT = DB.expectedNT(std::to_string(tryComm._plid));
+                if (expectedNT == tryComm._nT)
+                {
+                    tryComm._status = "OK";
+
+                    tryComm._nB = black(removeSpaces(tryComm._key), DB.getsecretKey(std::to_string(tryComm._plid)));
+                    tryComm._nW = white(removeSpaces(tryComm._key), DB.getsecretKey(std::to_string(tryComm._plid)));
+                    if (tryComm._nB == 4)
+                    {
+                        // end game
+                        // player wins
+                    }
+                    else
+                    {
+                        DB.registerTry(std::to_string(tryComm._plid), removeSpaces(tryComm._key), tryComm._nB, tryComm._nW);
+                    }
                 }
+                else if (tryComm._nT == expectedNT - 1)
+                {
+                    if (DB.isRepeatedTrial(std::to_string(tryComm._plid), removeSpaces(tryComm._key)))
+                    {
+                        /*nothing*/
+                    }
+                    else
+                    {
+                        tryComm._status = "INV";
+                        result = "Invalid nT, not a Dupe";
+                    }
+                }
+            }
+        }
     }
     catch (ProtocolException &e)
     { // If the protocol is not valid, status = "ERR"
         tryComm._status = "ERR";
         result = "Protocol Error";
     }
+    response = tryComm.encodeResponse(); // Encode the response
+    return;
 }
 
 void ShowTrialsCommand::handle(std::string &args, std::string &response, Server &receiver)
@@ -164,7 +204,7 @@ void QuitCommand::handle(std::string &args, std::string &response, Server &recei
             quitComm._key = DB.getsecretKey(std::to_string(quitComm._plid));
             DB.quitGame(std::to_string(quitComm._plid));
 
-            quitComm._status = "OK";  // Set the status to OK if everything goes right
+            quitComm._status = "OK"; // Set the status to OK if everything goes right
             result = "Game has ended sucessfully";
         }
         else
@@ -199,7 +239,7 @@ void ExitCommand::handle(std::string &args, std::string &response, Server &recei
             exitComm._key = DB.getsecretKey(std::to_string(exitComm._plid));
             DB.quitGame(std::to_string(exitComm._plid));
 
-            exitComm._status = "OK";  // Set the status to OK if everything goes right
+            exitComm._status = "OK"; // Set the status to OK if everything goes right
             result = "Game has ended sucessfully";
         }
         else

@@ -40,4 +40,7 @@ void terminate_signal_handler(int sig);
 std::string generateRandomKey();
 std::string gameFileName(std::string PLID);
 
+int black(const std::string key, const std::string secretKey);
+int white(const std::string key, const std::string secretKey);
+
 #endif

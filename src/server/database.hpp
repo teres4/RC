@@ -67,6 +67,12 @@ public:
     std::string getsecretKey(std::string plid);
     std::string formatSecretKey(std::string key);
     bool isRepeatedTrial(std::string plid, std::string key);
+    int expectedNT(std::string PLID);
+
+    void registerTry(std::string plid, std::string key, int B, int W);
+
+    long int getOngoingGameTime(std::string plid);
+    long int timeSinceStart(std::string plid);
 
     std::string getiword(std::string line, int n);
 };
