@@ -116,9 +116,36 @@ void ScoreboardCommand::handle(std::string &args, std::string &response, Server 
 
 void QuitCommand::handle(std::string &args, std::string &response, Server &receiver)
 {
-    //     // TODO check verbose
+    // TODO check verbose
 
-    std::cout << args << response << receiver.isverbose();
+    GamedataManager DB = receiver._DB;
+
+    QuitCommunication quitComm; 
+    std::string result;
+    try {
+        StreamMessage reqMessage(args);
+        quitComm.decodeRequest(reqMessage);  // Decode the request
+
+        bool hasGame = DB.hasOngoingGame(std::to_string(quitComm._plid)); 
+        if (hasGame) // exit game
+        {
+            // EXIT THE GAME
+            quitComm._status = "OK";  // Set the status to OK if everything goes right
+            result = "Game has ended sucessfully";
+        }
+        else
+        {
+            quitComm._status = "NOK";
+            result = "Player does not have an ongoing game";
+
+        }
+    
+    } catch (ProtocolException &e) {  // If the protocol is not valid, set the status to ERR
+        quitComm._status = "ERR";
+        result = "Protocol Error";
+    }
+    response = quitComm.encodeResponse();  // Encode the response
+    return;
 }
 
 void ExitCommand::handle(std::string &args, std::string &response, Server &receiver)
