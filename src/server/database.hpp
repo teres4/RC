@@ -62,6 +62,10 @@ public:
 
     std::string hourtoString(tm time);
     std::string dateToString(tm time);
+    std::string getsecretKey(std::string plid);
+    bool isRepeatedTrial(std::string plid, std::string key);
+
+    std::string getiword(std::string line, int n);
 };
 
 #endif

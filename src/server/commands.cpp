@@ -99,6 +99,38 @@ void TryCommand::handle(std::string &args, std::string &response, Server &receiv
     //     // TODO check verbose
 
     std::cout << args << response << receiver.isverbose();
+
+    GamedataManager DB = receiver._DB;
+
+    // TRY PLID C1 C2 C3 C4 nT
+
+    // RTR status [nT nB nW][C1 C2 C3 C4]
+
+    TryCommunication tryComm;
+
+    std::string result;
+
+    try
+    {
+        StreamMessage reqMessage(args);
+        tryComm.decodeRequest(reqMessage); // Decode the request
+
+        // check database if player has an ongoing game
+        bool hasGame = DB.hasOngoingGame(std::to_string(tryComm._plid));
+        if (hasGame)
+        {
+            tryComm._status = "NOK";
+            result = "Player has an ongoing game";
+        }
+        else
+        {
+                }
+    }
+    catch (ProtocolException &e)
+    { // If the protocol is not valid, status = "ERR"
+        tryComm._status = "ERR";
+        result = "Protocol Error";
+    }
 }
 
 void ShowTrialsCommand::handle(std::string &args, std::string &response, Server &receiver)

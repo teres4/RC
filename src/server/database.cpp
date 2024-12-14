@@ -57,7 +57,7 @@ bool GamedataManager::hasOngoingGame(std::string plid)
     {
         validate_plid(plid);
         // ongoing games are stored in the GAMES directory
-        std::string path = _m_rootDir + gameFileName(plid);
+        std::string path = GAMES_DIR + gameFileName(plid);
         std::fstream fileStream;
         if (!openFile(fileStream, path, std::ios::in))
         {
@@ -98,13 +98,76 @@ void GamedataManager::createGame(std::string plid, char mode, int duration,
 void GamedataManager::createGame(std::string plid, char mode, std::string key, int duration,
                                  std::string dateTime, time_t time)
 {
-    std::string path = _games_dir + gameFileName(plid);
+    validate_plid(plid);
+    validate_playTime(duration);
+
+    std::string path = GAMES_DIR + gameFileName(plid);
 
     std::string content = plid + " " + mode + " " + key + " " +
                           std::to_string(duration) + " " + dateTime + " " +
                           std::to_string(time) + "\n";
 
     writeToFile(path, content);
+}
+
+std::string GamedataManager::getsecretKey(std::string plid)
+{
+    std::string path = GAMES_DIR + gameFileName(plid);
+    std::string key;
+
+    // extract 3rd word from the file
+
+    std::fstream fileStream;
+    fileStream.open(path, std::ios::in);
+    if (!fileStream.is_open())
+    {
+        throw std::runtime_error("Error opening file");
+    }
+
+    std::string line;
+    std::getline(fileStream, line);
+
+    key = getiword(line, 3);
+
+    printf("key: %s\n", key.c_str());
+    return key;
+}
+
+std::string GamedataManager::getiword(std::string line, int n)
+{
+    std::istringstream iss(line);
+    std::string word;
+    for (int i = 0; i < n; i++)
+    {
+        iss >> word;
+    }
+
+    return word;
+}
+
+bool GamedataManager::isRepeatedTrial(std::string plid, std::string key)
+{
+    std::string path = GAMES_DIR + gameFileName(plid);
+    std::string line;
+
+    std::fstream fileStream;
+    fileStream.open(path, std::ios::in);
+    if (!fileStream.is_open())
+    {
+        throw std::runtime_error("Error opening file");
+    }
+
+    std::getline(fileStream, line); // ignore first line
+    while (std::getline(fileStream, line))
+    {
+        std::string word = getiword(line, 2); // get second word
+        if (word == key)
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 // std::string GamedataManager::hourtoString(tm time)
