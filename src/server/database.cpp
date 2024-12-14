@@ -25,7 +25,7 @@ void DatabaseManager::createFile(std::string path) {
 
     if (mkdir(directory.c_str(), 0777) == -1) { // Check if the directory portion is not empty.
         if (errno != EEXIST) {
-            throw ProtocolException();
+            throw std::runtime_error("Error creating file");
         }
     }
 }
@@ -43,26 +43,29 @@ void DatabaseManager::writeToFile(std::string path, std::string content)
     file.close();  // Close the file
     }
     catch (...) {
-        throw ProtocolException();
+        throw std::runtime_error("Couldn't write file");
     }
 }
 
 
 bool GamedataManager::hasOngoingGame(std::string plid)
 {
-    if (!validate_plid(plid)){
-        throw ProtocolException();
-        return false;
+    try {
+        validate_plid(plid);
+        // ongoing games are stored in the GAMES directory
+        std::string path = _m_rootDir + gameFileName(plid);
+        std::fstream fileStream;
+        if (!openFile(fileStream, path, std::ios::in))
+        {   
+            return false;
+        }
+        closeFile(fileStream);
+        return true;
     }
-    // ongoing games are stored in the GAMES directory
-    std::string path = _m_rootDir + gameFileName(plid);
-    std::fstream fileStream;
-    if (!openFile(fileStream, path, std::ios::in))
-    {   
+
+    catch (...){
         return false;
-    }
-    closeFile(fileStream);
-    return true;
+    }    
 }
 
 GamedataManager::GamedataManager(const std::string rootDir)
@@ -75,9 +78,13 @@ GamedataManager::GamedataManager(const std::string rootDir)
 void GamedataManager::createGame(std::string plid, char mode, int duration, 
                                     std::string dateTime, time_t time)
 {
+    validate_plid(plid);
+    validate_playTime(duration);
+
     std::string path = _m_rootDir + gameFileName(plid);
     
-    std::string code = generateRandomKey();
+    std::string code;
+    generateRandomKey(code);
 
     std::string content = plid + " " + mode + " " + code + " " + 
                 std::to_string(duration) + " " + dateTime + " " +
@@ -85,6 +92,7 @@ void GamedataManager::createGame(std::string plid, char mode, int duration,
 
 
     writeToFile(path, content);
+
 }
 
 

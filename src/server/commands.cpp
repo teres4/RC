@@ -64,7 +64,7 @@ void StartCommand::handle(std::string &args, std::string &response, Server &rece
     std::string result;
 
     try
-    {
+    {   
         StreamMessage reqMessage(args);
         startComm.decodeRequest(reqMessage); // Decode the request
 
@@ -85,7 +85,7 @@ void StartCommand::handle(std::string &args, std::string &response, Server &rece
                             current_datetime, time_t(&current_datetime));
         }
     }
-    catch (ProtocolException const &e)
+    catch (ProtocolException &e)
     { // If the protocol is not valid, status = "ERR"
         startComm._status = "ERR";
         result = "Protocol Error";
@@ -152,21 +152,20 @@ void DebugCommand::handle(std::string &args, std::string &response, Server &rece
         {
             dbgComm._status = "OK";
             result = "Player does not have an ongoing game";
-            // need: PLID MODE TIME STARTDATE TIMESTART
+
             std::string current_datetime = currentDateTime();
-            DB.createGame(std::to_string(dbgComm._plid), 'D', dbgComm._key, dbgComm._time, 
+            DB.createGame(std::to_string(dbgComm._plid), 'D', removeSpaces(dbgComm._key), dbgComm._time, 
                             current_datetime, time_t(&current_datetime));
         }
     }
-    catch (ProtocolException const &e)
+    catch (ProtocolException &e)
     { // If the protocol is not valid, status = "ERR"
         dbgComm._status = "ERR";
         result = "Protocol Error";
     }
     response = dbgComm.encodeResponse(); // Encode the response
     return;
-}
-
+}  
 
 std::vector<std::string> split_command(std::string input)
 {
@@ -195,4 +194,10 @@ std::string currentDateTime(){
 
 
     return time_str;
+}
+
+std::string removeSpaces(std::string &str){
+    std::string result = str;
+    result.erase(std::remove(result.begin(), result.end(), ' '), result.end());
+    return result;
 }

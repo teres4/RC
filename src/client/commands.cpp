@@ -85,15 +85,15 @@ void StartCommand::handle(std::string args, Client &state)
   std::string PLID = arg_split[0];
   std::string max_playtime = arg_split[1];
 
-  if (validate_plid(PLID) == false){
-    std::cout << "Invalid PLID: PLID must be a 6-digit number." << std::endl;
-    return;
-  }
-  if (validate_playTime(max_playtime) == false){
-    std::cout << "Invalid max_playtime: max_playtime cannot exceed 600 \
-    seconds." << std::endl;
-    return;
-  }
+  // if (validate_plid(PLID) == false){
+  //   std::cout << "Invalid PLID: PLID must be a 6-digit number." << std::endl;
+  //   return;
+  // }
+  // if (validate_playTime(max_playtime) == false){
+  //   std::cout << "Invalid max_playtime: max_playtime cannot exceed 600 
+  //   seconds." << std::endl;
+  //   return;
+  // }
 
   StartCommunication startComm;
   startComm._plid = get_plid(PLID);
@@ -134,10 +134,10 @@ void TryCommand::handle(std::string args, Client &state)
     return;
   }
 
-  if (validate_key(arg_split) == false){
-    std::cout << "Invalid color key." << std::endl;
-      return;
-  }
+  // if (validate_key(arg_split) == false){
+  //   std::cout << "Invalid color key." << std::endl;
+  //     return;
+  // }
 
   TryCommunication tryComm;
   tryComm._plid = state._player.getPlid();
@@ -275,21 +275,21 @@ void DebugCommand::handle(std::string args, Client &state)
   std::string PLID = arg_split[0];
   std::string max_playtime = arg_split[1];
 
-  if (validate_plid(PLID) == false){
-    std::cout << "Invalid PLID: PLID must be a 6-digit number." << std::endl;
-    return;
-  }
-  if (validate_playTime(max_playtime) == false){
-    std::cout << "Invalid max_playtime - cannot exceed 600 seconds" << std::endl;
-    return;
-  }
+  // if (validate_plid(PLID) == false){
+  //   std::cout << "Invalid PLID: PLID must be a 6-digit number." << std::endl;
+  //   return;
+  // }
+  // if (validate_playTime(max_playtime) == false){
+  //   std::cout << "Invalid max_playtime - cannot exceed 600 seconds" << std::endl;
+  //   return;
+  // }
 
   std::vector<std::string> colorArray(arg_split.begin() + 2, std::end(arg_split));
 
-  if (validate_key(colorArray) == false){
-    std::cout << "Invalid color key." << std::endl;
-    return;
-  }
+  // if (validate_key(colorArray) == false){
+  //   std::cout << "Invalid color key." << std::endl;
+  //   return;
+  // }
 
   DebugCommunication dbgComm;
   

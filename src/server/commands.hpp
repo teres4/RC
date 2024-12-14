@@ -115,4 +115,6 @@ std::vector<std::string> split_command(std::string input);
 
 std::string currentDateTime();
 
+std::string removeSpaces(std::string &str);
+
 #endif

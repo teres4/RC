@@ -20,10 +20,14 @@ bool is_numeric(std::string &str);
 bool is_not_numeric(std::string &str);
 
 void validate_port(std::string &port);
-bool validate_plid(std::string plid);
-bool validate_playTime(std::string playtime);
+void validate_plid(std::string plid);
+
+void validate_playTime(std::string playtime);
+void validate_playTime(int playtime);
+
 bool validate_color(std::string color);
-bool validate_key(std::vector<std::string> colors);
+void validate_key(std::vector<std::string> colors);
+void validate_key(std::string key);
 
 int get_plid(std::string plid);
 int get_playtime(std::string playtime);
@@ -33,7 +37,7 @@ std::string get_color_key(std::vector<std::string> args);
 void setup_signal_handlers();
 void terminate_signal_handler(int sig);
 
-std::string generateRandomKey();
+void generateRandomKey(std::string key);
 std::string gameFileName(std::string PLID);
 
 #endif
