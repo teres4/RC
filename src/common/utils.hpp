@@ -37,7 +37,7 @@ std::string get_color_key(std::vector<std::string> args);
 void setup_signal_handlers();
 void terminate_signal_handler(int sig);
 
-void generateRandomKey(std::string key);
+std::string generateRandomKey();
 std::string gameFileName(std::string PLID);
 
 #endif

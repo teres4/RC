@@ -48,12 +48,14 @@ void validate_port(std::string &port)
  */
 void validate_plid(std::string plid)
 {
-    if (plid.length() != PLID_MAX_SIZE || is_numeric(plid) == false){
+    if (plid.length() != PLID_MAX_SIZE || is_numeric(plid) == false)
+    {
         throw ProtocolMessageErrorException();
     }
-        
+
     int parsed = std::stoi(plid);
-    if (parsed < 0){
+    if (parsed < 0)
+    {
         throw ProtocolMessageErrorException();
     }
 }
@@ -65,25 +67,26 @@ int get_plid(std::string plid)
 
 void validate_playTime(std::string playtime)
 {
-    if (is_numeric(playtime) == false){
+    if (is_numeric(playtime) == false)
+    {
         throw ProtocolMessageErrorException();
     }
 
     int parsed = std::stoi(playtime);
 
-    if (parsed < 0 || parsed > MAX_PLAYTIME){
+    if (parsed < 0 || parsed > MAX_PLAYTIME)
+    {
         throw ProtocolMessageErrorException();
     }
 }
 
 void validate_playTime(int playtime)
 {
-    if (playtime < 0 || playtime > MAX_PLAYTIME){
+    if (playtime < 0 || playtime > MAX_PLAYTIME)
+    {
         throw ProtocolMessageErrorException();
     }
 }
-
-
 
 bool validate_color(std::string color)
 {
@@ -111,14 +114,13 @@ void validate_key(std::vector<std::string> colors)
     }
 }
 
-
 void validate_key(std::string key)
 {
     for (char c : key)
     {
         if (c == ' ' || c == '\n')
             continue;
-            
+
         std::string color(1, c);
         if (!validate_color(color))
         {
@@ -137,16 +139,17 @@ std::string get_color_key(std::vector<std::string> args)
     return args[0] + " " + args[1] + " " + args[2] + " " + args[3];
 }
 
-void generateRandomKey(std::string key)
+std::string generateRandomKey()
 {
+    std::string key;
     std::vector<std::string> colors = {"R", "G", "B", "Y", "O", "P"};
     for (int i = 0; i < 4; i++)
     {
         key += colors[(size_t)(rand() % 6)];
     }
-    
-    validate_key(key);
 
+    validate_key(key);
+    return key;
 }
 
 int get_playtime(std::string playtime)

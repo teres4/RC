@@ -23,7 +23,9 @@
 #define TCP_WRITE_TIMEOUT 300
 
 #define GAME_FILES_DIR "./src/game_files/"
-#define GAMES_DIR "./src/GAMES/"
+#define FILES_DIR "./src/gamedata/"
+#define GAMES_DIR "./src/gamedata/GAMES/"
+#define SCORES_DIR "./src/gamedata/SCORES/"
 
 #define MAX_TCP_WORKERS 100
 

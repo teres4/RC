@@ -64,12 +64,12 @@ void StartCommand::handle(std::string &args, std::string &response, Server &rece
     std::string result;
 
     try
-    {   
+    {
         StreamMessage reqMessage(args);
         startComm.decodeRequest(reqMessage); // Decode the request
 
         // check database if player has an ongoing game
-        bool hasGame = DB.hasOngoingGame(std::to_string(startComm._plid)); 
+        bool hasGame = DB.hasOngoingGame(std::to_string(startComm._plid));
         if (hasGame)
         {
             startComm._status = "NOK";
@@ -81,8 +81,8 @@ void StartCommand::handle(std::string &args, std::string &response, Server &rece
             result = "Player does not have an ongoing game";
             // need: PLID MODE TIME STARTDATE TIMESTART
             std::string current_datetime = currentDateTime();
-            DB.createGame(std::to_string(startComm._plid), 'P', startComm._time, 
-                            current_datetime, time_t(&current_datetime));
+            DB.createGame(std::to_string(startComm._plid), 'P', startComm._time,
+                          current_datetime, time_t(&current_datetime));
         }
     }
     catch (ProtocolException &e)
@@ -120,31 +120,32 @@ void QuitCommand::handle(std::string &args, std::string &response, Server &recei
 
     GamedataManager DB = receiver._DB;
 
-    QuitCommunication quitComm; 
+    QuitCommunication quitComm;
     std::string result;
-    try {
+    try
+    {
         StreamMessage reqMessage(args);
-        quitComm.decodeRequest(reqMessage);  // Decode the request
+        quitComm.decodeRequest(reqMessage); // Decode the request
 
-        bool hasGame = DB.hasOngoingGame(std::to_string(quitComm._plid)); 
+        bool hasGame = DB.hasOngoingGame(std::to_string(quitComm._plid));
         if (hasGame) // exit game
         {
             // EXIT THE GAME
-            quitComm._status = "OK";  // Set the status to OK if everything goes right
+            quitComm._status = "OK"; // Set the status to OK if everything goes right
             result = "Game has ended sucessfully";
         }
         else
         {
             quitComm._status = "NOK";
             result = "Player does not have an ongoing game";
-
         }
-    
-    } catch (ProtocolException &e) {  // If the protocol is not valid, set the status to ERR
+    }
+    catch (ProtocolException &e)
+    { // If the protocol is not valid, set the status to ERR
         quitComm._status = "ERR";
         result = "Protocol Error";
     }
-    response = quitComm.encodeResponse();  // Encode the response
+    response = quitComm.encodeResponse(); // Encode the response
     return;
 }
 
@@ -169,7 +170,7 @@ void DebugCommand::handle(std::string &args, std::string &response, Server &rece
         dbgComm.decodeRequest(reqMessage); // Decode the request
 
         // check database if player has an ongoing game
-        bool hasGame = DB.hasOngoingGame(std::to_string(dbgComm._plid)); 
+        bool hasGame = DB.hasOngoingGame(std::to_string(dbgComm._plid));
         if (hasGame)
         {
             dbgComm._status = "NOK";
@@ -181,8 +182,8 @@ void DebugCommand::handle(std::string &args, std::string &response, Server &rece
             result = "Player does not have an ongoing game";
 
             std::string current_datetime = currentDateTime();
-            DB.createGame(std::to_string(dbgComm._plid), 'D', removeSpaces(dbgComm._key), dbgComm._time, 
-                            current_datetime, time_t(&current_datetime));
+            DB.createGame(std::to_string(dbgComm._plid), 'D', removeSpaces(dbgComm._key), dbgComm._time,
+                          current_datetime, time_t(&current_datetime));
         }
     }
     catch (ProtocolException &e)
@@ -192,7 +193,7 @@ void DebugCommand::handle(std::string &args, std::string &response, Server &rece
     }
     response = dbgComm.encodeResponse(); // Encode the response
     return;
-}  
+}
 
 std::vector<std::string> split_command(std::string input)
 {
@@ -207,23 +208,23 @@ std::vector<std::string> split_command(std::string input)
     return command_split;
 }
 
-
-std::string currentDateTime(){
+std::string currentDateTime()
+{
     time_t fulltime;
     struct tm *current_time;
     char time_str[50];
 
     time(&fulltime);
     current_time = gmtime(&fulltime);
-    sprintf(time_str, "%4d-%02d-%02d %02d:%02d:%02d", current_time->tm_year + 1900, 
-                        current_time->tm_mon + 1, current_time->tm_mday, 
-                        current_time->tm_hour, current_time->tm_min, current_time->tm_sec);
-
+    sprintf(time_str, "%4d-%02d-%02d %02d:%02d:%02d", current_time->tm_year + 1900,
+            current_time->tm_mon + 1, current_time->tm_mday,
+            current_time->tm_hour, current_time->tm_min, current_time->tm_sec);
 
     return time_str;
 }
 
-std::string removeSpaces(std::string &str){
+std::string removeSpaces(std::string &str)
+{
     std::string result = str;
     result.erase(std::remove(result.begin(), result.end(), ' '), result.end());
     return result;

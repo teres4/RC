@@ -40,16 +40,21 @@ public:
 
 class GamedataManager : public DatabaseManager
 {
+
+private:
+    std::string _games_dir = "GAMES/";
+    std::string _scores_dir = "PLAYERS/";
+
 public:
     GamedataManager(const std::string rootDir);
 
     bool hasOngoingGame(std::string plid);
 
-    void createGame(std::string plid, char mode, int duration, 
-                        std::string dateTime, time_t time);
+    void createGame(std::string plid, char mode, int duration,
+                    std::string dateTime, time_t time);
 
-    void createGame(std::string plid, char mode, std::string key, int duration, 
-                        std::string dateTime, time_t time);
+    void createGame(std::string plid, char mode, std::string key, int duration,
+                    std::string dateTime, time_t time);
 
     int findTopScores();
 

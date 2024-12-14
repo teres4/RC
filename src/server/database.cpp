@@ -18,13 +18,15 @@ bool DatabaseManager::closeFile(std::fstream &fileStream)
     return true;
 }
 
-
-void DatabaseManager::createFile(std::string path) {
+void DatabaseManager::createFile(std::string path)
+{
     // Extract the directory portion from the provided file path.
     std::string directory = std::filesystem::path(path).parent_path().string();
 
-    if (mkdir(directory.c_str(), 0777) == -1) { // Check if the directory portion is not empty.
-        if (errno != EEXIST) {
+    if (mkdir(directory.c_str(), 0777) == -1)
+    { // Check if the directory portion is not empty.
+        if (errno != EEXIST)
+        {
             throw std::runtime_error("Error creating file");
         }
     }
@@ -32,40 +34,43 @@ void DatabaseManager::createFile(std::string path) {
 
 void DatabaseManager::writeToFile(std::string path, std::string content)
 {
-    try {
-    createFile(path);  // Assure that the directory exists
+    try
+    {
+        createFile(path); // Assure that the directory exists
 
-    std::ofstream file(path);  // Create a file with the given name
+        std::ofstream file(path); // Create a file with the given name
 
-    ssize_t n = (ssize_t) content.length();
-    file.write(content.c_str(), n);
+        ssize_t n = (ssize_t)content.length();
+        file.write(content.c_str(), n);
 
-    file.close();  // Close the file
+        file.close(); // Close the file
     }
-    catch (...) {
-        throw std::runtime_error("Couldn't write file");
+    catch (...)
+    {
+        throw std::runtime_error("Couldn't write file: " + path + " with content: " + content);
     }
 }
 
-
 bool GamedataManager::hasOngoingGame(std::string plid)
 {
-    try {
+    try
+    {
         validate_plid(plid);
         // ongoing games are stored in the GAMES directory
         std::string path = _m_rootDir + gameFileName(plid);
         std::fstream fileStream;
         if (!openFile(fileStream, path, std::ios::in))
-        {   
+        {
             return false;
         }
         closeFile(fileStream);
         return true;
     }
 
-    catch (...){
+    catch (...)
+    {
         return false;
-    }    
+    }
 }
 
 GamedataManager::GamedataManager(const std::string rootDir)
@@ -73,48 +78,39 @@ GamedataManager::GamedataManager(const std::string rootDir)
     _m_rootDir = rootDir;
 }
 
-
-
-void GamedataManager::createGame(std::string plid, char mode, int duration, 
-                                    std::string dateTime, time_t time)
+void GamedataManager::createGame(std::string plid, char mode, int duration,
+                                 std::string dateTime, time_t time)
 {
     validate_plid(plid);
     validate_playTime(duration);
 
-    std::string path = _m_rootDir + gameFileName(plid);
-    
-    std::string code;
-    generateRandomKey(code);
+    std::string path = GAMES_DIR + gameFileName(plid);
 
-    std::string content = plid + " " + mode + " " + code + " " + 
-                std::to_string(duration) + " " + dateTime + " " +
-                std::to_string(time) + "\n";
+    std::string code = generateRandomKey();
 
+    std::string content = plid + " " + mode + " " + code + " " +
+                          std::to_string(duration) + " " + dateTime + " " +
+                          std::to_string(time) + "\n";
 
     writeToFile(path, content);
-
 }
 
-
-void GamedataManager::createGame(std::string plid, char mode, std::string key, int duration, 
-                        std::string dateTime, time_t time)
+void GamedataManager::createGame(std::string plid, char mode, std::string key, int duration,
+                                 std::string dateTime, time_t time)
 {
-    std::string path = _m_rootDir + gameFileName(plid);
-    
-    std::string content = plid + " " + mode + " " + key + " " + 
-                std::to_string(duration) + " " + dateTime + " " +
-                std::to_string(time) + "\n";
+    std::string path = _games_dir + gameFileName(plid);
 
+    std::string content = plid + " " + mode + " " + key + " " +
+                          std::to_string(duration) + " " + dateTime + " " +
+                          std::to_string(time) + "\n";
 
     writeToFile(path, content);
 }
-
-
 
 // std::string GamedataManager::hourtoString(tm time)
 // {
-//     std::string timeString = std::to_string(time.tm_hour) + ":" + 
-//                     std::to_string(time.tm_min) + ":" + 
+//     std::string timeString = std::to_string(time.tm_hour) + ":" +
+//                     std::to_string(time.tm_min) + ":" +
 //                     std::to_string(time.tm_sec);
 
 //     std::cout << "time string: " << timeString << std::endl;
@@ -123,8 +119,8 @@ void GamedataManager::createGame(std::string plid, char mode, std::string key, i
 
 // std::string GamedataManager::dateToString(tm date)
 // {
-//     std::string dateString = std::to_string(date.tm_year) + "-" + 
-//                     std::to_string(date.tm_mon) + "-" + 
+//     std::string dateString = std::to_string(date.tm_year) + "-" +
+//                     std::to_string(date.tm_mon) + "-" +
 //                     std::to_string(date.tm_mday);
 
 //     std::cout << "date string: " << dateString << std::endl;
