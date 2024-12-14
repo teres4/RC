@@ -77,12 +77,12 @@ void StartCommand::handle(std::string &args, std::string &response, Server &rece
         }
         else
         {
-            startComm._status = "OK";
-            result = "Player does not have an ongoing game";
             // need: PLID MODE TIME STARTDATE TIMESTART
             std::string current_datetime = currentDateTime();
             DB.createGame(std::to_string(startComm._plid), 'P', startComm._time,
                           current_datetime, time_t(&current_datetime));
+            startComm._status = "OK";
+            result = "Player started a game. ";              
         }
     }
     catch (ProtocolException &e)
@@ -149,7 +149,6 @@ void ScoreboardCommand::handle(std::string &args, std::string &response, Server 
 void QuitCommand::handle(std::string &args, std::string &response, Server &receiver)
 {
     // TODO check verbose
-
     GamedataManager DB = receiver._DB;
 
     QuitCommunication quitComm;
@@ -163,7 +162,8 @@ void QuitCommand::handle(std::string &args, std::string &response, Server &recei
         if (hasGame) // exit game
         {
             // EXIT THE GAME
-            quitComm._status = "OK"; // Set the status to OK if everything goes right
+            quitComm._status = "OK";  // Set the status to OK if everything goes right
+            quitComm._key = DB.getsecretKey(std::to_string(quitComm._plid));
             result = "Game has ended sucessfully";
         }
         else
@@ -183,9 +183,36 @@ void QuitCommand::handle(std::string &args, std::string &response, Server &recei
 
 void ExitCommand::handle(std::string &args, std::string &response, Server &receiver)
 {
-    //     // TODO check verbose
+    GamedataManager DB = receiver._DB;
 
-    std::cout << args << response << receiver.isverbose();
+    QuitCommunication quitComm; 
+    std::string result;
+    try {
+        StreamMessage reqMessage(args);
+        quitComm.decodeRequest(reqMessage);  // Decode the request
+
+        bool hasGame = DB.hasOngoingGame(std::to_string(quitComm._plid)); 
+        if (hasGame) // exit game
+        {
+            // EXIT THE GAME
+            quitComm._status = "OK";  // Set the status to OK if everything goes right
+            // TODO quitComm._key = 
+            result = "Game has ended sucessfully";
+        }
+        else
+        {
+            quitComm._status = "NOK";
+            result = "Player does not have an ongoing game";
+
+        }
+    
+    } catch (ProtocolException &e) {  // If the protocol is not valid, set the status to ERR
+        quitComm._status = "ERR";
+        result = "Protocol Error";
+    }
+    response = quitComm.encodeResponse();  // Encode the response
+    // DELETE ALL INFO FROM PLAYER
+    return;
 }
 
 void DebugCommand::handle(std::string &args, std::string &response, Server &receiver)

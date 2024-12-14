@@ -129,9 +129,25 @@ std::string GamedataManager::getsecretKey(std::string plid)
 
     key = getiword(line, 3);
 
-    printf("key: %s\n", key.c_str());
-    return key;
+
+    return formatSecretKey(key);
 }
+
+
+std::string GamedataManager::formatSecretKey(std::string key){
+    std::string result;
+
+    for (size_t i = 0; i < key.length(); ++i) {
+        result += key[i];
+        if (i != key.length() - 1) { // Add space if not the last character
+            result += ' ';
+        }
+    }
+
+    return result;
+
+}
+
 
 std::string GamedataManager::getiword(std::string line, int n)
 {
