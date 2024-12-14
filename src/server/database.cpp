@@ -159,7 +159,7 @@ std::string GamedataManager::getsecretKey(std::string plid)
 
     key = getiword(line, 3);
 
-    return formatSecretKey(key);
+    return key;
 }
 
 std::string GamedataManager::formatSecretKey(std::string key)
@@ -265,7 +265,7 @@ long int GamedataManager::timeSinceStart(std::string plid)
 
     time_t now = time(NULL);
 
-    return starttime - (long int)now;
+    return (long int)now - starttime;
 }
 
 void GamedataManager::registerTry(std::string plid, std::string key, int B, int W)

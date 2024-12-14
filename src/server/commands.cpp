@@ -79,8 +79,9 @@ void StartCommand::handle(std::string &args, std::string &response, Server &rece
         {
             // need: PLID MODE TIME STARTDATE TIMESTART
             std::string current_datetime = currentDateTime();
+            time_t time_s = time(NULL);
             DB.createGame(std::to_string(startComm._plid), 'P', startComm._time,
-                          current_datetime, time_t(&current_datetime));
+                          current_datetime, time_s);
             startComm._status = "OK";
             result = "Player started a game. ";
         }

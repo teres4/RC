@@ -225,5 +225,5 @@ int white(const std::string key, const std::string guess)
             }
         }
     }
-    return count;
+    return count - black(key, guess);
 }
