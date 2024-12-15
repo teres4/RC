@@ -371,6 +371,8 @@ std::string GamedataManager::sendTrials(std::string plid)
 {
     std::string path = GAMES_DIR + gameFileName(plid);
 
+    // TODO: everything
+
     return path;
 }
 
@@ -421,4 +423,28 @@ bool GamedataManager::isTimeout(std::string plid)
     long int now = timeSinceStart(plid);
 
     return now > time;
+}
+
+void GamedataManager::formatScoreboard(SCORELIST *list)
+{
+
+    std::ofstream scfile("scoreboard", std::ios::binary);
+    if (!scfile.is_open())
+    {
+        throw std::runtime_error("Error opening scoreboard file");
+    }
+
+    // PLID secretkey NT
+
+    int i = 0;
+    while (i < 10 && list->score[i] != 0)
+    {
+        std::string colorcode(list->color_code[i]);
+        std::string plid(list->PLID[i]);
+
+        std::string content = std::to_string(list->score[i]) + " " + plid + " " + colorcode + " " + std::to_string(list->ntries[i]) + "\n";
+
+        scfile << content;
+        i++;
+    }
 }

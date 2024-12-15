@@ -47,4 +47,17 @@ std::string playerDirectory(std::string PLID);
 int black(const std::string key, const std::string secretKey);
 int white(const std::string key, const std::string secretKey);
 
+typedef struct
+{
+    int score[10];
+    char PLID[10][7];
+    char color_code[10][5];
+    int ntries[10];
+    int mode[10];
+} SCORELIST;
+
+int FindTopScores(SCORELIST *list);
+
+int findLastGame(std::string plid, std::string fname);
+
 #endif

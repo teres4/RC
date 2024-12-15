@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <unordered_map>
+#include <dirent.h>
 
 bool is_exiting = false;
 
@@ -297,4 +298,101 @@ int white(const std::string key, const std::string guess)
 std::string playerDirectory(std::string PLID)
 {
     return PLID;
+}
+
+int FindTopScores(SCORELIST *list)
+{
+    struct dirent **filelist;
+    int nentries, ifile;
+    char fname[300];
+    FILE *fp;
+    char mode[8];
+
+    // Scan the directory and sort files alphabetically
+    nentries = scandir(SCORES_DIR, &filelist, 0, alphasort);
+    // If no entries are found, return 0
+    if (nentries <= 0)
+        return 0;
+
+    else
+    {
+        ifile = 0;
+
+        // Iterate through the entries from last to first
+        while (nentries--)
+        {
+            // Check if the entry is not a hidden file and we haven't reached the top 10
+            if (filelist[nentries]->d_name[0] != '.' && ifile < 10)
+            {
+                // Construct the file path
+                sprintf(fname, "SCORES/%s", filelist[nentries]->d_name);
+
+                // Open the file for reading
+                fp = fopen(fname, "r");
+                if (fp != NULL)
+                {
+                    // Read data from the file
+                    if (!fscanf(fp, "%d %s %s %d %s",
+                                &list->score[ifile],
+                                list->PLID[ifile],
+                                list->color_code[ifile],
+                                &list->ntries[ifile],
+                                mode))
+                    {
+                        fclose(fp); // error
+                        continue;
+                    }
+
+                    // Parse the game mode
+                    if (!strcmp(mode, "PLAY"))
+                        list->mode[ifile] = MODEPLAY;
+                    if (!strcmp(mode, "DEBUG"))
+                        list->mode[ifile] = MODEDEBUG;
+
+                    // Close the file
+                    fclose(fp);
+                    ++ifile;
+                }
+            }
+            // Free the memory allocated for the entry
+            free(filelist[nentries]);
+        }
+        // Free the file list
+        free(filelist);
+    }
+
+    // Update the number of scores in the list
+    return ifile;
+}
+
+int FindLastGame(int PLID, char *fname)
+{
+    struct dirent **filelist;
+    int nentries, found;
+    char dirname[20];
+
+    sprintf(dirname, "GAMES/%d/", PLID);
+
+    nentries = scandir(dirname, &filelist, 0, alphasort);
+    found = 0;
+
+    if (nentries <= 0)
+    {
+        return 0;
+    }
+    else
+    {
+        while (nentries--)
+        {
+            if (filelist[nentries]->d_name[0] != '.' && !found)
+            {
+                sprintf(fname, "GAMES/%d/%s", PLID, filelist[nentries]->d_name);
+                found = 1;
+            }
+            free(filelist[nentries]);
+        }
+        free(filelist);
+    }
+
+    return found;
 }

@@ -209,6 +209,7 @@ void ShowTrialsCommand::handle(std::string &args, std::string &response, Server 
         if (hasGame)
         {
             // send text with current game summary
+
             DB.sendTrials(std::to_string(stComm._plid));
             stComm._status = "ACT";
             result = "Player has an ongoing game";
@@ -217,7 +218,7 @@ void ShowTrialsCommand::handle(std::string &args, std::string &response, Server 
         {
             // send text with most recent game
             stComm._status = "FIN";
-            result = "Player started a game. ";
+            // TODO: everyting here
         }
     }
     catch (ProtocolException &e)
@@ -233,6 +234,20 @@ void ScoreboardCommand::handle(std::string &args, std::string &response, Server 
 {
     //     // TODO check verbose
     std::cout << args << response << receiver.isverbose();
+
+    SCORELIST list;
+    int nscores = FindTopScores(&list);
+
+    ScoreboardCommunication sbComm;
+
+    if (!nscores)
+    {
+        sbComm._status = "EMPTY";
+    }
+    else
+    {
+        sbComm._status = "OK";
+    }
 }
 
 void QuitCommand::handle(std::string &args, std::string &response, Server &receiver)

@@ -89,6 +89,8 @@ public:
     void gameTimeout(std::string plid);
     bool isTimeout(std::string plid);
     void makeScoreFile(std::string plid);
+
+    void formatScoreboard(SCORELIST *list);
 };
 
 #endif

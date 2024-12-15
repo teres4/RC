@@ -34,4 +34,7 @@
 #define QUIT_CODE "Q"
 #define TIMEOUT_CODE "T"
 
+#define MODEPLAY 0
+#define MODEDEBUG 1
+
 #endif
