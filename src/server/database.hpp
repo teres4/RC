@@ -77,6 +77,9 @@ public:
     long int timeSinceStart(std::string plid);
 
     std::string getiword(std::string line, int n);
+
+    std::string sendTrials(std::string plid);
+
 };
 
 #endif

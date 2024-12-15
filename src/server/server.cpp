@@ -15,6 +15,8 @@ void UDPServer(UdpServer &udpServer, CommandManager &manager, Server &server);
 
 void TCPServer(TcpServer &tcpServer, CommandManager &manager, Server &server);
 
+extern bool is_exiting;
+
 int main(int argc, char *argv[])
 {
     setup_signal_handlers();
@@ -26,33 +28,36 @@ int main(int argc, char *argv[])
     CommandManager commandManager; // create a new command manager
     commandManager.registerAllCommands();
 
-    // server.initializeServers();
-    try
-    {
-        UdpServer udpServer(server.getPort());
-        TcpServer tcpServer(server.getPort());
 
-        int pid = fork();
-
-        if (pid < 0) // fork failed
-            exit(1);
-
-        else if (pid == 0) // child process
+    while (!is_exiting){
+        try
         {
-            tcpServer.closeServer();
-            // udp
-            UDPServer(udpServer, commandManager, server); // start udp server
+            UdpServer udpServer(server.getPort());
+            TcpServer tcpServer(server.getPort());
+
+            int pid = fork();
+
+            if (pid < 0) // fork failed
+                exit(1);
+
+            else if (pid == 0) // child process
+            {
+                tcpServer.closeServer();
+                // udp
+                UDPServer(udpServer, commandManager, server); // start udp server
+            }
+            else // parent process
+            {
+                udpServer.closeServer();
+                TCPServer(tcpServer, commandManager, server);
+            }
         }
-        else // parent process
+        catch (SocketException &e)
         {
-            udpServer.closeServer();
-            TCPServer(tcpServer, commandManager, server);
+            std::cerr << "Error: " << e.what() << std::endl;
         }
     }
-    catch (SocketException &e)
-    {
-        std::cerr << "Error: " << e.what() << std::endl;
-    }
+    
 
     return 0;
 }
@@ -108,7 +113,7 @@ void UDPServer(UdpServer &udpServer, CommandManager &manager, Server &server)
 {
     bool verbose = server.isverbose();
 
-    while (true)
+    while (!is_exiting)
     {
         std::string message = udpServer.receive();
         std::cout << "in udpserver received: " << message;

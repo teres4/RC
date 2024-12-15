@@ -2,7 +2,7 @@
 #include "player.hpp"
 #include "commands.hpp"
 
-extern bool exit_command;
+extern bool is_exiting;
 
 int main(int argc, char *argv[])
 {
@@ -15,12 +15,35 @@ int main(int argc, char *argv[])
     // player info
     // setup sockets
 
-    while (!std::cin.eof() && !exit_command)
+    while (!std::cin.eof() && !is_exiting)
     {
         commandManager.waitForCommand(client);
     }
 
-    return 0;
+    if (client._player.activePlayer()){
+        std::cout << "Player has an active game, will attempt to quit it." << std::endl;
+        try {
+            QuitCommunication quitComm;
+            quitComm._plid = client._player.getPlid();
+
+            client.processRequest(quitComm); // Send the request to the server, receiving its response
+
+            if (quitComm._status == "OK")
+            {
+                std::cout << "Game has ended." << std::endl;
+                std::cout << "The secret key: " << quitComm._key << std::endl;
+                client._player.finishGame();
+            }
+            else
+                std::cerr << "Failed to quit game. Exiting anyway." << std::endl;
+        } 
+        catch (...){
+            std::cerr << "Encountered unrecoverable error while running the "
+                            "application. Shutting down..." << std::endl;
+            return EXIT_FAILURE;
+        }
+    } 
+    return EXIT_SUCCESS;
 }
 
 

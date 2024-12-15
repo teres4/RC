@@ -2,7 +2,7 @@
 #include "player.hpp"
 #include <iostream>
 
-bool exit_command = false; // flag to indicate whether the application is exiting
+extern bool is_exiting; // flag to indicate whether the application is exiting
 
 void CommandManager::addCommand(std::shared_ptr<CommandHandler> command)
 {
@@ -257,7 +257,7 @@ void ExitCommand::handle(std::string args, Client &state)
 
   }
   // make the player programn finish
-  exit_command = true;
+  is_exiting = true;
   std::cout << "Exiting program " << std::endl;
 }
 

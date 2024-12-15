@@ -203,11 +203,8 @@ std::string GamedataManager::getsecretKey(std::string plid)
     std::string key;
 
     // extract 3rd word from the file
-
     std::fstream fileStream;
-    fileStream.open(path, std::ios::in);
-    if (!fileStream.is_open())
-    {
+    if (!openFile(fileStream, path, std::ios::in)){
         throw std::runtime_error("Error opening file");
     }
 
@@ -253,8 +250,7 @@ bool GamedataManager::isRepeatedTrial(std::string plid, std::string key)
     std::string line;
 
     std::fstream fileStream;
-    fileStream.open(path, std::ios::in);
-    if (!fileStream.is_open())
+    if (!openFile(fileStream, path, std::ios::in))
     {
         throw std::runtime_error("Error opening file");
     }
@@ -278,9 +274,7 @@ int GamedataManager::expectedNT(std::string PLID)
     std::string line;
 
     std::fstream fileStream;
-    fileStream.open(path, std::ios::in);
-
-    if (!fileStream.is_open())
+    if (!openFile(fileStream, path, std::ios::in))
     {
         throw std::runtime_error("Error opening file");
     }
@@ -302,8 +296,7 @@ long int GamedataManager::getOngoingGameTime(std::string plid)
     std::string line;
 
     std::fstream fileStream;
-    fileStream.open(path, std::ios::in);
-    if (!fileStream.is_open())
+    if (!openFile(fileStream, path, std::ios::in))
     {
         throw std::runtime_error("Error opening file");
     }
@@ -332,22 +325,10 @@ void GamedataManager::registerTry(std::string plid, std::string key, int B, int 
     appendToFile(path, content);
 }
 
-// std::string GamedataManager::hourtoString(tm time)
-// {
-//     std::string timeString = std::to_string(time.tm_hour) + ":" +
-//                     std::to_string(time.tm_min) + ":" +
-//                     std::to_string(time.tm_sec);
 
-//     std::cout << "time string: " << timeString << std::endl;
-//     return timeString;
-// }
+std::string GamedataManager::sendTrials(std::string plid){
+    std::string path = GAMES_DIR + gameFileName(plid);
 
-// std::string GamedataManager::dateToString(tm date)
-// {
-//     std::string dateString = std::to_string(date.tm_year) + "-" +
-//                     std::to_string(date.tm_mon) + "-" +
-//                     std::to_string(date.tm_mday);
+    return path;
 
-//     std::cout << "date string: " << dateString << std::endl;
-//     return dateString;
-// }
+}

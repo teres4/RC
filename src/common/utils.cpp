@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-int is_exiting = 0;
+bool is_exiting = false;
 
 bool is_numeric(std::string &str)
 {

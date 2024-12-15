@@ -111,7 +111,7 @@ int ProtocolCommunication::readInt(MessageSource &message)
     std::string string = readString(message);
 
     // Check if string only contains digits
-    if (is_not_numeric(string) == true)
+    if (is_not_numeric(string))
     {
         throw ProtocolViolationException();
     }
@@ -124,7 +124,7 @@ int ProtocolCommunication::readInt(MessageSource &message, size_t size)
     std::string string = readString(message, size);
 
     // Check if string only contains digits
-    if (is_not_numeric(string) == true)
+    if (is_not_numeric(string))
     {
         throw ProtocolViolationException();
     }
@@ -386,7 +386,7 @@ std::string QuitCommunication::encodeResponse()
 
     writeString(message, "RQT"); // write identifier "RQT"
     writeSpace(message);
-    writeString(message, _status); // TODO: send awnser if status is OK
+    writeString(message, _status);
     if (_status == "OK")
     {
         writeSpace(message);
