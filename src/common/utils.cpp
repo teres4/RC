@@ -132,6 +132,12 @@ void validate_key(std::string key)
 
 std::string get_color_key(std::string args)
 {
+    // cant end with a space
+    if (args[args.length() - 1] == ' ')
+    {
+        // take the space out
+        args = args.substr(0, args.length() - 1);
+    }
     return args;
 }
 

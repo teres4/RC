@@ -127,6 +127,7 @@ void TryCommand::handle(std::string &args, std::string &response, Server &receiv
                 DB.gameTimeout(std::to_string(tryComm._plid));
                 tryComm._status = "ETM";
                 /*reveal secret key*/
+                tryComm._key = DB.getsecretKey(std::to_string(tryComm._plid));
             }
             else if (DB.isRepeatedTrial(std::to_string(tryComm._plid),
                                         removeSpaces(tryComm._key)))
@@ -162,6 +163,7 @@ void TryCommand::handle(std::string &args, std::string &response, Server &receiv
                         DB.gameLost(std::to_string(tryComm._plid));
                         tryComm._status = "ENT";
                         /*reveal secret key*/
+                        tryComm._key = DB.getsecretKey(std::to_string(tryComm._plid));
                     }
                 }
                 else if (tryComm._nT == expectedNT - 1)
