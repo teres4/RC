@@ -99,9 +99,6 @@ void StartCommand::handle(std::string &args, std::string &response, Server &rece
 void TryCommand::handle(std::string &args, std::string &response, Server &receiver)
 {
     //     // TODO check verbose
-
-    std::cout << args << response << receiver.isverbose();
-
     GamedataManager DB = receiver._DB;
 
     // TRY PLID C1 C2 C3 C4 nT
@@ -234,7 +231,8 @@ void QuitCommand::handle(std::string &args, std::string &response, Server &recei
         bool hasGame = DB.hasOngoingGame(std::to_string(quitComm._plid));
         if (hasGame) // exit game
         {
-            quitComm._key = DB.getsecretKey(std::to_string(quitComm._plid));
+            std::string key = DB.getsecretKey(std::to_string(quitComm._plid));
+            quitComm._key = DB.formatSecretKey(key);
             DB.quitGame(std::to_string(quitComm._plid));
 
             quitComm._status = "OK"; // Set the status to OK if everything goes right
@@ -270,7 +268,8 @@ void ExitCommand::handle(std::string &args, std::string &response, Server &recei
         bool hasGame = DB.hasOngoingGame(std::to_string(exitComm._plid));
         if (hasGame) // exit game
         {
-            exitComm._key = DB.getsecretKey(std::to_string(exitComm._plid));
+            std::string key = DB.getsecretKey(std::to_string(exitComm._plid));
+            exitComm._key = DB.formatSecretKey(key);
             DB.quitGame(std::to_string(exitComm._plid));
 
             exitComm._status = "OK"; // Set the status to OK if everything goes right
