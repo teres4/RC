@@ -64,6 +64,8 @@ public:
 
     int findLastGame(std::string plid, std::string fname);
 
+    void GameOver(std::string plid, std::string code);
+
     std::string hourtoString(tm time);
     std::string dateToString(tm time);
     std::string getsecretKey(std::string plid);
@@ -74,12 +76,17 @@ public:
     void registerTry(std::string plid, std::string key, int B, int W);
 
     long int getOngoingGameTime(std::string plid);
+    long int getOngoingGameTimeLimit(std::string plid);
     long int timeSinceStart(std::string plid);
 
     std::string getiword(std::string line, int n);
 
     std::string sendTrials(std::string plid);
 
+    void gameWon(std::string plid);
+    void gameLost(std::string plid);
+    void gameTimeout(std::string plid);
+    bool isTimeout(std::string plid);
 };
 
 #endif

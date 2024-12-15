@@ -2,6 +2,7 @@
 #include "protocol.hpp"
 
 #include <iostream>
+#include <unordered_map>
 
 bool is_exiting = false;
 
@@ -146,13 +147,15 @@ std::string generateRandomKey()
 
     // Seed the random number generator with the current time (once per program run)
     static bool seeded = false;
-    if (!seeded) {
-        std::srand((unsigned) std::time(nullptr));
+    if (!seeded)
+    {
+        std::srand((unsigned)std::time(nullptr));
         seeded = true;
     }
 
-    for (int i = 0; i < 4; i++) {
-        key += colors[(size_t) std::rand() % colors.size()];
+    for (int i = 0; i < 4; i++)
+    {
+        key += colors[(size_t)std::rand() % colors.size()];
     }
     validate_key(key);
     return key;
@@ -162,7 +165,6 @@ int get_playtime(std::string playtime)
 {
     return std::stoi(playtime);
 }
-
 
 std::string currentDateTime()
 {
@@ -178,9 +180,6 @@ std::string currentDateTime()
 
     return time_str;
 }
-
-
-
 
 void setup_signal_handlers()
 {
@@ -238,19 +237,40 @@ int black(const std::string key, const std::string guess)
 
 int white(const std::string key, const std::string guess)
 {
-    int count = 0;
+    int whiteCount = 0;
+
+    // store counts of colors that are unmatched in correct position
+    std::unordered_map<char, int> secretFreq, guessFreq;
+
+    // Loop through to first count the exact matches for black pieces
     for (std::string::size_type i = 0; i < key.size(); i++)
     {
-        for (std::string::size_type j = 0; j < key.size(); j++)
+        if (key[i] == guess[i])
         {
-            if (key[i] == guess[j])
-            {
-                count++;
-                break;
-            }
+            // black piece
+            continue;
+        }
+        else
+        {
+            // record the unmatched colors
+            secretFreq[key[i]]++;
+            guessFreq[guess[i]]++;
         }
     }
-    return count - black(key, guess);
+
+    // Calculate white pieces by comparing the frequencies
+    for (const auto &entry : guessFreq)
+    {
+        char color = entry.first;
+        int guessCount = entry.second;
+        if (secretFreq.find(color) != secretFreq.end())
+        {
+            // The color exists in the secret, so add the minimum count of that color in guess and secret
+            whiteCount += std::min(guessCount, secretFreq[color]);
+        }
+    }
+
+    return whiteCount;
 }
 
 std::string playerDirectory(std::string PLID)

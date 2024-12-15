@@ -20,20 +20,20 @@ bool DatabaseManager::closeFile(std::fstream &fileStream)
     return true;
 }
 
-
 void DatabaseManager::createDir(std::string path)
 {
-    try {
+    try
+    {
         // Check if the directory already exists
         if (!std::filesystem::exists(path))
             // Create the directory
             std::filesystem::create_directory(path);
-
-    } catch (std::exception& e) {
+    }
+    catch (std::exception &e)
+    {
         std::cerr << "Error: " << e.what() << std::endl;
     }
 }
-
 
 void DatabaseManager::createFile(std::string path)
 {
@@ -76,7 +76,6 @@ void DatabaseManager::deleteFile(std::string path)
     }
 }
 
-
 std::string DatabaseManager::renameFile(std::string code)
 {
     // yyyy-mm-dd hh-mm-ss
@@ -84,18 +83,17 @@ std::string DatabaseManager::renameFile(std::string code)
 
     std::string filename;
 
-    for (char c : timedate){
+    for (char c : timedate)
+    {
         if (c == '-')
             continue;
         else if (c == ' ')
             filename += '_';
         else
             filename += c;
-
     }
     filename += '_' + code + ".txt";
     return filename;
-
 }
 
 void DatabaseManager::appendToFile(std::string path, std::string content)
@@ -134,14 +132,15 @@ bool GamedataManager::hasOngoingGame(std::string plid)
     }
 }
 
-void GamedataManager::quitGame(std::string plid){
-    // create directory with plid and move file 
+void GamedataManager::GameOver(std::string plid, std::string code)
+{
+    // create directory with plid and move file
     // delete file from gamedata/games
 
     std::string src_path = GAMES_DIR + gameFileName(plid);
     std::string dest_path = GAMES_DIR + playerDirectory(plid);
-    
-    std::string newFilename = renameFile(QUIT_CODE);
+
+    std::string newFilename = renameFile(code);
 
     try
     {
@@ -151,13 +150,11 @@ void GamedataManager::quitGame(std::string plid){
 
         // Move the file to the folder
         std::filesystem::rename(src_path, destPath);
-
     }
-    catch (std::exception& e)
+    catch (std::exception &e)
     {
         std::cerr << "Error: " << e.what() << std::endl;
     }
-    
 }
 
 GamedataManager::GamedataManager(const std::string rootDir)
@@ -204,7 +201,8 @@ std::string GamedataManager::getsecretKey(std::string plid)
 
     // extract 3rd word from the file
     std::fstream fileStream;
-    if (!openFile(fileStream, path, std::ios::in)){
+    if (!openFile(fileStream, path, std::ios::in))
+    {
         throw std::runtime_error("Error opening file");
     }
 
@@ -308,6 +306,24 @@ long int GamedataManager::getOngoingGameTime(std::string plid)
     return std::stol(word);
 }
 
+long int GamedataManager::getOngoingGameTimeLimit(std::string plid)
+{
+    std::string path = GAMES_DIR + gameFileName(plid);
+    std::string line;
+
+    std::fstream fileStream;
+    if (!openFile(fileStream, path, std::ios::in))
+    {
+        throw std::runtime_error("Error opening file");
+    }
+
+    std::getline(fileStream, line);
+    std::string word = getiword(line, 4); // get the time()
+    std::cout << "time: " << word << std::endl;
+
+    return std::stol(word);
+}
+
 long int GamedataManager::timeSinceStart(std::string plid)
 {
     std::string path = GAMES_DIR + gameFileName(plid);
@@ -325,10 +341,37 @@ void GamedataManager::registerTry(std::string plid, std::string key, int B, int 
     appendToFile(path, content);
 }
 
-
-std::string GamedataManager::sendTrials(std::string plid){
+std::string GamedataManager::sendTrials(std::string plid)
+{
     std::string path = GAMES_DIR + gameFileName(plid);
 
     return path;
+}
 
+void GamedataManager::gameWon(std::string plid)
+{
+    GameOver(plid, WIN_CODE);
+}
+
+void GamedataManager::gameLost(std::string plid)
+{
+    GameOver(plid, FAIL_CODE);
+}
+
+void GamedataManager::gameTimeout(std::string plid)
+{
+    GameOver(plid, TIMEOUT_CODE);
+}
+
+void GamedataManager::quitGame(std::string plid)
+{
+    GameOver(plid, QUIT_CODE);
+}
+
+bool GamedataManager::isTimeout(std::string plid)
+{
+    long int time = getOngoingGameTimeLimit(plid);
+    long int now = timeSinceStart(plid);
+
+    return now > time;
 }

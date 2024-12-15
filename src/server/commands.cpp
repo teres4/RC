@@ -95,7 +95,6 @@ void StartCommand::handle(std::string &args, std::string &response, Server &rece
     return;
 }
 
-
 void TryCommand::handle(std::string &args, std::string &response, Server &receiver)
 {
     //     // TODO check verbose
@@ -123,8 +122,14 @@ void TryCommand::handle(std::string &args, std::string &response, Server &receiv
         }
         else
         {
-            if (DB.isRepeatedTrial(std::to_string(tryComm._plid), 
-                                    removeSpaces(tryComm._key)))
+            if (DB.isTimeout(std::to_string(tryComm._plid)))
+            {
+                DB.gameTimeout(std::to_string(tryComm._plid));
+                tryComm._status = "ETM";
+                /*reveal secret key*/
+            }
+            else if (DB.isRepeatedTrial(std::to_string(tryComm._plid),
+                                        removeSpaces(tryComm._key)))
             {
                 tryComm._status = "DUP";
                 result = "Repeated trial";
@@ -137,25 +142,32 @@ void TryCommand::handle(std::string &args, std::string &response, Server &receiv
                 {
                     tryComm._status = "OK";
 
-                    tryComm._nB = black(removeSpaces(tryComm._key), 
-                                    DB.getsecretKey(std::to_string(tryComm._plid)));
-                    tryComm._nW = white(removeSpaces(tryComm._key), 
-                                    DB.getsecretKey(std::to_string(tryComm._plid)));
+                    tryComm._nB = black(removeSpaces(tryComm._key),
+                                        DB.getsecretKey(std::to_string(tryComm._plid)));
+                    tryComm._nW = white(removeSpaces(tryComm._key),
+                                        DB.getsecretKey(std::to_string(tryComm._plid)));
+
+                    DB.registerTry(std::to_string(tryComm._plid),
+                                   removeSpaces(tryComm._key), tryComm._nB, tryComm._nW);
                     if (tryComm._nB == 4)
                     {
                         // end game
                         // player wins
+                        DB.gameWon(std::to_string(tryComm._plid));
                     }
-                    else
+                    else if (tryComm._nT == 8)
                     {
-                        DB.registerTry(std::to_string(tryComm._plid), 
-                                        removeSpaces(tryComm._key), tryComm._nB, tryComm._nW);
+                        // end game
+                        // player loses
+                        DB.gameLost(std::to_string(tryComm._plid));
+                        tryComm._status = "ENT";
+                        /*reveal secret key*/
                     }
                 }
                 else if (tryComm._nT == expectedNT - 1)
                 {
-                    if (DB.isRepeatedTrial(std::to_string(tryComm._plid), 
-                                            removeSpaces(tryComm._key)))
+                    if (DB.isRepeatedTrial(std::to_string(tryComm._plid),
+                                           removeSpaces(tryComm._key)))
                     {
                         /*nothing*/
                     }
@@ -203,7 +215,7 @@ void ShowTrialsCommand::handle(std::string &args, std::string &response, Server 
         {
             // send text with most recent game
             stComm._status = "FIN";
-            result = "Player started a game. ";              
+            result = "Player started a game. ";
         }
     }
     catch (ProtocolException &e)
@@ -213,7 +225,6 @@ void ShowTrialsCommand::handle(std::string &args, std::string &response, Server 
     }
     response = stComm.encodeResponse(); // Encode the response
     return;
-    
 }
 
 void ScoreboardCommand::handle(std::string &args, std::string &response, Server &receiver)
@@ -296,7 +307,6 @@ void ExitCommand::handle(std::string &args, std::string &response, Server &recei
     return;
 }
 
-
 void DebugCommand::handle(std::string &args, std::string &response, Server &receiver)
 {
     // TODO check verbose
@@ -323,8 +333,8 @@ void DebugCommand::handle(std::string &args, std::string &response, Server &rece
             result = "Player does not have an ongoing game";
 
             std::string current_datetime = currentDateTime();
-            DB.createGame(std::to_string(dbgComm._plid), 'D', removeSpaces(dbgComm._key), 
-                            dbgComm._time, current_datetime, time_t(&current_datetime));
+            DB.createGame(std::to_string(dbgComm._plid), 'D', removeSpaces(dbgComm._key),
+                          dbgComm._time, current_datetime, time_t(&current_datetime));
         }
     }
     catch (ProtocolException &e)
@@ -348,7 +358,6 @@ std::vector<std::string> split_command(std::string input)
 
     return command_split;
 }
-
 
 std::string removeSpaces(std::string &str)
 {
