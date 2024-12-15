@@ -34,9 +34,8 @@ int get_playtime(std::string playtime);
 std::string get_color_key(std::string args);
 std::string get_color_key(std::vector<std::string> args);
 
-
 std::string currentDateTime();
-
+std::string currentDateTimeFN();
 
 void setup_signal_handlers();
 void terminate_signal_handler(int sig);

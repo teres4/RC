@@ -187,6 +187,21 @@ std::string currentDateTime()
     return time_str;
 }
 
+std::string currentDateTimeFN()
+{
+    time_t fulltime;
+    struct tm *current_time;
+    char time_str[50];
+
+    time(&fulltime);
+    current_time = gmtime(&fulltime);
+    sprintf(time_str, "%4d%02d%02d_%02d%02d%02d", current_time->tm_year + 1900,
+            current_time->tm_mon + 1, current_time->tm_mday,
+            current_time->tm_hour, current_time->tm_min, current_time->tm_sec);
+
+    return time_str;
+}
+
 void setup_signal_handlers()
 {
     // set SIGINT/SIGTERM handler to close server gracefully

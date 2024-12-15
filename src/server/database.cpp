@@ -79,7 +79,7 @@ void DatabaseManager::deleteFile(std::string path)
 std::string DatabaseManager::renameFile(std::string code)
 {
     // yyyy-mm-dd hh-mm-ss
-    std::string timedate = currentDateTime();
+    std::string timedate = currentDateTimeFN();
 
     std::string filename;
 
@@ -324,6 +324,32 @@ long int GamedataManager::getOngoingGameTimeLimit(std::string plid)
     return std::stol(word);
 }
 
+std::string GamedataManager::ongoingGameMode(std::string plid)
+{
+    std::string path = GAMES_DIR + gameFileName(plid);
+    std::string line;
+
+    std::fstream fileStream;
+    if (!openFile(fileStream, path, std::ios::in))
+    {
+        throw std::runtime_error("Error opening file");
+    }
+
+    std::getline(fileStream, line);
+    std::string word = getiword(line, 2);
+
+    if (word == "P")
+    {
+        return "PLAY";
+    }
+    else
+    {
+        return "DEBUG";
+    }
+
+    return word;
+}
+
 long int GamedataManager::timeSinceStart(std::string plid)
 {
     std::string path = GAMES_DIR + gameFileName(plid);
@@ -348,8 +374,29 @@ std::string GamedataManager::sendTrials(std::string plid)
     return path;
 }
 
+void GamedataManager::makeScoreFile(std::string plid)
+{
+    // score PLID DDMMYYYY HHMMSS.txt
+    // format: SSS, add zeros to the left
+    int nT = expectedNT(plid) - 1;
+    std::string score = std::to_string(rand() % 20 + (8 - nT) * 10); // better score with lower nT
+    while (score.length() < 3)
+    {
+        score = "0" + score;
+    }
+    std::string timedate = currentDateTimeFN();
+    std::string filename = score + "_" + plid + "_" + timedate + ".txt";
+
+    std::string path = SCORES_DIR + filename;
+    std::string content = score + " " + plid + " " + getsecretKey(plid) + " " + std::to_string(nT) + " " + ongoingGameMode(plid) + " " + "\n";
+
+    std::cout << "path: " << path << std::endl;
+    writeToFile(path, content);
+}
+
 void GamedataManager::gameWon(std::string plid)
 {
+    makeScoreFile(plid);
     GameOver(plid, WIN_CODE);
 }
 

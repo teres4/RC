@@ -72,6 +72,7 @@ public:
     std::string formatSecretKey(std::string key);
     bool isRepeatedTrial(std::string plid, std::string key);
     int expectedNT(std::string PLID);
+    std::string ongoingGameMode(std::string plid);
 
     void registerTry(std::string plid, std::string key, int B, int W);
 
@@ -87,6 +88,7 @@ public:
     void gameLost(std::string plid);
     void gameTimeout(std::string plid);
     bool isTimeout(std::string plid);
+    void makeScoreFile(std::string plid);
 };
 
 #endif

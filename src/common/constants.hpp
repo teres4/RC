@@ -34,5 +34,4 @@
 #define QUIT_CODE "Q"
 #define TIMEOUT_CODE "T"
 
-
 #endif
