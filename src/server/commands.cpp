@@ -95,6 +95,7 @@ void StartCommand::handle(std::string &args, std::string &response, Server &rece
     return;
 }
 
+
 void TryCommand::handle(std::string &args, std::string &response, Server &receiver)
 {
     //     // TODO check verbose
@@ -176,9 +177,40 @@ void TryCommand::handle(std::string &args, std::string &response, Server &receiv
 
 void ShowTrialsCommand::handle(std::string &args, std::string &response, Server &receiver)
 {
-    //     // TODO check verbose
+    // TODO check verbose
 
-    std::cout << args << response << receiver.isverbose();
+    GamedataManager DB = receiver._DB;
+
+    ShowTrialsCommunication stComm;
+    std::string result;
+
+    try
+    {
+        StreamMessage reqMessage(args);
+        stComm.decodeRequest(reqMessage); // Decode the request
+
+        // check database if player has an ongoing game
+        bool hasGame = DB.hasOngoingGame(std::to_string(stComm._plid));
+        if (hasGame)
+        {
+            stComm._status = "ACT";
+            // send text with game summary
+            result = "Player has an ongoing game";
+        }
+        else
+        {
+            stComm._status = "FIN";
+            result = "Player started a game. ";              
+        }
+    }
+    catch (ProtocolException &e)
+    { // If the protocol is not valid, status = "ERR"
+        stComm._status = "ERR";
+        result = "Protocol Error";
+    }
+    response = stComm.encodeResponse(); // Encode the response
+    return;
+    
 }
 
 void ScoreboardCommand::handle(std::string &args, std::string &response, Server &receiver)
@@ -225,6 +257,7 @@ void QuitCommand::handle(std::string &args, std::string &response, Server &recei
 
 void ExitCommand::handle(std::string &args, std::string &response, Server &receiver)
 {
+    // TODO check verbose
     GamedataManager DB = receiver._DB;
 
     QuitCommunication exitComm;
@@ -257,6 +290,7 @@ void ExitCommand::handle(std::string &args, std::string &response, Server &recei
     response = exitComm.encodeResponse(); // Encode the response
     return;
 }
+
 
 void DebugCommand::handle(std::string &args, std::string &response, Server &receiver)
 {
@@ -310,20 +344,6 @@ std::vector<std::string> split_command(std::string input)
     return command_split;
 }
 
-std::string currentDateTime()
-{
-    time_t fulltime;
-    struct tm *current_time;
-    char time_str[50];
-
-    time(&fulltime);
-    current_time = gmtime(&fulltime);
-    sprintf(time_str, "%4d-%02d-%02d %02d:%02d:%02d", current_time->tm_year + 1900,
-            current_time->tm_mon + 1, current_time->tm_mday,
-            current_time->tm_hour, current_time->tm_min, current_time->tm_sec);
-
-    return time_str;
-}
 
 std::string removeSpaces(std::string &str)
 {

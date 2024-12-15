@@ -134,7 +134,7 @@ void TcpServer::send(std::string &message)
     while (total_sent < message_size)
     {
         size_t bytes_to_send = std::min(message_size - total_sent, static_cast<size_t>(BUFFER_SIZE));
-        ssize_t bytes_sent = write(_fd, message.data() + total_sent, bytes_to_send);
+        ssize_t bytes_sent = write(_clientfd, message.data() + total_sent, bytes_to_send);
 
         if (bytes_sent == -1)
         {
@@ -148,11 +148,12 @@ std::string TcpServer::receive()
 {
     // between the initialization of TcpServer and receive(), there is an accept() call
     char buffer[BUFFER_SIZE];
-    ssize_t bytes_received = read(_fd, buffer, BUFFER_SIZE);
+    ssize_t bytes_received = ::read(_clientfd, buffer, BUFFER_SIZE);
     if (bytes_received == -1)
-    {
+    {   
         throw SocketException();
     }
+    
     return std::string(buffer, (size_t)bytes_received);
 }
 
@@ -184,16 +185,23 @@ std::string TcpServer::getClientPort()
 }
 
 
+void TcpServer::setClientFd(int fd)
+{
+    _clientfd = fd;
+}
+
+
 
 TcpServer::~TcpServer()
 {
     freeaddrinfo(_res); // Free the address info
+    close(_clientfd);
     close(_fd);         // Close the socket
 }
 
 
 void TcpServer::closeServer() {
-    if (close(_fd) != 0) {
+    if (close(_fd) != 0 || close(_clientfd)) {
         if (errno == EBADF)   // was already closed
             return;
         throw SocketException();

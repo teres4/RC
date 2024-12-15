@@ -143,11 +143,17 @@ std::string generateRandomKey()
 {
     std::string key;
     std::vector<std::string> colors = {"R", "G", "B", "Y", "O", "P"};
-    for (int i = 0; i < 4; i++)
-    {
-        key += colors[(size_t)(rand() % 6)];
+
+    // Seed the random number generator with the current time (once per program run)
+    static bool seeded = false;
+    if (!seeded) {
+        std::srand((unsigned) std::time(nullptr));
+        seeded = true;
     }
 
+    for (int i = 0; i < 4; i++) {
+        key += colors[(size_t) std::rand() % colors.size()];
+    }
     validate_key(key);
     return key;
 }
@@ -156,6 +162,25 @@ int get_playtime(std::string playtime)
 {
     return std::stoi(playtime);
 }
+
+
+std::string currentDateTime()
+{
+    time_t fulltime;
+    struct tm *current_time;
+    char time_str[50];
+
+    time(&fulltime);
+    current_time = gmtime(&fulltime);
+    sprintf(time_str, "%4d-%02d-%02d %02d:%02d:%02d", current_time->tm_year + 1900,
+            current_time->tm_mon + 1, current_time->tm_mday,
+            current_time->tm_hour, current_time->tm_min, current_time->tm_sec);
+
+    return time_str;
+}
+
+
+
 
 void setup_signal_handlers()
 {
@@ -226,4 +251,9 @@ int white(const std::string key, const std::string guess)
         }
     }
     return count - black(key, guess);
+}
+
+std::string playerDirectory(std::string PLID)
+{
+    return PLID;
 }

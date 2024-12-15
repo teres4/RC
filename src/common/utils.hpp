@@ -34,11 +34,16 @@ int get_playtime(std::string playtime);
 std::string get_color_key(std::string args);
 std::string get_color_key(std::vector<std::string> args);
 
+
+std::string currentDateTime();
+
+
 void setup_signal_handlers();
 void terminate_signal_handler(int sig);
 
 std::string generateRandomKey();
 std::string gameFileName(std::string PLID);
+std::string playerDirectory(std::string PLID);
 
 int black(const std::string key, const std::string secretKey);
 int white(const std::string key, const std::string secretKey);

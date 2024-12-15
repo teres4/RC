@@ -54,10 +54,6 @@ int main(int argc, char *argv[])
         std::cerr << "Error: " << e.what() << std::endl;
     }
 
-    // while (!std::cin.eof() && !exiting){
-    //     // commandManager.handleCommand();
-    // }
-
     return 0;
 }
 
@@ -129,7 +125,7 @@ void UDPServer(UdpServer &udpServer, CommandManager &manager, Server &server)
 void TCPServer(TcpServer &tcpServer, CommandManager &manager, Server &server)
 {
     bool verbose = server.isverbose();
-    tcpServer.accept();
+    tcpServer.setClientFd(tcpServer.accept());
 
     while (true)
     {
@@ -140,7 +136,7 @@ void TCPServer(TcpServer &tcpServer, CommandManager &manager, Server &server)
         {
             std::cout << tcpServer.getClientIP() << ":" << tcpServer.getClientPort() << std::endl;
         }
-        std::cout << "tcp response: " << response;
+        std::cout << "tcp response: " << response << std::endl;
         tcpServer.send(response);
     }
 }

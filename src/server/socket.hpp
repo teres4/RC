@@ -23,6 +23,7 @@ private:
     int _fd;                  // The file descriptor of the socket
     struct addrinfo _hints;   // The address flags
     struct addrinfo *_res;    // The address info
+    int _clientfd;
     // struct sockaddr_in _addr; // The address
 
     bool _closed = false;  // Flag indicating whether the server has been closed
@@ -37,6 +38,7 @@ public:
 
     std::string getClientIP();
     std::string getClientPort();
+    void setClientFd(int clientFd);
 
 };
 

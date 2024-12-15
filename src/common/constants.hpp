@@ -29,4 +29,10 @@
 
 #define MAX_TCP_WORKERS 100
 
+#define WIN_CODE "W"
+#define FAIL_CODE "F"
+#define QUIT_CODE "Q"
+#define TIMEOUT_CODE "T"
+
+
 #endif
