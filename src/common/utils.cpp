@@ -36,7 +36,7 @@ void validate_port(std::string &port)
     {
         int32_t parsed_port = std::stoi(port);
         if (parsed_port < 1 || parsed_port > 65535)
-            throw std::runtime_error("");
+            throw UnrecoverableError("");
     }
     catch (...)
     {

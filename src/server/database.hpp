@@ -54,6 +54,7 @@ public:
 
     bool hasOngoingGame(std::string plid);
     bool hasGames(std::string plid);
+    bool gameShouldEnd(std::string plid);
 
     void createGame(std::string plid, char mode, int duration,
                     std::string dateTime, time_t time);
@@ -70,8 +71,8 @@ public:
 
     void gameOver(std::string plid, std::string code);
 
-    std::string hourtoString(tm time);
-    std::string dateToString(tm time);
+    // std::string hourtoString(tm time);
+    // std::string dateToString(tm time);
     std::string getsecretKey(std::string plid);
     std::string formatSecretKey(std::string key);
     bool isRepeatedTrial(std::string plid, std::string key);
@@ -96,7 +97,8 @@ public:
 
     void formatScoreboard(SCORELIST *list);
     int remainingTime(std::string plid);
-    void getCurrentGameData(std::string plid, std::string &fName, int &fSize, std::string &fdata);
+    void getCurrentGameData(std::string plid, std::string &fName, 
+                            int &fSize, std::string &fdata);
 };
 
 #endif

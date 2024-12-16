@@ -67,24 +67,29 @@ void StartCommand::handle(std::string &args, std::string &response, Server &rece
     {
         StreamMessage reqMessage(args);
         startComm.decodeRequest(reqMessage); // Decode the request
+        std::string plid = std::to_string(startComm._plid);
 
         // check database if player has an ongoing game
-        bool hasGame = DB.hasOngoingGame(std::to_string(startComm._plid));
-        if (hasGame)
+        bool hasGame = DB.hasOngoingGame(plid);
+        
+        // if has game or has an ongoing game that should've ended bc it ran out of time
+        if (!hasGame || (hasGame && DB.gameShouldEnd(plid))) {
+
+            if (hasGame && DB.gameShouldEnd(plid))
+                DB.gameTimeout(plid);
+
+            std::string current_datetime = currentDateTime();
+            time_t time_s = time(NULL);
+            DB.createGame(plid, 'P', startComm._time, current_datetime, time_s);
+            startComm._status = "OK";
+            result = "Player started a game. ";
+        }
+        else
         {
             startComm._status = "NOK";
             result = "Player has an ongoing game";
         }
-        else
-        {
-            // need: PLID MODE TIME STARTDATE TIMESTART
-            std::string current_datetime = currentDateTime();
-            time_t time_s = time(NULL);
-            DB.createGame(std::to_string(startComm._plid), 'P', startComm._time,
-                          current_datetime, time_s);
-            startComm._status = "OK";
-            result = "Player started a game. ";
-        }
+    
     }
     catch (ProtocolException &e)
     { // If the protocol is not valid, status = "ERR"

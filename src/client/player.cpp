@@ -6,44 +6,52 @@ extern bool is_exiting;
 
 int main(int argc, char *argv[])
 {
-    setup_signal_handlers();   // change the signal handlers to our own
-    Client client(argc, argv); // parse command-line arguments
+    try {
+        setup_signal_handlers();   // change the signal handlers to our own
+        Client client(argc, argv); // parse command-line arguments
 
-    CommandManager commandManager; // create a new command manager
-    commandManager.addAllCommands();
+        CommandManager commandManager; // create a new command manager
+        commandManager.addAllCommands();
 
-    // player info
-    // setup sockets
+        while (!std::cin.eof() && !is_exiting)
+        {
+            commandManager.waitForCommand(client);
+        }
 
-    while (!std::cin.eof() && !is_exiting)
-    {
-        commandManager.waitForCommand(client);
+        if (client._player.activePlayer()){
+            std::cout << "Player has an active game, will attempt to quit it." 
+                    << std::endl;
+            try {
+                QuitCommunication quitComm;
+                quitComm._plid = client._player.getPlid();
+
+                client.processRequest(quitComm); 
+
+                if (quitComm._status == "OK")
+                {
+                    std::cout << "Game quit successfully." << std::endl;
+                }
+                else
+                    std::cerr << "Failed to quit game. Exiting anyway." << std::endl;
+            } 
+            catch (...){
+                std::cerr << "Failed to quit game. Exiting anyway..." << std::endl;
+            }
+        }
+    } catch (UnrecoverableError &e) {
+        std::cerr << "Encountered unrecoverable error while running the "
+                    "application. Shutting down..." << std::endl
+                    << e.what() << std::endl;
+        return EXIT_FAILURE;
+    } catch (...) {
+        std::cerr << "Encountered unrecoverable error while running the "
+                    "application. Shutting down..."
+                    << std::endl;
+        return EXIT_FAILURE;
     }
 
-    if (client._player.activePlayer()){
-        std::cout << "Player has an active game, will attempt to quit it." << std::endl;
-        try {
-            QuitCommunication quitComm;
-            quitComm._plid = client._player.getPlid();
-
-            client.processRequest(quitComm); // Send the request to the server, receiving its response
-
-            if (quitComm._status == "OK")
-            {
-                std::cout << "Game has ended." << std::endl;
-                std::cout << "The secret key: " << quitComm._key << std::endl;
-                client._player.finishGame();
-            }
-            else
-                std::cerr << "Failed to quit game. Exiting anyway." << std::endl;
-        } 
-        catch (...){
-            std::cerr << "Encountered unrecoverable error while running the "
-                            "application. Shutting down..." << std::endl;
-            return EXIT_FAILURE;
-        }
-    } 
     return EXIT_SUCCESS;
+    
 }
 
 
@@ -191,7 +199,7 @@ void Client::writeFile(std::string fName, std::string &data) {
 void Client::checkDir() {
     if (mkdir(_path.c_str(), 0777) == -1) {  // If the directory doesn't exist, create it
         if (errno != EEXIST) { // The named file exists.
-            throw std::runtime_error("Couldn't write file");
+            throw UnrecoverableError("Couldn't write file\n");
         }
     }
 }

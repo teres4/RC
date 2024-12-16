@@ -70,6 +70,8 @@ int main(int argc, char *argv[])
                   << std::endl;
         return EXIT_FAILURE;
     }
+    // TODO if catches runtime errors, shut down server
+
 
     return EXIT_SUCCESS;
 }

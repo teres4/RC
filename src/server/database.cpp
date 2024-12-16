@@ -1,5 +1,6 @@
 #include "database.hpp"
 #include <filesystem>
+#include <regex>
 
 #include <ctime>
 
@@ -44,7 +45,7 @@ void DatabaseManager::createFile(std::string path)
     { // Check if the directory portion is not empty.
         if (errno != EEXIST)
         {
-            throw std::runtime_error("Error: Unable to create file");
+            throw UnrecoverableError("Error: Unable to create file");
         }
     }
 }
@@ -70,7 +71,7 @@ void DatabaseManager::writeToFile(std::string path, std::string content)
     }
     catch (...)
     {
-        throw std::runtime_error("Couldn't write file: " + path + " with content: " + content);
+        throw UnrecoverableError("Couldn't write file: " + path + " with content: " + content);
     }
 }
 
@@ -78,7 +79,7 @@ void DatabaseManager::deleteFile(std::string path)
 {
     if (std::remove(path.c_str()) != 0)
     { // Try to delete the file
-        throw std::runtime_error("Error: Unable to delete file '" + path + "'.");
+        throw UnrecoverableError("Error: Unable to delete file '" + path + "'.");
     }
 }
 
@@ -112,7 +113,7 @@ void DatabaseManager::appendToFile(std::string path, std::string content)
     }
     catch (const std::exception &e)
     {
-        throw std::runtime_error("Couldn't append to file: " + path + " with content: " + content);
+        throw UnrecoverableError("Couldn't append to file: " + path + " with content: " + content);
     }
 }
 
@@ -179,6 +180,12 @@ bool GamedataManager::hasGames(std::string plid)
     {
         return false;
     }
+}
+
+bool GamedataManager::gameShouldEnd(std::string plid){
+    if (remainingTime(plid) <= 0)
+        return true;
+    return false;
 }
 
 
@@ -256,7 +263,7 @@ std::string GamedataManager::getsecretKey(std::string plid)
     std::fstream fileStream;
     if (!openFile(fileStream, path, std::ios::in))
     {
-        throw std::runtime_error("Error opening file");
+        throw UnrecoverableError("Error opening file");
     }
 
     std::string line;
@@ -303,7 +310,7 @@ bool GamedataManager::isRepeatedTrial(std::string plid, std::string key)
     std::fstream fileStream;
     if (!openFile(fileStream, path, std::ios::in))
     {
-        throw std::runtime_error("Error opening file");
+        throw UnrecoverableError("Error opening file");
     }
 
     std::getline(fileStream, line); // ignore first line
@@ -327,7 +334,7 @@ int GamedataManager::expectedNT(std::string PLID)
     std::fstream fileStream;
     if (!openFile(fileStream, path, std::ios::in))
     {
-        throw std::runtime_error("Error opening file");
+        throw UnrecoverableError("Error opening file");
     }
     int i = 0;
     std::getline(fileStream, line); // ignore first line
@@ -349,7 +356,7 @@ long int GamedataManager::getOngoingGameTime(std::string plid)
     std::fstream fileStream;
     if (!openFile(fileStream, path, std::ios::in))
     {
-        throw std::runtime_error("Error opening file");
+        throw UnrecoverableError("Error opening file");
     }
 
     std::getline(fileStream, line);
@@ -368,7 +375,7 @@ long int GamedataManager::getOngoingGameTimeLimit(std::string plid)
     std::fstream fileStream;
     if (!openFile(fileStream, path, std::ios::in))
     {
-        throw std::runtime_error("Error opening file");
+        throw UnrecoverableError("Error opening file");
     }
 
     std::getline(fileStream, line);
@@ -386,7 +393,7 @@ std::string GamedataManager::ongoingGameMode(std::string plid)
     std::fstream fileStream;
     if (!openFile(fileStream, path, std::ios::in))
     {
-        throw std::runtime_error("Error opening file");
+        throw UnrecoverableError("Error opening file");
     }
 
     std::getline(fileStream, line);
@@ -473,9 +480,24 @@ void GamedataManager::quitGame(std::string plid)
 }
 
 void GamedataManager::quitAllGames(){
-    
-}
+    std::string directory = GAMES_DIR;
 
+    std::regex pattern("^GAME_.*\\.txt$");
+
+    for (auto entry : std::filesystem::directory_iterator(directory)) {
+        if (entry.is_regular_file()) {  // Check if it's a file
+            std::string fileName = entry.path().filename().string();
+
+            // Match the filename using the regular expression
+            if (std::regex_match(fileName, pattern)) {
+                std::string plid = fileName.substr(5, 6);
+                quitGame(plid);
+
+            }
+        }
+    }
+
+}
 
 int GamedataManager::remainingTime(std::string plid)
 {
@@ -489,7 +511,7 @@ void GamedataManager::formatScoreboard(SCORELIST *list)
     std::ofstream scfile("scoreboard", std::ios::binary);
     if (!scfile.is_open())
     {
-        throw std::runtime_error("Error opening scoreboard file");
+        throw UnrecoverableError("Error opening scoreboard file");
     }
 
     // PLID secretkey NT
@@ -515,7 +537,7 @@ void GamedataManager::getCurrentGameData(std::string plid,
 
     std::fstream fileStream;
     if (!openFile(fileStream, path, std::ios::in)){
-        throw std::runtime_error("Error opening file");
+        throw UnrecoverableError("Error opening file");
     }
 
     fName = gameFileName(plid);

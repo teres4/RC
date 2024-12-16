@@ -69,6 +69,8 @@ void CommandManager::waitForCommand(Client &state)
   catch (std::exception &e)
   {
     std::cout << e.what() << std::endl;
+  } catch (...) {
+    std::cout << "[ERROR] An unknown error occurred." << std::endl;
   }
 }
 
