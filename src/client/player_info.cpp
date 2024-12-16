@@ -123,19 +123,17 @@ TCPInfo::~TCPInfo()
 
 void TCPInfo::send(std::string &message)
 {
-    size_t message_size = message.size();
+    size_t message_size = message.length();
     size_t total_sent = 0;
 
     while (total_sent < message_size)
     {
-        size_t bytes_to_send = std::min(message_size - total_sent, static_cast<size_t>(BUFFER_SIZE));
-        ssize_t bytes_sent = write(_fd, message.data() + total_sent, bytes_to_send);
+        ssize_t sent = write(_fd, message.data() + total_sent, message_size - total_sent);
 
-        if (bytes_sent == -1)
-        {
+        if (sent < 0) {
             throw SocketException();
         }
-        total_sent += (size_t)bytes_sent;
+        total_sent += (size_t)sent;
     }
 }
 

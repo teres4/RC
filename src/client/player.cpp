@@ -159,23 +159,34 @@ void Client::processRequest(ProtocolCommunication &comm)
 
     StreamMessage resStreamMessage(resMessage); // Create a StreamMessage from the response
 
-    // std::cout << resMessage;
-
     comm.decodeResponse(resStreamMessage); // Decode the response
 }
 
 
 void Client::writeFile(std::string fName, std::string &data) {
-    checkDir();  // Assure that the directory exists
+    try {
+        checkDir();  // Assure that the directory exists
 
-    std::ofstream file(_path + fName);  // Create a file with the given name
+        std::ofstream file(_path + fName);  // Create a file with the given name
 
-    ssize_t n = (ssize_t) data.length();
-    file.write(data.c_str(), n);
+        ssize_t n = (ssize_t) data.length();
+        ssize_t total_written = 0;
 
-    file.close();  // Close the file
+        while (total_written < n) {
+            file.write(data.c_str() + total_written, n - total_written);
+
+            total_written += (ssize_t)file.tellp() - total_written;
+        }
+
+        file.close();  // Close the file
+    }
+    catch (std::exception &e){
+        std::cerr << "Error: " << e.what() << std::endl;
+    }
+
+
+
 }
-
 
 void Client::checkDir() {
     if (mkdir(_path.c_str(), 0777) == -1) {  // If the directory doesn't exist, create it

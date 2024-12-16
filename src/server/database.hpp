@@ -38,6 +38,8 @@ public:
     void appendToFile(std::string path, std::string content);
     void writeToFile(std::string path, std::string content);
     std::string renameFile(std::string path);
+    int countLinesInFile(std::fstream &fileStream);
+
 };
 
 class GamedataManager : public DatabaseManager
@@ -51,6 +53,7 @@ public:
     GamedataManager(const std::string rootDir);
 
     bool hasOngoingGame(std::string plid);
+    bool hasGames(std::string plid);
 
     void createGame(std::string plid, char mode, int duration,
                     std::string dateTime, time_t time);
@@ -59,12 +62,13 @@ public:
                     std::string dateTime, time_t time);
 
     void quitGame(std::string plid);
+    void quitAllGames();
 
     int findTopScores();
 
     int findLastGame(std::string plid, std::string fname);
 
-    void GameOver(std::string plid, std::string code);
+    void gameOver(std::string plid, std::string code);
 
     std::string hourtoString(tm time);
     std::string dateToString(tm time);
@@ -87,10 +91,12 @@ public:
     void gameWon(std::string plid);
     void gameLost(std::string plid);
     void gameTimeout(std::string plid);
-    bool isTimeout(std::string plid);
+
     void makeScoreFile(std::string plid);
 
     void formatScoreboard(SCORELIST *list);
+    int remainingTime(std::string plid);
+    void getCurrentGameData(std::string plid, std::string &fName, int &fSize, std::string &fdata);
 };
 
 #endif

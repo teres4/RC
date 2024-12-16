@@ -58,7 +58,13 @@ void DatabaseManager::writeToFile(std::string path, std::string content)
         std::ofstream file(path); // Create a file with the given name
 
         ssize_t n = (ssize_t)content.length();
-        file.write(content.c_str(), n);
+        ssize_t total_written = 0;
+
+        while (total_written < n) {
+            file.write(content.c_str() + total_written, n - total_written);
+
+            total_written += (ssize_t)file.tellp() - total_written;
+        }
 
         file.close(); // Close the file
     }
@@ -110,6 +116,26 @@ void DatabaseManager::appendToFile(std::string path, std::string content)
     }
 }
 
+
+int DatabaseManager::countLinesInFile(std::fstream &fileStream) {
+    int lineCount = 0;
+    std::string line;
+
+    // Save the current stream position
+    std::streampos initialPos = fileStream.tellg();    
+
+    // Read each line and count
+    while (std::getline(fileStream, line)) {
+        ++lineCount;
+    }
+
+    // Reset the stream to where it was before counting lines
+    fileStream.clear(); // Clear EOF flag
+    fileStream.seekg(initialPos);
+    return lineCount;
+}
+
+
 bool GamedataManager::hasOngoingGame(std::string plid)
 {
     try
@@ -132,13 +158,40 @@ bool GamedataManager::hasOngoingGame(std::string plid)
     }
 }
 
-void GamedataManager::GameOver(std::string plid, std::string code)
+
+bool GamedataManager::hasGames(std::string plid)
+{ // TODO
+    try
+    {
+        validate_plid(plid);
+        // ongoing games are stored in the GAMES directory
+        std::string path = GAMES_DIR + gameFileName(plid);
+        std::fstream fileStream;
+        if (!openFile(fileStream, path, std::ios::in))
+        {
+            return false;
+        }
+        closeFile(fileStream);
+        return true;
+    }
+
+    catch (...)
+    {
+        return false;
+    }
+}
+
+
+void GamedataManager::gameOver(std::string plid, std::string code)
 {
     // create directory with plid and move file
     // delete file from gamedata/games
 
     std::string src_path = GAMES_DIR + gameFileName(plid);
     std::string dest_path = GAMES_DIR + playerDirectory(plid);
+
+    std::string lastLine = currentDateTime() + " " + std::to_string(timeSinceStart(plid));
+    appendToFile(src_path, lastLine);
 
     std::string newFilename = renameFile(code);
 
@@ -301,7 +354,8 @@ long int GamedataManager::getOngoingGameTime(std::string plid)
 
     std::getline(fileStream, line);
     std::string word = getiword(line, 7); // get the time()
-    std::cout << "time: " << word << std::endl;
+
+    // std::cout << "time: " << word << std::endl;
 
     return std::stol(word);
 }
@@ -363,7 +417,8 @@ long int GamedataManager::timeSinceStart(std::string plid)
 void GamedataManager::registerTry(std::string plid, std::string key, int B, int W)
 {
     std::string path = GAMES_DIR + gameFileName(plid);
-    std::string content = "T: " + key + " " + std::to_string(B) + " " + std::to_string(W) + " " + std::to_string(timeSinceStart(plid)) + "\n";
+    std::string content = "T: " + key + " " + std::to_string(B) + " " + 
+                    std::to_string(W) + " " + std::to_string(timeSinceStart(plid)) + "\n";
     appendToFile(path, content);
 }
 
@@ -399,35 +454,38 @@ void GamedataManager::makeScoreFile(std::string plid)
 void GamedataManager::gameWon(std::string plid)
 {
     makeScoreFile(plid);
-    GameOver(plid, WIN_CODE);
+    gameOver(plid, WIN_CODE);
 }
 
 void GamedataManager::gameLost(std::string plid)
 {
-    GameOver(plid, FAIL_CODE);
+    gameOver(plid, FAIL_CODE);
 }
 
 void GamedataManager::gameTimeout(std::string plid)
 {
-    GameOver(plid, TIMEOUT_CODE);
+    gameOver(plid, TIMEOUT_CODE);
 }
 
 void GamedataManager::quitGame(std::string plid)
 {
-    GameOver(plid, QUIT_CODE);
+    gameOver(plid, QUIT_CODE);
 }
 
-bool GamedataManager::isTimeout(std::string plid)
+void GamedataManager::quitAllGames(){
+    
+}
+
+
+int GamedataManager::remainingTime(std::string plid)
 {
     long int time = getOngoingGameTimeLimit(plid);
     long int now = timeSinceStart(plid);
-
-    return now > time;
+    return (int) (time - now);
 }
 
 void GamedataManager::formatScoreboard(SCORELIST *list)
 {
-
     std::ofstream scfile("scoreboard", std::ios::binary);
     if (!scfile.is_open())
     {
@@ -448,3 +506,53 @@ void GamedataManager::formatScoreboard(SCORELIST *list)
         i++;
     }
 }
+    
+
+void GamedataManager::getCurrentGameData(std::string plid, 
+                            std::string &fName, int &fSize, std::string &fdata)
+{
+    std::string path = GAMES_DIR + gameFileName(plid);
+
+    std::fstream fileStream;
+    if (!openFile(fileStream, path, std::ios::in)){
+        throw std::runtime_error("Error opening file");
+    }
+
+    fName = gameFileName(plid);
+    
+    int number_trials = countLinesInFile(fileStream) - 1;
+
+    std::string line;
+    std::getline(fileStream, line);
+
+    std::string game_duration = getiword(line, 4);
+    std::string dateTime = getiword(line, 5) +' ' + getiword(line, 6);
+
+    fdata = "\n\tActive game found for player " + plid + '\n';
+    fdata += "Game initiated: " + dateTime + " with " + game_duration + 
+            " seconds to be completed\n";
+    
+    fdata += "\n\t--- Transactions found: " + std::to_string(number_trials) 
+            + " ---\n\n";
+
+    while (number_trials > 0){
+        std::getline(fileStream, line);
+        std::string trial = getiword(line, 2);
+        std::string nB = getiword(line, 3);
+        std::string nW = getiword(line, 4);
+        std::string time = getiword(line, 5);
+
+        fdata += "Trial: " + trial + ", nB: " + nB + ", nW: " + nW + 
+                " at " + time + "s\n";
+
+        number_trials--;
+    }
+    
+    fdata += "\n\t-- " + std::to_string(remainingTime(plid)) 
+            + " seconds remaining to be completed --\n";
+    
+    fSize = (int) fdata.length();
+
+    fdata += "\n";
+}
+

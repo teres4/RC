@@ -122,7 +122,7 @@ void TryCommand::handle(std::string &args, std::string &response, Server &receiv
         }
         else
         {
-            if (DB.isTimeout(std::to_string(tryComm._plid)))
+            if (DB.remainingTime(std::to_string(tryComm._plid)) <= 0)
             {
                 DB.gameTimeout(std::to_string(tryComm._plid));
                 tryComm._status = "ETM";
@@ -207,18 +207,20 @@ void ShowTrialsCommand::handle(std::string &args, std::string &response, Server 
         // check database if player has an ongoing game
         bool hasGame = DB.hasOngoingGame(std::to_string(stComm._plid));
         if (hasGame)
-        {
-            // send text with current game summary
-
-            DB.sendTrials(std::to_string(stComm._plid));
-            stComm._status = "ACT";
-            result = "Player has an ongoing game";
+        {   // send text with current game summary
+            DB.getCurrentGameData(std::to_string(stComm._plid), stComm._Fname, 
+                                    stComm._Fsize, stComm._Fdata);
+            stComm._status = "ACT";                        
+            result = "Showing player's ongoing game";
         }
-        else
-        {
-            // send text with most recent game
+        else if (DB.hasGames(std::to_string(stComm._plid)))
+        {   // send text with most recent game
             stComm._status = "FIN";
-            // TODO: everyting here
+            result = "Showing player's most recently finished game. ";              
+        }
+        else {
+            stComm._status = "NOK";
+            result = "Player has no ongoing game or recently finished games. ";       
         }
     }
     catch (ProtocolException &e)

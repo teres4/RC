@@ -23,8 +23,6 @@ int main(int argc, char *argv[])
 
     Server server(argc, argv);
 
-    // open conections
-
     CommandManager commandManager; // create a new command manager
     commandManager.registerAllCommands();
 
@@ -57,9 +55,21 @@ int main(int argc, char *argv[])
             std::cerr << "Error: " << e.what() << std::endl;
         }
     }
-    
 
-    return 0;
+    // if exiting, finish all games
+    GamedataManager DB = server._DB;
+    try
+    {
+        DB.quitAllGames();
+    }
+    catch (ProtocolException &e)
+    { 
+        std::cerr << "Encountered unrecoverable error while running the "
+                    "application. Shutting down..." << std::endl;
+        return EXIT_FAILURE;
+    }
+
+    return EXIT_SUCCESS;
 }
 
 Server::Server(int argc, char **argv)
@@ -132,7 +142,7 @@ void TCPServer(TcpServer &tcpServer, CommandManager &manager, Server &server)
     bool verbose = server.isverbose();
     tcpServer.setClientFd(tcpServer.accept());
 
-    while (true)
+    while (!is_exiting)
     {
         std::string message = tcpServer.receive();
         std::cout << "in tcpserver received: " << message;
@@ -143,5 +153,6 @@ void TCPServer(TcpServer &tcpServer, CommandManager &manager, Server &server)
         }
         std::cout << "tcp response: " << response << std::endl;
         tcpServer.send(response);
+        std::cout << "Finished sending response " << std::endl;
     }
 }
