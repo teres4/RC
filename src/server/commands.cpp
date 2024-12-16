@@ -32,7 +32,7 @@ std::string CommandManager::handleCommand(std::string message, Server &receiver)
         return "ERR";
 
     std::string commandName = command_split[0]; // The name of the command
-
+    
     if (commandName.length() == 0 || commandName.length() != 3)
         return "ERR";
 
@@ -49,7 +49,6 @@ std::string CommandManager::handleCommand(std::string message, Server &receiver)
     }
 
     std::string response;
-
     handler->second->handle(message, response, receiver);
 
     return response;
@@ -242,19 +241,19 @@ void ScoreboardCommand::handle(std::string &args, std::string &response, Server 
     //     // TODO check verbose
     std::cout << args << response << receiver.isverbose();
 
-    SCORELIST list;
-    int nscores = FindTopScores(&list);
+    // SCORELIST list;
+    // int nscores = FindTopScores(&list);
 
-    ScoreboardCommunication sbComm;
+    // ScoreboardCommunication sbComm;
 
-    if (!nscores)
-    {
-        sbComm._status = "EMPTY";
-    }
-    else
-    {
-        sbComm._status = "OK";
-    }
+    // if (!nscores)
+    // {
+    //     sbComm._status = "EMPTY";
+    // }
+    // else
+    // {
+    //     sbComm._status = "OK";
+    // }
 }
 
 void QuitCommand::handle(std::string &args, std::string &response, Server &receiver)
@@ -377,9 +376,10 @@ std::vector<std::string> split_command(std::string input)
     std::vector<std::string> command_split;
 
     // Splitting the input string by space
-    while (std::getline(ss, temp, ' '))
+    while (std::getline(ss, temp, ' ')){
+        temp.erase(std::remove_if(temp.begin(), temp.end(), ::isspace), temp.end());
         command_split.push_back(temp);
-
+    }
     return command_split;
 }
 
