@@ -72,7 +72,6 @@ int main(int argc, char *argv[])
     }
     // TODO if catches runtime errors, shut down server
 
-
     return EXIT_SUCCESS;
 }
 
@@ -182,30 +181,29 @@ void TCPServer(TcpServer &tcpServer, CommandManager &manager, Server &server)
             {
 
                 close(tcpServer._fd);
-                int flags = fcntl(newfd, F_GETFL, 0);
-                if (flags == -1)
-                {
-                    perror("fcntl(F_GETFL)");
-                    close(newfd);
-                    exit(1);
-                }
+                // int flags = fcntl(newfd, F_GETFL, 0);
+                // if (flags == -1)
+                // {
+                //     perror("fcntl(F_GETFL)");
+                //     close(newfd);
+                //     exit(1);
+                // }
 
-                if (fcntl(newfd, F_SETFL, flags | O_NONBLOCK) == -1)
-                {
-                    perror("fcntl(F_SETFL)");
-                    close(newfd);
+                // if (fcntl(newfd, F_SETFL, flags | O_NONBLOCK) == -1)
+                // {
+                //     perror("fcntl(F_SETFL)");
+                //     close(newfd);
+                //     exit(1);
+                // }
+                n = read(newfd, buffer, 128);
+                if (n == -1) /*error*/
                     exit(1);
-                }
-                while ((n = read(newfd, buffer, 128)) != 0)
-                {
-                    if (n == -1) /*error*/
-                        exit(1);
-                    // add buffer to string
+                // add buffer to string
 
-                    message.append(buffer, (size_t)n);
-                    std::cout << "message: " << message << std::endl;
-                    std::cout << "n: " << n << std::endl;
-                }
+                message.append(buffer, (size_t)n);
+                std::cout << "message: " << message << std::endl;
+                std::cout << "n: " << n << std::endl;
+
                 std::cout << "in tcpserver received: " << message;
                 std::string response = manager.handleCommand(message, server);
                 if (verbose)
