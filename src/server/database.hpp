@@ -39,7 +39,6 @@ public:
     void writeToFile(std::string path, std::string content);
     std::string renameFile(std::string path);
     int countLinesInFile(std::fstream &fileStream);
-
 };
 
 class GamedataManager : public DatabaseManager
@@ -95,9 +94,9 @@ public:
 
     void makeScoreFile(std::string plid);
 
-    void formatScoreboard(SCORELIST *list);
+    void formatScoreboard(SCORELIST *list, std::string &fName, int &fSize, std::string &fdata);
     int remainingTime(std::string plid);
-    void getCurrentGameData(std::string plid, std::string &fName, 
+    void getCurrentGameData(std::string plid, std::string &fName,
                             int &fSize, std::string &fdata);
 };
 

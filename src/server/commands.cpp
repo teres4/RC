@@ -32,7 +32,7 @@ std::string CommandManager::handleCommand(std::string message, Server &receiver)
         return "ERR";
 
     std::string commandName = command_split[0]; // The name of the command
-    
+
     if (commandName.length() == 0 || commandName.length() != 3)
         return "ERR";
 
@@ -70,9 +70,10 @@ void StartCommand::handle(std::string &args, std::string &response, Server &rece
 
         // check database if player has an ongoing game
         bool hasGame = DB.hasOngoingGame(plid);
-        
+
         // if has game or has an ongoing game that should've ended bc it ran out of time
-        if (!hasGame || (hasGame && DB.gameShouldEnd(plid))) {
+        if (!hasGame || (hasGame && DB.gameShouldEnd(plid)))
+        {
 
             if (hasGame && DB.gameShouldEnd(plid))
                 DB.gameTimeout(plid);
@@ -88,7 +89,6 @@ void StartCommand::handle(std::string &args, std::string &response, Server &rece
             startComm._status = "NOK";
             result = "Player has an ongoing game";
         }
-    
     }
     catch (ProtocolException &e)
     { // If the protocol is not valid, status = "ERR"
@@ -211,20 +211,21 @@ void ShowTrialsCommand::handle(std::string &args, std::string &response, Server 
         // check database if player has an ongoing game
         bool hasGame = DB.hasOngoingGame(std::to_string(stComm._plid));
         if (hasGame)
-        {   // send text with current game summary
-            DB.getCurrentGameData(std::to_string(stComm._plid), stComm._Fname, 
-                                    stComm._Fsize, stComm._Fdata);
-            stComm._status = "ACT";                        
+        { // send text with current game summary
+            DB.getCurrentGameData(std::to_string(stComm._plid), stComm._Fname,
+                                  stComm._Fsize, stComm._Fdata);
+            stComm._status = "ACT";
             result = "Showing player's ongoing game";
         }
         else if (DB.hasGames(std::to_string(stComm._plid)))
-        {   // send text with most recent game
+        { // send text with most recent game
             stComm._status = "FIN";
-            result = "Showing player's most recently finished game. ";              
+            result = "Showing player's most recently finished game. ";
         }
-        else {
+        else
+        {
             stComm._status = "NOK";
-            result = "Player has no ongoing game or recently finished games. ";       
+            result = "Player has no ongoing game or recently finished games. ";
         }
     }
     catch (ProtocolException &e)
@@ -241,19 +242,34 @@ void ScoreboardCommand::handle(std::string &args, std::string &response, Server 
     //     // TODO check verbose
     std::cout << args << response << receiver.isverbose();
 
-    // SCORELIST list;
-    // int nscores = FindTopScores(&list);
+    std::cout << "ScoreboardCommand" << std::endl;
 
-    // ScoreboardCommunication sbComm;
+    SCORELIST list;
 
-    // if (!nscores)
-    // {
-    //     sbComm._status = "EMPTY";
-    // }
-    // else
-    // {
-    //     sbComm._status = "OK";
-    // }
+    ScoreboardCommunication sbComm;
+    GamedataManager DB = receiver._DB;
+
+    try
+    {
+        int nscores = FindTopScores(&list);
+        if (!nscores)
+        {
+            sbComm._status = "EMPTY";
+            std::cout << "No scores found" << std::endl;
+        }
+        else
+        {
+            sbComm._status = "OK";
+            DB.formatScoreboard(&list, sbComm._Fname, sbComm._Fsize, sbComm._Fdata);
+        }
+    }
+    catch (const std::exception &e)
+    {
+        sbComm._status = "ERR";
+    }
+
+    response = sbComm.encodeResponse();
+    return;
 }
 
 void QuitCommand::handle(std::string &args, std::string &response, Server &receiver)
@@ -376,7 +392,8 @@ std::vector<std::string> split_command(std::string input)
     std::vector<std::string> command_split;
 
     // Splitting the input string by space
-    while (std::getline(ss, temp, ' ')){
+    while (std::getline(ss, temp, ' '))
+    {
         temp.erase(std::remove_if(temp.begin(), temp.end(), ::isspace), temp.end());
         command_split.push_back(temp);
     }

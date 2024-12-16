@@ -61,7 +61,8 @@ void DatabaseManager::writeToFile(std::string path, std::string content)
         ssize_t n = (ssize_t)content.length();
         ssize_t total_written = 0;
 
-        while (total_written < n) {
+        while (total_written < n)
+        {
             file.write(content.c_str() + total_written, n - total_written);
 
             total_written += (ssize_t)file.tellp() - total_written;
@@ -117,16 +118,17 @@ void DatabaseManager::appendToFile(std::string path, std::string content)
     }
 }
 
-
-int DatabaseManager::countLinesInFile(std::fstream &fileStream) {
+int DatabaseManager::countLinesInFile(std::fstream &fileStream)
+{
     int lineCount = 0;
     std::string line;
 
     // Save the current stream position
-    std::streampos initialPos = fileStream.tellg();    
+    std::streampos initialPos = fileStream.tellg();
 
     // Read each line and count
-    while (std::getline(fileStream, line)) {
+    while (std::getline(fileStream, line))
+    {
         ++lineCount;
     }
 
@@ -135,7 +137,6 @@ int DatabaseManager::countLinesInFile(std::fstream &fileStream) {
     fileStream.seekg(initialPos);
     return lineCount;
 }
-
 
 bool GamedataManager::hasOngoingGame(std::string plid)
 {
@@ -159,7 +160,6 @@ bool GamedataManager::hasOngoingGame(std::string plid)
     }
 }
 
-
 bool GamedataManager::hasGames(std::string plid)
 { // TODO
     try
@@ -182,12 +182,12 @@ bool GamedataManager::hasGames(std::string plid)
     }
 }
 
-bool GamedataManager::gameShouldEnd(std::string plid){
+bool GamedataManager::gameShouldEnd(std::string plid)
+{
     if (remainingTime(plid) <= 0)
         return true;
     return false;
 }
-
 
 void GamedataManager::gameOver(std::string plid, std::string code)
 {
@@ -424,8 +424,8 @@ long int GamedataManager::timeSinceStart(std::string plid)
 void GamedataManager::registerTry(std::string plid, std::string key, int B, int W)
 {
     std::string path = GAMES_DIR + gameFileName(plid);
-    std::string content = "T: " + key + " " + std::to_string(B) + " " + 
-                    std::to_string(W) + " " + std::to_string(timeSinceStart(plid)) + "\n";
+    std::string content = "T: " + key + " " + std::to_string(B) + " " +
+                          std::to_string(W) + " " + std::to_string(timeSinceStart(plid)) + "\n";
     appendToFile(path, content);
 }
 
@@ -479,42 +479,40 @@ void GamedataManager::quitGame(std::string plid)
     gameOver(plid, QUIT_CODE);
 }
 
-void GamedataManager::quitAllGames(){
+void GamedataManager::quitAllGames()
+{
     std::string directory = GAMES_DIR;
 
     std::regex pattern("^GAME_.*\\.txt$");
 
-    for (auto entry : std::filesystem::directory_iterator(directory)) {
-        if (entry.is_regular_file()) {  // Check if it's a file
+    for (auto entry : std::filesystem::directory_iterator(directory))
+    {
+        if (entry.is_regular_file())
+        { // Check if it's a file
             std::string fileName = entry.path().filename().string();
 
             // Match the filename using the regular expression
-            if (std::regex_match(fileName, pattern)) {
+            if (std::regex_match(fileName, pattern))
+            {
                 std::string plid = fileName.substr(5, 6);
                 quitGame(plid);
-
             }
         }
     }
-
 }
 
 int GamedataManager::remainingTime(std::string plid)
 {
     long int time = getOngoingGameTimeLimit(plid);
     long int now = timeSinceStart(plid);
-    return (int) (time - now);
+    return (int)(time - now);
 }
 
-void GamedataManager::formatScoreboard(SCORELIST *list)
+void GamedataManager::formatScoreboard(SCORELIST *list, std::string &fName, int &fSize, std::string &fdata)
 {
-    std::ofstream scfile("scoreboard", std::ios::binary);
-    if (!scfile.is_open())
-    {
-        throw UnrecoverableError("Error opening scoreboard file");
-    }
-
     // PLID secretkey NT
+
+    fName = "scoreboard_" + currentDateTimeFN() + ".txt";
 
     int i = 0;
     while (i < 10 && list->score[i] != 0)
@@ -524,57 +522,57 @@ void GamedataManager::formatScoreboard(SCORELIST *list)
 
         std::string content = std::to_string(list->score[i]) + " " + plid + " " + colorcode + " " + std::to_string(list->ntries[i]) + "\n";
 
-        scfile << content;
+        fdata += content;
+        std::cout << content << std::endl;
         i++;
     }
+    fSize = (int)fdata.length();
 }
-    
 
-void GamedataManager::getCurrentGameData(std::string plid, 
-                            std::string &fName, int &fSize, std::string &fdata)
+void GamedataManager::getCurrentGameData(std::string plid,
+                                         std::string &fName, int &fSize, std::string &fdata)
 {
     std::string path = GAMES_DIR + gameFileName(plid);
 
     std::fstream fileStream;
-    if (!openFile(fileStream, path, std::ios::in)){
+    if (!openFile(fileStream, path, std::ios::in))
+    {
         throw UnrecoverableError("Error opening file");
     }
 
     fName = gameFileName(plid);
-    
+
     int number_trials = countLinesInFile(fileStream) - 1;
 
     std::string line;
     std::getline(fileStream, line);
 
     std::string game_duration = getiword(line, 4);
-    std::string dateTime = getiword(line, 5) +' ' + getiword(line, 6);
+    std::string dateTime = getiword(line, 5) + ' ' + getiword(line, 6);
 
     fdata = "\n\tActive game found for player " + plid + '\n';
-    fdata += "Game initiated: " + dateTime + " with " + game_duration + 
-            " seconds to be completed\n";
-    
-    fdata += "\n\t--- Transactions found: " + std::to_string(number_trials) 
-            + " ---\n\n";
+    fdata += "Game initiated: " + dateTime + " with " + game_duration +
+             " seconds to be completed\n";
 
-    while (number_trials > 0){
+    fdata += "\n\t--- Transactions found: " + std::to_string(number_trials) + " ---\n\n";
+
+    while (number_trials > 0)
+    {
         std::getline(fileStream, line);
         std::string trial = getiword(line, 2);
         std::string nB = getiword(line, 3);
         std::string nW = getiword(line, 4);
         std::string time = getiword(line, 5);
 
-        fdata += "Trial: " + trial + ", nB: " + nB + ", nW: " + nW + 
-                " at " + time + "s\n";
+        fdata += "Trial: " + trial + ", nB: " + nB + ", nW: " + nW +
+                 " at " + time + "s\n";
 
         number_trials--;
     }
-    
-    fdata += "\n\t-- " + std::to_string(remainingTime(plid)) 
-            + " seconds remaining to be completed --\n";
-    
-    fSize = (int) fdata.length();
+
+    fdata += "\n\t-- " + std::to_string(remainingTime(plid)) + " seconds remaining to be completed --\n";
+
+    fSize = (int)fdata.length();
 
     fdata += "\n";
 }
-

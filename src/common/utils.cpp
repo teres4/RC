@@ -309,7 +309,8 @@ int FindTopScores(SCORELIST *list)
     char mode[8];
 
     // Scan the directory and sort files alphabetically
-    nentries = scandir(SCORES_DIR, &filelist, 0, alphasort);
+    nentries = scandir("/src/gamedata/SCORES", &filelist, 0, alphasort);
+
     // If no entries are found, return 0
     if (nentries <= 0)
         return 0;
@@ -325,7 +326,7 @@ int FindTopScores(SCORELIST *list)
             if (filelist[nentries]->d_name[0] != '.' && ifile < 10)
             {
                 // Construct the file path
-                sprintf(fname, "SCORES/%s", filelist[nentries]->d_name);
+                sprintf(fname, "/src/gamedata/SCORES/%s", filelist[nentries]->d_name);
 
                 // Open the file for reading
                 fp = fopen(fname, "r");
