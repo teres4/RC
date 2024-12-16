@@ -7,6 +7,7 @@
 #include <netdb.h>
 #include <string.h>
 #include <stdexcept>
+#include <fcntl.h>
 
 #include "server.hpp"
 #include "commands.hpp"
@@ -26,8 +27,8 @@ int main(int argc, char *argv[])
     CommandManager commandManager; // create a new command manager
     commandManager.registerAllCommands();
 
-
-    while (!is_exiting){
+    while (!is_exiting)
+    {
         try
         {
             UdpServer udpServer(server.getPort());
@@ -63,9 +64,10 @@ int main(int argc, char *argv[])
         DB.quitAllGames();
     }
     catch (ProtocolException &e)
-    { 
+    {
         std::cerr << "Encountered unrecoverable error while running the "
-                    "application. Shutting down..." << std::endl;
+                     "application. Shutting down..."
+                  << std::endl;
         return EXIT_FAILURE;
     }
 
@@ -105,9 +107,7 @@ Server::Server(int argc, char **argv)
     }
 
     validate_port(_gsport);
-    
 }
-
 
 bool Server::isverbose()
 {
@@ -140,19 +140,97 @@ void UDPServer(UdpServer &udpServer, CommandManager &manager, Server &server)
 void TCPServer(TcpServer &tcpServer, CommandManager &manager, Server &server)
 {
     bool verbose = server.isverbose();
-    tcpServer.setClientFd(tcpServer.accept());
+    // tcpServer.setClientFd(tcpServer.accept());
+
+    // while (!is_exiting)
+    //  while (true)
+    //  {
+    //      std::string message = tcpServer.receive();
+    //      std::cout << "in tcpserver received: " << message;
+    //      std::string response = manager.handleCommand(message, server);
+    //      if (verbose)
+    //      {
+    //          std::cout << tcpServer.getClientIP() << ":" << tcpServer.getClientPort() << std::endl;
+    //      }
+    //      std::cout << "tcp response: " << response << std::endl;
+    //      tcpServer.send(response);
+    //  }
+    int newfd, pid, ret;
+    char buffer[128];
+    struct sockaddr_in addr;
+    char *ptr;
+    ssize_t n, nw;
+    std::string message;
 
     while (!is_exiting)
     {
-        std::string message = tcpServer.receive();
-        std::cout << "in tcpserver received: " << message;
-        std::string response = manager.handleCommand(message, server);
-        if (verbose)
+        socklen_t addrlen = sizeof(addr);
+        do
+            newfd = accept(tcpServer._fd, (struct sockaddr *)&addr, &addrlen);
+
+        while (newfd == -1 && errno == EINTR);
+        if (newfd == -1) /*error*/
+            exit(1);
+        std::cout << "newfd: " << newfd << std::endl;
+        if ((pid = fork()) == -1) /*error*/
+            exit(1);
+        else if (pid == 0)
         {
-            std::cout << tcpServer.getClientIP() << ":" << tcpServer.getClientPort() << std::endl;
+            // child
+            {
+
+                close(tcpServer._fd);
+                int flags = fcntl(newfd, F_GETFL, 0);
+                if (flags == -1)
+                {
+                    perror("fcntl(F_GETFL)");
+                    close(newfd);
+                    exit(1);
+                }
+
+                if (fcntl(newfd, F_SETFL, flags | O_NONBLOCK) == -1)
+                {
+                    perror("fcntl(F_SETFL)");
+                    close(newfd);
+                    exit(1);
+                }
+                while ((n = read(newfd, buffer, 128)) != 0)
+                {
+                    if (n == -1) /*error*/
+                        exit(1);
+                    // add buffer to string
+
+                    message.append(buffer, (size_t)n);
+                    std::cout << "message: " << message << std::endl;
+                    std::cout << "n: " << n << std::endl;
+                }
+                std::cout << "in tcpserver received: " << message;
+                std::string response = manager.handleCommand(message, server);
+                if (verbose)
+                {
+                    std::cout << tcpServer.getClientIP() << ":" << tcpServer.getClientPort() << std::endl;
+                }
+                ptr = (char *)response.c_str();
+                n = static_cast<ssize_t>(response.size());
+                while (n > 0)
+                {
+                    if ((nw = write(newfd, ptr, (size_t)n)) <= 0) /*error*/
+                        exit(1);
+                    n -= nw;
+                    ptr += nw;
+                }
+                close(newfd);
+                exit(0);
+            }
         }
-        std::cout << "tcp response: " << response << std::endl;
-        tcpServer.send(response);
-        std::cout << "Finished sending response " << std::endl;
+        // std::cout << "tcp response: " << response << std::endl;
+        // tcpServer.send(response);
+        // std::cout << "Finished sending response " << std::endl;
+        // parent
+        do
+            ret = close(newfd);
+        while ((ret == -1) && (errno = EINTR));
+        if (ret == -1) /*error*/
+            exit(1);
     }
 }

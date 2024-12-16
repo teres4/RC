@@ -13,20 +13,21 @@
 #include <unistd.h>
 #include <cstring>
 #include <stdexcept>
+#include <fcntl.h>
 
 #include "common/constants.hpp"
 #include "common/utils.hpp"
 
 class TcpServer
 {
-private:
-    int _fd;                  // The file descriptor of the socket
-    struct addrinfo _hints;   // The address flags
-    struct addrinfo *_res;    // The address info
+public:
+    int _fd;                // The file descriptor of the socket
+    struct addrinfo _hints; // The address flags
+    struct addrinfo *_res;  // The address info
     int _clientfd;
     // struct sockaddr_in _addr; // The address
 
-    bool _closed = false;  // Flag indicating whether the server has been closed
+    bool _closed = false; // Flag indicating whether the server has been closed
 
 public:
     TcpServer(std::string gsport);
@@ -39,7 +40,6 @@ public:
     std::string getClientIP();
     std::string getClientPort();
     void setClientFd(int clientFd);
-
 };
 
 class UdpServer
@@ -60,7 +60,6 @@ public:
     std::string getClientIP();
     std::string getClientPort();
 };
-
 
 /**
  * @class SocketException
