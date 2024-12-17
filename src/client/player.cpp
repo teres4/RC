@@ -100,6 +100,7 @@ Client::Client(int argc, char **argv)
 {
     switch (argc) {
         case 1:
+            // get ip
             return;
         case 3:
             if (strcmp(argv[1], "-n") == 0)

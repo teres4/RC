@@ -1,6 +1,6 @@
 #include "socket.hpp"
 
-UdpServer::UdpServer(std::string gsport, std::string gsip)
+UdpServer::UdpServer(std::string gsport)
 {
     int errcode;
 
@@ -14,7 +14,7 @@ UdpServer::UdpServer(std::string gsport, std::string gsip)
     _hints.ai_socktype = SOCK_DGRAM;
     _hints.ai_flags = AI_PASSIVE;
 
-    errcode = getaddrinfo(gsip.c_str(), gsport.c_str(), &_hints, &_res);
+    errcode = getaddrinfo(NULL, gsport.c_str(), &_hints, &_res);
     if (errcode != 0) {
         throw SocketException();
     }

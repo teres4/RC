@@ -9,11 +9,11 @@
 #include <stdexcept>
 #include <fcntl.h>
 
-#include <iostream>
-#include <cstring>
-#include <cstdlib>
-#include <ifaddrs.h>
-#include <arpa/inet.h>
+// #include <iostream>
+// #include <cstring>
+// #include <cstdlib>
+// #include <ifaddrs.h>
+// #include <arpa/inet.h>
 
 #include "server.hpp"
 #include "commands.hpp"
@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
     {
         try
         {
-            UdpServer udpServer(server.getPort(), server.getIPaddress());
+            UdpServer udpServer(server.getPort());
             TcpServer tcpServer(server.getPort());
 
             int pid = fork();
@@ -115,42 +115,41 @@ Server::Server(int argc, char **argv)
         return;
     }
 
-    std::cout << _gsport << std::endl;
     validate_port(_gsport);
     
 }
 
 
-std::string Server::getIPaddress() {
-    struct ifaddrs *ifaddr, *tmp;
-    char *ip_address = nullptr;
+// std::string Server::getIPaddress() {
+//     struct ifaddrs *ifaddr, *tmp;
+//     char *ip_address = nullptr;
 
-    // Get list of network interfaces
-    if (getifaddrs(&ifaddr) == -1) {
-        perror("getifaddrs");
-        exit(EXIT_FAILURE);
-    }
+//     // Get list of network interfaces
+//     if (getifaddrs(&ifaddr) == -1) {
+//         perror("getifaddrs");
+//         exit(EXIT_FAILURE);
+//     }
 
-    tmp = ifaddr;
+//     tmp = ifaddr;
 
-    // Traverse the list of network interfaces
-    while (tmp) {
-        if (tmp->ifa_addr && tmp->ifa_addr->sa_family == AF_INET) {
-            struct sockaddr_in *pAddr = (struct sockaddr_in *)tmp->ifa_addr;
-            ip_address = inet_ntoa(pAddr->sin_addr);
-            break;  // We found an IP address, exit the loop
-        }
-        tmp = tmp->ifa_next;
-    }
+//     // Traverse the list of network interfaces
+//     while (tmp) {
+//         if (tmp->ifa_addr && tmp->ifa_addr->sa_family == AF_INET) {
+//             struct sockaddr_in *pAddr = (struct sockaddr_in *)tmp->ifa_addr;
+//             ip_address = inet_ntoa(pAddr->sin_addr);
+//             break;  // We found an IP address, exit the loop
+//         }
+//         tmp = tmp->ifa_next;
+//     }
 
-    freeifaddrs(ifaddr);
+//     freeifaddrs(ifaddr);
 
-    if (ip_address)
-        _gsip = std::string(ip_address);
+//     if (ip_address)
+//         _gsip = std::string(ip_address);
         
-    // std::cout << ip_address << std::endl;
-    return ip_address;
-}
+//     // std::cout << ip_address << std::endl;
+//     return ip_address;
+// }
 
 
 bool Server::isverbose()
