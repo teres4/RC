@@ -11,22 +11,8 @@
 #include "../common/utils.hpp"
 #include "../common/protocol.hpp"
 
-/*A directoria GAMES contém um ficheiro por cada jogo em curso contendo o estado do jogo, e ainda as directorias de jogadores, contendo
-cada uma delas os resumos de todos os jogos já terminados para um dado jogador.
-
-O estado de um jogo em curso para um dado PLID encontra-se guardado num ficheiro designado GAME (plid).txt
-
-Os jogos já terminados pertencentes a um dado PLID ficam guardados, para cada player, numa directoria cuja designação é PLID sob a
-directoria GAMES. O caminho para a localização dos ficheiros de jogos finalizados é assim: GAMES/PLID.
-
-GAME (plid).txt:
-PPPPPP M CCCC T YYYY-MM-DD HH:MM:SS s*/
-
 class DatabaseManager
 {
-protected:
-    std::string _m_rootDir; // Root directory for all data files
-
     // Helper methods
 
 public:
@@ -44,12 +30,8 @@ public:
 class GamedataManager : public DatabaseManager
 {
 
-private:
-    std::string _games_dir = "GAMES/";
-    std::string _scores_dir = "PLAYERS/";
-
 public:
-    GamedataManager(const std::string rootDir);
+    GamedataManager();
 
     bool hasOngoingGame(std::string plid);
     bool hasGames(std::string plid);
@@ -63,10 +45,6 @@ public:
 
     void quitGame(std::string plid);
     void quitAllGames();
-
-    // int findTopScores();
-
-    // int findLastGame(std::string plid, std::string fname);
 
     void gameOver(std::string plid, std::string code);
 
@@ -90,17 +68,16 @@ public:
 
     void makeScoreFile(std::string plid);
 
-    void formatScoreboard(SCORELIST *list, std::string &fName, int &fSize, 
-                        std::string &fdata, int nscores);
+    void formatScoreboard(SCORELIST *list, std::string &fName, int &fSize,
+                          std::string &fdata, int nscores);
     int remainingTime(std::string plid);
     std::string durationOfGame(std::string str);
 
-    void getCurrentGameData(std::string plid, std::string &fName, 
+    void getCurrentGameData(std::string plid, std::string &fName,
                             int &fSize, std::string &fdata);
 
-    void getMostRecentGameData(std::string plid, std::string &fName, 
-                            int &fSize, std::string &fdata);
-
+    void getMostRecentGameData(std::string plid, std::string &fName,
+                               int &fSize, std::string &fdata);
 };
 
 #endif

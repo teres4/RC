@@ -253,7 +253,7 @@ void ShowTrialsCommand::handle(std::string &args, std::string &response, Server 
     response = stComm.encodeResponse(); // Encode the response
     if (receiver.isverbose())
     {
-        std::cout << "Try Request by: " << stComm._plid << std::endl;
+        std::cout << "Show Trials Request by: " << stComm._plid << std::endl;
     }
     return;
 }

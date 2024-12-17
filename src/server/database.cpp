@@ -15,12 +15,6 @@ bool DatabaseManager::openFile(std::fstream &fileStream,
     return true;
 }
 
-bool DatabaseManager::closeFile(std::fstream &fileStream)
-{
-    fileStream.close();
-    return true;
-}
-
 void DatabaseManager::createDir(std::string path)
 {
     try
@@ -130,6 +124,12 @@ int DatabaseManager::countLinesInFile(std::fstream &fileStream)
     return lineCount;
 }
 
+GamedataManager::GamedataManager()
+{
+    createDir(GAMES_DIR);
+    createDir(SCORES_DIR);
+}
+
 bool GamedataManager::hasOngoingGame(std::string plid)
 {
     try
@@ -142,7 +142,7 @@ bool GamedataManager::hasOngoingGame(std::string plid)
         {
             return false;
         }
-        closeFile(fileStream);
+        fileStream.close();
         return true;
     }
 
@@ -202,11 +202,6 @@ void GamedataManager::gameOver(std::string plid, std::string code)
     {
         std::cerr << "Error: " << e.what() << std::endl;
     }
-}
-
-GamedataManager::GamedataManager(const std::string rootDir)
-{
-    _m_rootDir = rootDir;
 }
 
 void GamedataManager::createGame(std::string plid, char mode, int duration,
@@ -349,8 +344,6 @@ long int GamedataManager::getOngoingGameTime(std::string plid)
     std::getline(fileStream, line);
     std::string word = getiword(line, 7); // get the time()
 
-    // std::cout << "time: " << word << std::endl;
-
     return std::stol(word);
 }
 
@@ -367,7 +360,6 @@ long int GamedataManager::getOngoingGameTimeLimit(std::string plid)
 
     std::getline(fileStream, line);
     std::string word = getiword(line, 4); // get the time()
-    // std::cout << "time: " << word << std::endl;
 
     return std::stol(word);
 }
@@ -432,7 +424,6 @@ void GamedataManager::makeScoreFile(std::string plid)
     std::string path = SCORES_DIR + filename;
     std::string content = score + " " + plid + " " + getsecretKey(plid) + " " + std::to_string(nT) + " " + ongoingGameMode(plid) + " " + "\n";
 
-    // std::cout << "path: " << path << std::endl;
     writeToFile(path, content);
 }
 
@@ -594,12 +585,12 @@ void GamedataManager::getMostRecentGameData(std::string plid, std::string &fName
     std::string key = getiword(line, 3);
     std::string game_duration = getiword(line, 4);
     std::string dateTime = getiword(line, 5) + ' ' + getiword(line, 6);
-    
+
     // TODO
     fdata = "\n\tLast finalized game for player " + plid + '\n';
     fdata += "Game initiated: " + dateTime + " with " + game_duration +
              " seconds to be completed\n";
-    fdata += "Mode: " ;   
+    fdata += "Mode: ";
     fdata += "\n\t--- Transactions found: " + std::to_string(number_trials) + " ---\n\n";
 
     while (number_trials > 0)

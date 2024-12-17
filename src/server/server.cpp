@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
     }
 
     // if exiting, finish all games
-    GamedataManager DB = server._DB;
+    GamedataManager DB;
     try
     {
         DB.quitAllGames();
@@ -116,41 +116,7 @@ Server::Server(int argc, char **argv)
     }
 
     validate_port(_gsport);
-    
 }
-
-
-// std::string Server::getIPaddress() {
-//     struct ifaddrs *ifaddr, *tmp;
-//     char *ip_address = nullptr;
-
-//     // Get list of network interfaces
-//     if (getifaddrs(&ifaddr) == -1) {
-//         perror("getifaddrs");
-//         exit(EXIT_FAILURE);
-//     }
-
-//     tmp = ifaddr;
-
-//     // Traverse the list of network interfaces
-//     while (tmp) {
-//         if (tmp->ifa_addr && tmp->ifa_addr->sa_family == AF_INET) {
-//             struct sockaddr_in *pAddr = (struct sockaddr_in *)tmp->ifa_addr;
-//             ip_address = inet_ntoa(pAddr->sin_addr);
-//             break;  // We found an IP address, exit the loop
-//         }
-//         tmp = tmp->ifa_next;
-//     }
-
-//     freeifaddrs(ifaddr);
-
-//     if (ip_address)
-//         _gsip = std::string(ip_address);
-        
-//     // std::cout << ip_address << std::endl;
-//     return ip_address;
-// }
-
 
 bool Server::isverbose()
 {
@@ -169,15 +135,12 @@ void UDPServer(UdpServer &udpServer, CommandManager &manager, Server &server)
     while (!is_exiting)
     {
         std::string message = udpServer.receive();
-        std::cout << "in udpserver received: " << message;
         std::string response = manager.handleCommand(message, server);
-        
-        std::cout << "udp response: " << response;
-        udpServer.send(response);
-        if (verbose){
+        if (verbose)
+        {
             std::cout << udpServer.getClientIP() << ":" << udpServer.getClientPort() << std::endl;
         }
-
+        udpServer.send(response);
     }
 }
 
@@ -216,7 +179,6 @@ void TCPServer(TcpServer &tcpServer, CommandManager &manager, Server &server)
 
                 message.append(buffer, (size_t)n);
 
-                std::cout << "in tcpserver received: " << message;
                 std::string response = manager.handleCommand(message, server);
 
                 ptr = (char *)response.c_str();

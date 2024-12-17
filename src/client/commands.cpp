@@ -190,12 +190,10 @@ void TryCommand::handle(std::string args, Client &state)
 
     state._player.increaseNT();
 
-    // enunciado stuff?
   }
   if (tryComm._status == "DUP")
     std::cout << "Duplicate of a previous trial's guess " << std::endl;
 
-  // TODO - message
   if (tryComm._status == "INV")
     std::cout << "INV" << std::endl;
 
