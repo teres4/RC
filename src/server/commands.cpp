@@ -167,7 +167,7 @@ void TryCommand::handle(std::string &args, std::string &response, Server &receiv
                         // player wins
                         DB.gameWon(std::to_string(tryComm._plid));
                     }
-                    else if (tryComm._nT == 3)
+                    else if (tryComm._nT == 8)
                     {
                         // end game
                         // player loses

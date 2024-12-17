@@ -175,7 +175,7 @@ void TryCommand::handle(std::string args, Client &state)
 
   state.processRequest(tryComm); // Send the request to the server, receiving its response
 
-  if (tryComm._status == "OK")
+  if (tryComm._status == "OK" || tryComm._status == "ENT" || tryComm._status == "ETM")
   {
     std::cout << "Number of trial: " << state._player.getnT() << std::endl
               << "Number of black: " << tryComm._nB << std::endl
@@ -192,31 +192,31 @@ void TryCommand::handle(std::string args, Client &state)
 
     // enunciado stuff?
   }
-  else if (tryComm._status == "DUP")
+  if (tryComm._status == "DUP")
     std::cout << "Duplicate of a previous trial's guess " << std::endl;
 
   // TODO - message
-  else if (tryComm._status == "INV")
+  if (tryComm._status == "INV")
     std::cout << "INV" << std::endl;
 
-  else if (tryComm._status == "NOK")
+  if (tryComm._status == "NOK")
     std::cout << "Trial out of context" << std::endl;
 
-  else if (tryComm._status == "ENT")
+  if (tryComm._status == "ENT")
   {
     std::cout << "No more attempts available. Secret key was: " << tryComm._key
               << std::endl;
     state._player.finishGame();
   }
 
-  else if (tryComm._status == "ETM")
+  if (tryComm._status == "ETM")
   {
     std::cout << "Maximum play time has been exceeded. Secret key was: "
               << tryComm._key << std::endl;
     state._player.finishGame();
   }
 
-  else if (tryComm._status == "ERR")
+  if (tryComm._status == "ERR")
     std::cout << "Failed at try request. Please check syntax. " << std::endl;
 }
 
