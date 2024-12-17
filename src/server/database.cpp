@@ -494,26 +494,40 @@ std::string GamedataManager::durationOfGame(std::string lastLineOfFile)
     return getiword(lastLineOfFile, 3);
 }
 
-void GamedataManager::formatScoreboard(SCORELIST *list, std::string &fName, int &fSize, std::string &fdata)
+void GamedataManager::formatScoreboard(SCORELIST *list, std::string &fName, 
+                                    int &fSize, std::string &fdata, int nscores)
 {
-    // PLID secretkey NT
+    fName = "TOPSCORE_" + truncateDate(currentDateTimeFN()) + ".txt";
 
-    fName = "scoreboard_" + currentDateTimeFN() + ".txt";
-
+    char buffer[BUFFER_SIZE];
+    char mode[6];
     int i = 0;
+
+    sprintf(buffer, "\n\t\t\t------ TOP %d SCORES ------\n\n", nscores);
+    fdata += buffer;
+
+    sprintf(buffer, "\t\tSCORE \tPLAYER \tCODE\tNO TRIALS  MODE\n\n");
+    fdata += buffer;
     while (i < 10 && list->score[i] != 0)
     {
-        std::string colorcode(list->color_code[i]);
-        std::string plid(list->PLID[i]);
-
-        std::string content = std::to_string(list->score[i]) + " " + plid + " " + colorcode + " " + std::to_string(list->ntries[i]) + "\n";
-
-        fdata += content;
-        std::cout << content << std::endl;
+        if (list->mode[i] == MODEDEBUG){
+            strcpy(mode, "DEBUG");
+        }
+        else 
+            strcpy(mode, "PLAY");
+            
+        sprintf(buffer, "\t%d ------ %d\t%s\t%s\t%d\t%s\n", i + 1, 
+                list->score[i], list->PLID[i], list->color_code[i], 
+                list->ntries[i], mode);
+        fdata += buffer;
+        
         i++;
     }
     fSize = (int)fdata.length();
+
+    fdata += "\n";
 }
+
 
 void GamedataManager::getCurrentGameData(std::string plid,
                                          std::string &fName, int &fSize, std::string &fdata)
@@ -568,8 +582,6 @@ void GamedataManager::getMostRecentGameData(std::string plid, std::string &fName
 
     std::string path;
     findLastGame(plid, path);
-
-    std::cout << path << std::endl;
 
     std::fstream fileStream;
     if (!openFile(fileStream, path, std::ios::in))

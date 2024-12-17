@@ -6,6 +6,8 @@ extern bool is_exiting;
 
 int main(int argc, char *argv[])
 {
+
+    // TODO detect if server is down??
     try {
         setup_signal_handlers();   // change the signal handlers to our own
         Client client(argc, argv); // parse command-line arguments

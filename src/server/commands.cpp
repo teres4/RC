@@ -242,36 +242,40 @@ void ShowTrialsCommand::handle(std::string &args, std::string &response, Server 
 
 void ScoreboardCommand::handle(std::string &args, std::string &response, Server &receiver)
 {
-    //     // TODO check verbose
-    std::cout << args;
-
-    std::cout << "ScoreboardCommand" << std::endl;
-
+        // TODO check verbose
     SCORELIST list;
 
-    ScoreboardCommunication sbComm;
     GamedataManager DB = receiver._DB;
+    ScoreboardCommunication sbComm;
+    
+    std::string result;
 
     try
     {
+        StreamMessage reqMessage(args);
+        sbComm.decodeRequest(reqMessage); // Decode the request
+
         int nscores = findTopScores(&list);
         if (!nscores)
         {
             sbComm._status = "EMPTY";
-            std::cout << "No scores found" << std::endl;
+            result = "No scores found";
         }
         else
         {
+            DB.formatScoreboard(&list, sbComm._Fname, sbComm._Fsize, sbComm._Fdata, nscores);
             sbComm._status = "OK";
-            DB.formatScoreboard(&list, sbComm._Fname, sbComm._Fsize, sbComm._Fdata);
+            result = "Showing top " + std::to_string(nscores) + " games";
         }
     }
-    catch (const std::exception &e)
-    {
+    catch (ProtocolException &e)
+    {   // If the protocol is not valid, status = "ERR"
         sbComm._status = "ERR";
+        result = "Protocol Error";
     }
 
     response = sbComm.encodeResponse();
+
     return;
 }
 

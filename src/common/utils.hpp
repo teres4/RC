@@ -36,6 +36,7 @@ std::string get_color_key(std::vector<std::string> args);
 
 std::string currentDateTime();
 std::string currentDateTimeFN();
+std::string truncateDate(std::string datetime);
 
 void setup_signal_handlers();
 void terminate_signal_handler(int sig);

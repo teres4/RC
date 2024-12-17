@@ -90,7 +90,8 @@ public:
 
     void makeScoreFile(std::string plid);
 
-    void formatScoreboard(SCORELIST *list, std::string &fName, int &fSize, std::string &fdata);
+    void formatScoreboard(SCORELIST *list, std::string &fName, int &fSize, 
+                        std::string &fdata, int nscores);
     int remainingTime(std::string plid);
     std::string durationOfGame(std::string str);
 

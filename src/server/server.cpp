@@ -141,21 +141,7 @@ void UDPServer(UdpServer &udpServer, CommandManager &manager, Server &server)
 void TCPServer(TcpServer &tcpServer, CommandManager &manager, Server &server)
 {
     bool verbose = server.isverbose();
-    // tcpServer.setClientFd(tcpServer.accept());
 
-    // while (!is_exiting)
-    //  while (true)
-    //  {
-    //      std::string message = tcpServer.receive();
-    //      std::cout << "in tcpserver received: " << message;
-    //      std::string response = manager.handleCommand(message, server);
-    //      if (verbose)
-    //      {
-    //          std::cout << tcpServer.getClientIP() << ":" << tcpServer.getClientPort() << std::endl;
-    //      }
-    //      std::cout << "tcp response: " << response << std::endl;
-    //      tcpServer.send(response);
-    //  }
     int newfd, pid, ret;
     char buffer[128];
     struct sockaddr_in addr;

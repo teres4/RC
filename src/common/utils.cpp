@@ -203,6 +203,16 @@ std::string currentDateTimeFN()
     return time_str;
 }
 
+
+std::string truncateDate(std::string datetime)
+{
+    // datetime comes in yyyymmdd_hhmmss
+    // we'll truncate so it becomes yymmdd_hhmm
+
+    return datetime.substr(2, 11);
+}
+
+
 void setup_signal_handlers()
 {
     // set SIGINT/SIGTERM handler to close server gracefully
@@ -327,19 +337,17 @@ int findTopScores(SCORELIST *list)
             if (filelist[nentries]->d_name[0] != '.' && ifile < 10)
             {
                 // Construct the file path
-                sprintf(fname, "/src/gamedata/SCORES/%s", filelist[nentries]->d_name);
+                sprintf(fname, "./src/gamedata/SCORES/%s", filelist[nentries]->d_name);
 
                 // Open the file for reading
                 fp = fopen(fname, "r");
+
                 if (fp != NULL)
                 {
                     // Read data from the file
-                    if (!fscanf(fp, "%d %s %s %d %s",
-                                &list->score[ifile],
-                                list->PLID[ifile],
-                                list->color_code[ifile],
-                                &list->ntries[ifile],
-                                mode))
+                    if (!fscanf(fp, "%d %s %s %d %s", &list->score[ifile],
+                                list->PLID[ifile], list->color_code[ifile],
+                                &list->ntries[ifile], mode))
                     {
                         fclose(fp); // error
                         continue;
