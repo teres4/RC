@@ -8,7 +8,8 @@ void CommandManager::addCommand(std::shared_ptr<CommandHandler> command)
 {
   _handlers.insert({command->_name, command});
 
-  if (command->_alias != ""){
+  if (command->_alias != "")
+  {
     _handlers.insert({command->_alias, command});
   }
 }
@@ -69,7 +70,9 @@ void CommandManager::waitForCommand(Client &state)
   catch (std::exception &e)
   {
     std::cout << e.what() << std::endl;
-  } catch (...) {
+  }
+  catch (...)
+  {
     std::cout << "[ERROR] An unknown error occurred." << std::endl;
   }
 }
@@ -78,13 +81,15 @@ void StartCommand::handle(std::string args, Client &state)
 {
   std::vector<std::string> arg_split = split_command(args);
 
-  if (arg_split.size() != 2) { // If the number of arguments is not 2 
+  if (arg_split.size() != 2)
+  { // If the number of arguments is not 2
     std::cout << "Invalid number of arguments.\nUsage: " << *_command_arg << std::endl;
     return;
   }
 
-  if (state._player.activePlayer()){
-    std::cout << "There's already an active player: Player " 
+  if (state._player.activePlayer())
+  {
+    std::cout << "There's already an active player: Player "
               << state._player.getPlid() << std::endl;
     return;
   }
@@ -93,16 +98,22 @@ void StartCommand::handle(std::string args, Client &state)
   std::string PLID = arg_split[0];
   std::string max_playtime = arg_split[1];
 
-  try {
+  try
+  {
     validate_plid(PLID);
-  } catch (ProtocolException &e) {
+  }
+  catch (ProtocolException &e)
+  {
     std::cerr << "Invalid PLID: PLID must be a 6-digit number." << std::endl;
     return;
   }
 
-  try {
+  try
+  {
     validate_playTime(max_playtime);
-  } catch (ProtocolException &e) {
+  }
+  catch (ProtocolException &e)
+  {
     std::cerr << "Invalid max_playtime: max_playtime cannot exceed 600 seconds."
               << std::endl;
     return;
@@ -147,10 +158,12 @@ void TryCommand::handle(std::string args, Client &state)
     return;
   }
 
-  try {
+  try
+  {
     validate_key(arg_split);
-
-  } catch (ProtocolException &e) {
+  }
+  catch (ProtocolException &e)
+  {
     std::cerr << "Invalid color key." << std::endl;
     return;
   }
@@ -172,6 +185,7 @@ void TryCommand::handle(std::string args, Client &state)
     if (tryComm._nB == 4)
     {
       std::cout << "Game won!" << std::endl;
+      state._player.finishGame();
     }
 
     state._player.increaseNT();
@@ -180,7 +194,6 @@ void TryCommand::handle(std::string args, Client &state)
   }
   else if (tryComm._status == "DUP")
     std::cout << "Duplicate of a previous trial's guess " << std::endl;
-  
 
   // TODO - message
   else if (tryComm._status == "INV")
@@ -188,20 +201,24 @@ void TryCommand::handle(std::string args, Client &state)
 
   else if (tryComm._status == "NOK")
     std::cout << "Trial out of context" << std::endl;
-  
+
   else if (tryComm._status == "ENT")
+  {
     std::cout << "No more attempts available. Secret key was: " << tryComm._key
               << std::endl;
-  
+    state._player.finishGame();
+  }
+
   else if (tryComm._status == "ETM")
+  {
     std::cout << "Maximum play time has been exceeded. Secret key was: "
               << tryComm._key << std::endl;
-  
+    state._player.finishGame();
+  }
+
   else if (tryComm._status == "ERR")
     std::cout << "Failed at try request. Please check syntax. " << std::endl;
-    
 }
-
 
 void QuitCommand::handle(std::string args, Client &state)
 {
@@ -210,13 +227,13 @@ void QuitCommand::handle(std::string args, Client &state)
     std::cout << "Invalid number of arguments.\nUsage: " << *_command_arg << std::endl;
     return;
   }
-  
+
   if (!state._player.activePlayer())
   {
     std::cout << "There's not an active player" << std::endl;
     return;
   }
-  
+
   QuitCommunication quitComm;
 
   quitComm._plid = state._player.getPlid();
@@ -239,7 +256,6 @@ void QuitCommand::handle(std::string args, Client &state)
     std::cout << "Failed to quit." << std::endl;
   }
 }
-
 
 void ExitCommand::handle(std::string args, Client &state)
 {
@@ -272,19 +288,18 @@ void ExitCommand::handle(std::string args, Client &state)
     {
       std::cout << "Failed to exit." << std::endl;
     }
-
   }
   // make the player programn finish
   is_exiting = true;
   std::cout << "Exiting program " << std::endl;
 }
 
-
 void DebugCommand::handle(std::string args, Client &state)
 {
   std::vector<std::string> arg_split = split_command(args);
 
-  if (arg_split.size() != 6) {
+  if (arg_split.size() != 6)
+  {
     // If the number of arguments is not 6
     std::cout << "Invalid number of arguments.\nUsage: " << *_command_arg << std::endl;
     return;
@@ -293,16 +308,22 @@ void DebugCommand::handle(std::string args, Client &state)
   std::string PLID = arg_split[0];
   std::string max_playtime = arg_split[1];
 
-  try {
+  try
+  {
     validate_plid(PLID);
-  } catch (ProtocolException &e) {
+  }
+  catch (ProtocolException &e)
+  {
     std::cerr << "Invalid PLID: PLID must be a 6-digit number." << std::endl;
     return;
   }
 
-  try {
+  try
+  {
     validate_playTime(max_playtime);
-  } catch (ProtocolException &e) {
+  }
+  catch (ProtocolException &e)
+  {
     std::cerr << "Invalid max_playtime: max_playtime cannot exceed 600 seconds."
               << std::endl;
     return;
@@ -310,34 +331,39 @@ void DebugCommand::handle(std::string args, Client &state)
 
   std::vector<std::string> colorArray(arg_split.begin() + 2, std::end(arg_split));
 
-  try {
+  try
+  {
     validate_key(colorArray);
-  } catch (ProtocolException &e) {
+  }
+  catch (ProtocolException &e)
+  {
     std::cerr << "Invalid color key." << std::endl;
     return;
   }
 
   DebugCommunication dbgComm;
-  
+
   dbgComm._plid = get_plid(PLID);
   dbgComm._time = get_playtime(max_playtime);
   dbgComm._key = get_color_key(colorArray);
 
-  state.processRequest(dbgComm); 
+  state.processRequest(dbgComm);
 
-  if (dbgComm._status == "OK") {
-    std::cout << "New game has started in debug mode with key: "<< dbgComm._key << std::endl;
+  if (dbgComm._status == "OK")
+  {
+    std::cout << "New game has started in debug mode with key: " << dbgComm._key << std::endl;
     state._player.newPlayer(get_plid(PLID));
-  } 
-  else if (dbgComm._status == "NOK") {
+  }
+  else if (dbgComm._status == "NOK")
+  {
     std::cout << "Player already has an ongoing game" << std::endl;
     state._player.newPlayer(get_plid(PLID));
-  } 
-  else if (dbgComm._status == "ERR") {
+  }
+  else if (dbgComm._status == "ERR")
+  {
     std::cout << "Failed debug request. Please check syntax." << std::endl;
   }
 }
-
 
 void ShowTrialsCommand::handle(std::string args, Client &state)
 {
@@ -346,7 +372,7 @@ void ShowTrialsCommand::handle(std::string args, Client &state)
     std::cout << "Invalid number of arguments.\nUsage: " << *_command_arg << std::endl;
     return;
   }
-  
+
   if (!state._player.activePlayer())
   {
     std::cout << "There's not an active player" << std::endl;
@@ -360,11 +386,13 @@ void ShowTrialsCommand::handle(std::string args, Client &state)
 
   if (stComm._status == "ACT" || stComm._status == "FIN")
   {
-    if (stComm._Fname.size() > MAX_FNAME){
+    if (stComm._Fname.size() > MAX_FNAME)
+    {
       std::cout << "Invalid filename - max of 24 alphanumerical characters";
       return;
     }
-    if (stComm._Fsize > MAX_FSIZE){
+    if (stComm._Fsize > MAX_FSIZE)
+    {
       std::cout << "File too big.";
       return;
     }
@@ -377,7 +405,6 @@ void ShowTrialsCommand::handle(std::string args, Client &state)
   else if (stComm._status == "NOK")
     std::cout << "Player has no games." << std::endl;
 }
-
 
 void ScoreboardCommand::handle(std::string args, Client &state)
 {
@@ -393,11 +420,13 @@ void ScoreboardCommand::handle(std::string args, Client &state)
 
   if (sbComm._status == "OK")
   {
-    if (sbComm._Fname.size() > MAX_FNAME){
+    if (sbComm._Fname.size() > MAX_FNAME)
+    {
       std::cout << "Invalid filename - max of 24 alphanumerical characters";
       return;
     }
-    if (sbComm._Fsize > MAX_FSIZE){
+    if (sbComm._Fsize > MAX_FSIZE)
+    {
       std::cout << "File too big.";
       return;
     }
@@ -406,10 +435,7 @@ void ScoreboardCommand::handle(std::string args, Client &state)
     std::cout << sbComm._Fdata << std::endl;
     state.writeFile(sbComm._Fname, sbComm._Fdata);
   }
-
 }
-
-
 
 std::vector<std::string> split_command(std::string input)
 {
