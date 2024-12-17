@@ -19,10 +19,6 @@ UdpServer::UdpServer(std::string gsport)
         throw SocketException();
     }
 
-    // Set the socket option to reuse the address to avoid "address already in use" errors
-    int opt = 1;
-    setsockopt(_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
-
     errcode = bind(_fd, _res->ai_addr, _res->ai_addrlen);
     if (errcode == -1) {
         throw SocketException();

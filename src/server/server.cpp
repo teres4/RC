@@ -9,6 +9,12 @@
 #include <stdexcept>
 #include <fcntl.h>
 
+#include <iostream>
+#include <cstring>
+#include <cstdlib>
+#include <ifaddrs.h>
+#include <arpa/inet.h>
+
 #include "server.hpp"
 #include "commands.hpp"
 
@@ -108,6 +114,39 @@ Server::Server(int argc, char **argv)
     }
 
     validate_port(_gsport);
+    getIPaddress();
+}
+
+
+void Server::getIPaddress() {
+    struct ifaddrs *ifaddr, *tmp;
+    char *ip_address = nullptr;
+
+    // Get list of network interfaces
+    if (getifaddrs(&ifaddr) == -1) {
+        perror("getifaddrs");
+        exit(EXIT_FAILURE);
+    }
+
+    tmp = ifaddr;
+
+    // Traverse the list of network interfaces
+    while (tmp) {
+        if (tmp->ifa_addr && tmp->ifa_addr->sa_family == AF_INET) {
+            struct sockaddr_in *pAddr = (struct sockaddr_in *)tmp->ifa_addr;
+            ip_address = inet_ntoa(pAddr->sin_addr);
+            break;  // We found an IP address, exit the loop
+        }
+        tmp = tmp->ifa_next;
+    }
+
+    freeifaddrs(ifaddr);
+
+    if (ip_address)
+        _gsip = std::string(ip_address);
+    // } else {
+    //     return "IP address not found";
+    // }
 }
 
 bool Server::isverbose()

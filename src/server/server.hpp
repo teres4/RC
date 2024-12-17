@@ -13,6 +13,7 @@ class Server
 {
 private:
     std::string _gsport = DEFAULT_PORT;
+    std::string _gsip;
     bool _verbose = false;
 
 public:
@@ -20,6 +21,7 @@ public:
     Server(int argc, char **argv);
     // void initializeServers();
 
+    void getIPaddress();
     bool isverbose();
 
     std::string getPort();
