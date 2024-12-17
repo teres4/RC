@@ -171,13 +171,13 @@ void UDPServer(UdpServer &udpServer, CommandManager &manager, Server &server)
         std::string message = udpServer.receive();
         std::cout << "in udpserver received: " << message;
         std::string response = manager.handleCommand(message, server);
-        if (verbose)
-
-            std::cout << "udp response: " << response;
+        
+        std::cout << "udp response: " << response;
         udpServer.send(response);
-        {
+        if (verbose){
             std::cout << udpServer.getClientIP() << ":" << udpServer.getClientPort() << std::endl;
         }
+
     }
 }
 
@@ -230,7 +230,6 @@ void TCPServer(TcpServer &tcpServer, CommandManager &manager, Server &server)
                 }
                 if (verbose)
                 {
-
                     std::cout << tcpServer.getClientIP() << " : " << tcpServer.getClientPort() << std::endl;
                 }
                 close(newfd);
