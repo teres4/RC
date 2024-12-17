@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
     {
         try
         {
-            UdpServer udpServer(server.getPort());
+            UdpServer udpServer(server.getPort(), server.getIPaddress());
             TcpServer tcpServer(server.getPort());
 
             int pid = fork();
@@ -86,8 +86,10 @@ Server::Server(int argc, char **argv)
     switch (argc)
     {
     case 1: // no arguments
+        // getIPaddress();
         return;
     case 2: // with -v
+        // getIPaddress();
         if (strcmp(argv[1], "-v") == 0)
             _verbose = true;
         else
@@ -113,12 +115,13 @@ Server::Server(int argc, char **argv)
         return;
     }
 
+    std::cout << _gsport << std::endl;
     validate_port(_gsport);
-    getIPaddress();
+    
 }
 
 
-void Server::getIPaddress() {
+std::string Server::getIPaddress() {
     struct ifaddrs *ifaddr, *tmp;
     char *ip_address = nullptr;
 
@@ -144,10 +147,11 @@ void Server::getIPaddress() {
 
     if (ip_address)
         _gsip = std::string(ip_address);
-    // } else {
-    //     return "IP address not found";
-    // }
+        
+    // std::cout << ip_address << std::endl;
+    return ip_address;
 }
+
 
 bool Server::isverbose()
 {

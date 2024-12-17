@@ -51,7 +51,7 @@ private:
     struct sockaddr_in _addr; // The address
 
 public:
-    UdpServer(std::string gsport);
+    UdpServer(std::string gsport, std::string gsip);
     ~UdpServer();
     void send(std::string &message);
     std::string receive();

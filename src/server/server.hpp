@@ -21,7 +21,7 @@ public:
     Server(int argc, char **argv);
     // void initializeServers();
 
-    void getIPaddress();
+    std::string getIPaddress();
     bool isverbose();
 
     std::string getPort();
