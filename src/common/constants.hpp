@@ -27,8 +27,6 @@
 #define GAMES_DIR "./src/gamedata/GAMES/"
 #define SCORES_DIR "./src/gamedata/SCORES/"
 
-#define MAX_TCP_WORKERS 100
-
 #define WIN_CODE "W"
 #define FAIL_CODE "F"
 #define QUIT_CODE "Q"

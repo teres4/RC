@@ -114,7 +114,7 @@ TcpServer::TcpServer(std::string gsport)
         throw SocketException();
     }
 
-    if (listen(_fd, 5) == -1) /*error*/
+    if (listen(_fd, 5) == -1) // error
     {
         throw SocketException();
     }
@@ -127,8 +127,6 @@ void TcpServer::send(std::string &message)
     size_t message_size = message.length();
     size_t total_sent = 0;
 
-    std::cout << "Sending message of size: " << message_size << std::endl;
-
     while (total_sent < message_size)
     {
         ssize_t sent = write(_clientfd, message.data() + total_sent, message_size - total_sent);
@@ -138,8 +136,6 @@ void TcpServer::send(std::string &message)
         }
         total_sent += (size_t)sent;
     }
-
-    std::cout << "Finished sending message of size: " << message_size << std::endl;
 }
 
 std::string TcpServer::receive()

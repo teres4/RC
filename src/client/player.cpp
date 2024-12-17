@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
             commandManager.waitForCommand(client);
         }
 
-        if (client._player.activePlayer()){
+        if (client._player.activePlayer() && client._player.activeGame()){
             std::cout << "Player has an active game, will attempt to quit it." 
                     << std::endl;
             try {
@@ -76,8 +76,14 @@ int Player::getnT()
 
 bool Player::activePlayer()
 {
+    return _plid != 0;
+}
+
+bool Player::activeGame()
+{
     return _onGoing;
 }
+
 
 void Player::increaseNT()
 {
@@ -86,6 +92,11 @@ void Player::increaseNT()
 
 void Player::finishGame()
 {
+    _onGoing = false;
+    _nT = 1;
+}
+
+void Player::quitPlayer(){
     _onGoing = false;
     _nT = 1;
     _plid = 0;

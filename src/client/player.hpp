@@ -26,6 +26,8 @@ public:
   int getPlid();
   int getnT();
   bool activePlayer();
+  bool activeGame();
+  void quitPlayer();
   void setOngoing(bool status);
   void finishGame();
   void increaseNT();

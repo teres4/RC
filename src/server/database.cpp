@@ -586,11 +586,15 @@ void GamedataManager::getMostRecentGameData(std::string plid, std::string &fName
     std::string game_duration = getiword(line, 4);
     std::string dateTime = getiword(line, 5) + ' ' + getiword(line, 6);
 
-    // TODO
+    if (mode == "P")
+        mode = "PLAY";
+    else
+        mode = "DEBUG";
+        
     fdata = "\n\tLast finalized game for player " + plid + '\n';
     fdata += "Game initiated: " + dateTime + " with " + game_duration +
              " seconds to be completed\n";
-    fdata += "Mode: ";
+    fdata += "Mode: " + mode + "\tSecret code: " + key + "\n";
     fdata += "\n\t--- Transactions found: " + std::to_string(number_trials) + " ---\n\n";
 
     while (number_trials > 0)

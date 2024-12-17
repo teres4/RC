@@ -25,13 +25,6 @@ void CommandManager::addAllCommands()
   this->addCommand(std::make_shared<DebugCommand>());
 }
 
-// void CommandManager::printHelp()
-// {
-//     for (auto &handler : handlerList)
-//     {
-//         std::cout << handler->name << " " << handler->args.value_or("") << " - " << handler->usage.value_or("") << std::endl;
-//     }
-// }
 
 void CommandManager::waitForCommand(Client &state)
 {
@@ -87,9 +80,9 @@ void StartCommand::handle(std::string args, Client &state)
     return;
   }
 
-  if (state._player.activePlayer())
+  if (state._player.activePlayer() && state._player.activeGame())
   {
-    std::cout << "There's already an active player: Player "
+    std::cout << "There's already an active game for player "
               << state._player.getPlid() << std::endl;
     return;
   }
@@ -146,6 +139,10 @@ void TryCommand::handle(std::string args, Client &state)
   if (!state._player.activePlayer())
   {
     std::cout << "There's not an active player" << std::endl;
+    return;
+  }
+  if (!state._player.activeGame()){
+    std::cout << "There's not an active game" << std::endl;
     return;
   }
 
@@ -275,11 +272,10 @@ void ExitCommand::handle(std::string args, Client &state)
     {
       std::cout << "Game has ended." << std::endl;
       std::cout << "The secret key:" << quitComm._key << std::endl;
-      state._player.finishGame();
+      state._player.quitPlayer();
     }
     else if (quitComm._status == "NOK")
     {
-      std::cout << "Player had no ongoing game." << std::endl;
       state._player.setOngoing(false);
     }
     else if (quitComm._status == "ERR")

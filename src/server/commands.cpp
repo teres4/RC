@@ -56,7 +56,6 @@ std::string CommandManager::handleCommand(std::string message, Server &receiver)
 
 void StartCommand::handle(std::string &args, std::string &response, Server &receiver)
 {
-    // TODO check verbose
     GamedataManager DB = receiver._DB;
 
     StartCommunication startComm;
@@ -107,15 +106,9 @@ void StartCommand::handle(std::string &args, std::string &response, Server &rece
 
 void TryCommand::handle(std::string &args, std::string &response, Server &receiver)
 {
-    //     // TODO check verbose
     GamedataManager DB = receiver._DB;
 
-    // TRY PLID C1 C2 C3 C4 nT
-
-    // RTR status [nT nB nW][C1 C2 C3 C4]
-
     TryCommunication tryComm;
-
     std::string result;
 
     try
@@ -136,7 +129,6 @@ void TryCommand::handle(std::string &args, std::string &response, Server &receiv
             {
                 DB.gameTimeout(std::to_string(tryComm._plid));
                 tryComm._status = "ETM";
-                /*reveal secret key*/
                 tryComm._key = DB.getsecretKey(std::to_string(tryComm._plid));
                 tryComm._key = DB.formatSecretKey(tryComm._key);
             }
@@ -148,7 +140,6 @@ void TryCommand::handle(std::string &args, std::string &response, Server &receiv
             }
             else
             {
-
                 int expectedNT = DB.expectedNT(std::to_string(tryComm._plid));
                 if (expectedNT == tryComm._nT)
                 {
@@ -161,20 +152,13 @@ void TryCommand::handle(std::string &args, std::string &response, Server &receiv
 
                     DB.registerTry(std::to_string(tryComm._plid),
                                    removeSpaces(tryComm._key), tryComm._nB, tryComm._nW);
-                    if (tryComm._nB == 4)
-                    {
-                        // end game
-                        // player wins
+                                
+                    if (tryComm._nB == 4) // end game, player won
                         DB.gameWon(std::to_string(tryComm._plid));
-                    }
-                    else if (tryComm._nT == 8)
+                    else if (tryComm._nT == 8) // end game, player loss
                     {
-                        // end game
-                        // player loses
-
-                        tryComm._status = "ENT";
-                        /*reveal secret key*/
-                        // add spaces to key
+                        tryComm._status = "ENT"; 
+                        // reveal secret key
                         tryComm._key = DB.getsecretKey(std::to_string(tryComm._plid));
                         tryComm._key = DB.formatSecretKey(tryComm._key);
                         DB.gameLost(std::to_string(tryComm._plid));
@@ -211,7 +195,6 @@ void TryCommand::handle(std::string &args, std::string &response, Server &receiv
 
 void ShowTrialsCommand::handle(std::string &args, std::string &response, Server &receiver)
 {
-    // TODO check verbose
     GamedataManager DB = receiver._DB;
 
     ShowTrialsCommunication stComm;
@@ -260,7 +243,6 @@ void ShowTrialsCommand::handle(std::string &args, std::string &response, Server 
 
 void ScoreboardCommand::handle(std::string &args, std::string &response, Server &receiver)
 {
-    // TODO check verbose
     SCORELIST list;
 
     GamedataManager DB = receiver._DB;
@@ -303,7 +285,6 @@ void ScoreboardCommand::handle(std::string &args, std::string &response, Server 
 
 void QuitCommand::handle(std::string &args, std::string &response, Server &receiver)
 {
-    // TODO check verbose
     GamedataManager DB = receiver._DB;
 
     QuitCommunication quitComm;
@@ -344,7 +325,6 @@ void QuitCommand::handle(std::string &args, std::string &response, Server &recei
 
 void ExitCommand::handle(std::string &args, std::string &response, Server &receiver)
 {
-    // TODO check verbose
     GamedataManager DB = receiver._DB;
 
     QuitCommunication exitComm;
@@ -385,7 +365,6 @@ void ExitCommand::handle(std::string &args, std::string &response, Server &recei
 
 void DebugCommand::handle(std::string &args, std::string &response, Server &receiver)
 {
-    // TODO check verbose
     GamedataManager DB = receiver._DB;
 
     DebugCommunication dbgComm;

@@ -9,12 +9,6 @@
 #include <stdexcept>
 #include <fcntl.h>
 
-// #include <iostream>
-// #include <cstring>
-// #include <cstdlib>
-// #include <ifaddrs.h>
-// #include <arpa/inet.h>
-
 #include "server.hpp"
 #include "commands.hpp"
 
@@ -48,7 +42,6 @@ int main(int argc, char *argv[])
             else if (pid == 0) // child process
             {
                 tcpServer.closeServer();
-                // udp
                 UDPServer(udpServer, commandManager, server); // start udp server
             }
             else // parent process
@@ -86,10 +79,8 @@ Server::Server(int argc, char **argv)
     switch (argc)
     {
     case 1: // no arguments
-        // getIPaddress();
         return;
     case 2: // with -v
-        // getIPaddress();
         if (strcmp(argv[1], "-v") == 0)
             _verbose = true;
         else
@@ -136,8 +127,8 @@ void UDPServer(UdpServer &udpServer, CommandManager &manager, Server &server)
     {
         std::string message = udpServer.receive();
         std::string response = manager.handleCommand(message, server);
-        if (verbose)
-        {
+        
+        if (verbose){
             std::cout << udpServer.getClientIP() << ":" << udpServer.getClientPort() << std::endl;
         }
         udpServer.send(response);
@@ -162,21 +153,20 @@ void TCPServer(TcpServer &tcpServer, CommandManager &manager, Server &server)
             newfd = accept(tcpServer._fd, (struct sockaddr *)&addr, &addrlen);
 
         while (newfd == -1 && errno == EINTR);
-        if (newfd == -1) /*error*/
+        if (newfd == -1) // error
             exit(1);
 
-        if ((pid = fork()) == -1) /*error*/
+        if ((pid = fork()) == -1) // error
             exit(1);
-        else if (pid == 0)
+        else if (pid == 0)  // child
         {
-            // child
             {
                 close(tcpServer._fd);
                 n = read(newfd, buffer, 128);
-                if (n == -1) /*error*/
+                if (n == -1) // error
                     exit(1);
-                // add buffer to string
 
+                // add buffer to string
                 message.append(buffer, (size_t)n);
 
                 std::string response = manager.handleCommand(message, server);
@@ -185,7 +175,7 @@ void TCPServer(TcpServer &tcpServer, CommandManager &manager, Server &server)
                 n = static_cast<ssize_t>(response.size());
                 while (n > 0)
                 {
-                    if ((nw = write(newfd, ptr, (size_t)n)) <= 0) /*error*/
+                    if ((nw = write(newfd, ptr, (size_t)n)) <= 0) //error
                         exit(1);
                     n -= nw;
                     ptr += nw;
@@ -202,7 +192,7 @@ void TCPServer(TcpServer &tcpServer, CommandManager &manager, Server &server)
         do
             ret = close(newfd);
         while ((ret == -1) && (errno = EINTR));
-        if (ret == -1) /*error*/
+        if (ret == -1) // error
             exit(1);
     }
 }

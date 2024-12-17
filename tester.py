@@ -3,7 +3,7 @@ import os
 
 def generate_reports():
     # Define the ranges of numbers
-    ranges = list(range(1, 12)) + list(range(21, 25))
+    ranges = list(range(1, 12))
     
     # Define the folder where reports will be saved
     reports_folder = "reports"
@@ -19,7 +19,7 @@ def generate_reports():
         file_path = os.path.join(reports_folder, f"report_{xx}.html")
         
         # Construct the command to send data to nc
-        command = f'echo "172.20.48.1 58013 {xx}" | nc tejo.tecnico.ulisboa.pt 59000'
+        command = f'echo "193.136.128.104 58013 {xx}" | nc tejo.tecnico.ulisboa.pt 59000'
         
         try:
             # Open the file in write mode and capture the command output
