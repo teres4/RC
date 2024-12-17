@@ -9,5 +9,8 @@ player
 utils
 readme.txt
 gamedata
-
+SCRIPTS
 GAMES
+game_files
+*.html
+src/server
