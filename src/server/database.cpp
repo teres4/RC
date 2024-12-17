@@ -76,7 +76,6 @@ void DatabaseManager::writeToFile(std::string path, std::string content)
     }
 }
 
-
 std::string DatabaseManager::renameFile(std::string code)
 {
     // yyyy-mm-dd hh-mm-ss
@@ -154,7 +153,7 @@ bool GamedataManager::hasOngoingGame(std::string plid)
 }
 
 bool GamedataManager::hasGames(std::string plid)
-{ 
+{
     try
     {
         validate_plid(plid);
@@ -417,7 +416,6 @@ void GamedataManager::registerTry(std::string plid, std::string key, int B, int 
     appendToFile(path, content);
 }
 
-
 void GamedataManager::makeScoreFile(std::string plid)
 {
     // score PLID DDMMYYYY HHMMSS.txt
@@ -488,14 +486,13 @@ int GamedataManager::remainingTime(std::string plid)
     return (int)(time - now);
 }
 
-
 std::string GamedataManager::durationOfGame(std::string lastLineOfFile)
 {
     return getiword(lastLineOfFile, 3);
 }
 
-void GamedataManager::formatScoreboard(SCORELIST *list, std::string &fName, 
-                                    int &fSize, std::string &fdata, int nscores)
+void GamedataManager::formatScoreboard(SCORELIST *list, std::string &fName,
+                                       int &fSize, std::string &fdata, int nscores)
 {
     fName = "TOPSCORE_" + truncateDate(currentDateTimeFN()) + ".txt";
 
@@ -508,26 +505,26 @@ void GamedataManager::formatScoreboard(SCORELIST *list, std::string &fName,
 
     sprintf(buffer, "\t\tSCORE \tPLAYER \tCODE\tNO TRIALS  MODE\n\n");
     fdata += buffer;
-    while (i < 10 && list->score[i] != 0)
+    while (i < 10 && list->score[i] != 0 && i < nscores)
     {
-        if (list->mode[i] == MODEDEBUG){
+        if (list->mode[i] == MODEDEBUG)
+        {
             strcpy(mode, "DEBUG");
         }
-        else 
+        else
             strcpy(mode, "PLAY");
-            
-        sprintf(buffer, "\t%d ------ %d\t%s\t%s\t%d\t%s\n", i + 1, 
-                list->score[i], list->PLID[i], list->color_code[i], 
+
+        sprintf(buffer, "\t%d ------ %d\t%s\t%s\t%d\t%s\n", i + 1,
+                list->score[i], list->PLID[i], list->color_code[i],
                 list->ntries[i], mode);
         fdata += buffer;
-        
+
         i++;
     }
     fSize = (int)fdata.length();
 
     fdata += "\n";
 }
-
 
 void GamedataManager::getCurrentGameData(std::string plid,
                                          std::string &fName, int &fSize, std::string &fdata)
@@ -575,10 +572,9 @@ void GamedataManager::getCurrentGameData(std::string plid,
     fdata += "\n";
 }
 
-
-
-void GamedataManager::getMostRecentGameData(std::string plid, std::string &fName, 
-                            int &fSize, std::string &fdata){
+void GamedataManager::getMostRecentGameData(std::string plid, std::string &fName,
+                                            int &fSize, std::string &fdata)
+{
 
     std::string path;
     findLastGame(plid, path);
@@ -622,7 +618,4 @@ void GamedataManager::getMostRecentGameData(std::string plid, std::string &fName
     fSize = (int)fdata.length();
 
     fdata += "\n";
-
-
-
 }
