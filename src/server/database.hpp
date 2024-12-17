@@ -64,14 +64,12 @@ public:
     void quitGame(std::string plid);
     void quitAllGames();
 
-    int findTopScores();
+    // int findTopScores();
 
-    int findLastGame(std::string plid, std::string fname);
+    // int findLastGame(std::string plid, std::string fname);
 
     void gameOver(std::string plid, std::string code);
 
-    // std::string hourtoString(tm time);
-    // std::string dateToString(tm time);
     std::string getsecretKey(std::string plid);
     std::string formatSecretKey(std::string key);
     bool isRepeatedTrial(std::string plid, std::string key);
@@ -86,8 +84,6 @@ public:
 
     std::string getiword(std::string line, int n);
 
-    std::string sendTrials(std::string plid);
-
     void gameWon(std::string plid);
     void gameLost(std::string plid);
     void gameTimeout(std::string plid);
@@ -96,8 +92,14 @@ public:
 
     void formatScoreboard(SCORELIST *list, std::string &fName, int &fSize, std::string &fdata);
     int remainingTime(std::string plid);
-    void getCurrentGameData(std::string plid, std::string &fName,
+    std::string durationOfGame(std::string str);
+
+    void getCurrentGameData(std::string plid, std::string &fName, 
                             int &fSize, std::string &fdata);
+
+    void getMostRecentGameData(std::string plid, std::string &fName, 
+                            int &fSize, std::string &fdata);
+
 };
 
 #endif

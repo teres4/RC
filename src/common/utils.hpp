@@ -56,8 +56,8 @@ typedef struct
     int mode[10];
 } SCORELIST;
 
-int FindTopScores(SCORELIST *list);
+int findTopScores(SCORELIST *list);
 
-int findLastGame(std::string plid, std::string fname);
+void findLastGame(std::string plid, std::string &path);
 
 #endif

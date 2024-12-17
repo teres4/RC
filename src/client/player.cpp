@@ -59,7 +59,7 @@ void Player::newPlayer(int plid)
 {
     _plid = plid;
     _nT = 1;
-    onGoing = true;
+    _onGoing = true;
 }
 
 int Player::getPlid()
@@ -74,7 +74,7 @@ int Player::getnT()
 
 bool Player::activePlayer()
 {
-    return onGoing;
+    return _onGoing;
 }
 
 void Player::increaseNT()
@@ -84,9 +84,13 @@ void Player::increaseNT()
 
 void Player::finishGame()
 {
-    onGoing = false;
+    _onGoing = false;
     _nT = 1;
     _plid = 0;
+}
+
+void Player::setOngoing(bool status){
+    _onGoing = status;
 }
 
 

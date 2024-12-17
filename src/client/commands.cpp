@@ -83,6 +83,12 @@ void StartCommand::handle(std::string args, Client &state)
     return;
   }
 
+  if (state._player.activePlayer()){
+    std::cout << "There's already an active player: Player " 
+              << state._player.getPlid() << std::endl;
+    return;
+  }
+
   // Get the username and password from the arguments
   std::string PLID = arg_split[0];
   std::string max_playtime = arg_split[1];
@@ -226,6 +232,7 @@ void QuitCommand::handle(std::string args, Client &state)
   else if (quitComm._status == "NOK")
   {
     std::cout << "Player had no ongoing game." << std::endl;
+    state._player.setOngoing(false);
   }
   else if (quitComm._status == "ERR")
   {
@@ -259,6 +266,7 @@ void ExitCommand::handle(std::string args, Client &state)
     else if (quitComm._status == "NOK")
     {
       std::cout << "Player had no ongoing game." << std::endl;
+      state._player.setOngoing(false);
     }
     else if (quitComm._status == "ERR")
     {

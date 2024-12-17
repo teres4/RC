@@ -76,13 +76,6 @@ void DatabaseManager::writeToFile(std::string path, std::string content)
     }
 }
 
-void DatabaseManager::deleteFile(std::string path)
-{
-    if (std::remove(path.c_str()) != 0)
-    { // Try to delete the file
-        throw UnrecoverableError("Error: Unable to delete file '" + path + "'.");
-    }
-}
 
 std::string DatabaseManager::renameFile(std::string code)
 {
@@ -161,19 +154,14 @@ bool GamedataManager::hasOngoingGame(std::string plid)
 }
 
 bool GamedataManager::hasGames(std::string plid)
-{ // TODO
+{ 
     try
     {
         validate_plid(plid);
         // ongoing games are stored in the GAMES directory
-        std::string path = GAMES_DIR + gameFileName(plid);
-        std::fstream fileStream;
-        if (!openFile(fileStream, path, std::ios::in))
-        {
-            return false;
-        }
-        closeFile(fileStream);
-        return true;
+        std::string path = GAMES_DIR + plid;
+
+        return std::filesystem::is_directory(path);
     }
 
     catch (...)
@@ -380,7 +368,7 @@ long int GamedataManager::getOngoingGameTimeLimit(std::string plid)
 
     std::getline(fileStream, line);
     std::string word = getiword(line, 4); // get the time()
-    std::cout << "time: " << word << std::endl;
+    // std::cout << "time: " << word << std::endl;
 
     return std::stol(word);
 }
@@ -429,14 +417,6 @@ void GamedataManager::registerTry(std::string plid, std::string key, int B, int 
     appendToFile(path, content);
 }
 
-std::string GamedataManager::sendTrials(std::string plid)
-{
-    std::string path = GAMES_DIR + gameFileName(plid);
-
-    // TODO: everything
-
-    return path;
-}
 
 void GamedataManager::makeScoreFile(std::string plid)
 {
@@ -454,7 +434,7 @@ void GamedataManager::makeScoreFile(std::string plid)
     std::string path = SCORES_DIR + filename;
     std::string content = score + " " + plid + " " + getsecretKey(plid) + " " + std::to_string(nT) + " " + ongoingGameMode(plid) + " " + "\n";
 
-    std::cout << "path: " << path << std::endl;
+    // std::cout << "path: " << path << std::endl;
     writeToFile(path, content);
 }
 
@@ -508,6 +488,12 @@ int GamedataManager::remainingTime(std::string plid)
     return (int)(time - now);
 }
 
+
+std::string GamedataManager::durationOfGame(std::string lastLineOfFile)
+{
+    return getiword(lastLineOfFile, 3);
+}
+
 void GamedataManager::formatScoreboard(SCORELIST *list, std::string &fName, int &fSize, std::string &fdata)
 {
     // PLID secretkey NT
@@ -536,9 +522,7 @@ void GamedataManager::getCurrentGameData(std::string plid,
 
     std::fstream fileStream;
     if (!openFile(fileStream, path, std::ios::in))
-    {
         throw UnrecoverableError("Error opening file");
-    }
 
     fName = gameFileName(plid);
 
@@ -575,4 +559,58 @@ void GamedataManager::getCurrentGameData(std::string plid,
     fSize = (int)fdata.length();
 
     fdata += "\n";
+}
+
+
+
+void GamedataManager::getMostRecentGameData(std::string plid, std::string &fName, 
+                            int &fSize, std::string &fdata){
+
+    std::string path;
+    findLastGame(plid, path);
+
+    std::cout << path << std::endl;
+
+    std::fstream fileStream;
+    if (!openFile(fileStream, path, std::ios::in))
+        throw UnrecoverableError("Error opening file");
+
+    fName = gameFileName(plid);
+
+    int number_trials = countLinesInFile(fileStream) - 2;
+
+    std::string line;
+    std::getline(fileStream, line);
+
+    std::string game_duration = getiword(line, 4);
+    std::string dateTime = getiword(line, 5) + ' ' + getiword(line, 6);
+
+    fdata = "\n\tMost recently finished game for player " + plid + '\n';
+    fdata += "Game initiated: " + dateTime + " with " + game_duration +
+             " seconds to be completed\n";
+
+    fdata += "\n\t--- Transactions found: " + std::to_string(number_trials) + " ---\n\n";
+
+    while (number_trials > 0)
+    {
+        std::getline(fileStream, line);
+        std::string trial = getiword(line, 2);
+        std::string nB = getiword(line, 3);
+        std::string nW = getiword(line, 4);
+        std::string time = getiword(line, 5);
+
+        fdata += "Trial: " + trial + ", nB: " + nB + ", nW: " + nW +
+                 " at " + time + "s\n";
+
+        number_trials--;
+    }
+    std::getline(fileStream, line);
+    fdata += "\n\t-- " + durationOfGame(line) + " seconds of play time --\n";
+
+    fSize = (int)fdata.length();
+
+    fdata += "\n";
+
+
+
 }

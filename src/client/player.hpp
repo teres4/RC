@@ -18,7 +18,7 @@ class Player
 private:
   int _plid = 0; // The player id
   int _nT;   // The number of trial
-  bool onGoing = false;
+  bool _onGoing = false;
 
 public:
   void newPlayer(int plid);
@@ -26,7 +26,7 @@ public:
   int getPlid();
   int getnT();
   bool activePlayer();
-
+  void setOngoing(bool status);
   void finishGame();
   void increaseNT();
 };

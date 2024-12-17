@@ -208,17 +208,20 @@ void ShowTrialsCommand::handle(std::string &args, std::string &response, Server 
         StreamMessage reqMessage(args);
         stComm.decodeRequest(reqMessage); // Decode the request
 
-        // check database if player has an ongoing game
-        bool hasGame = DB.hasOngoingGame(std::to_string(stComm._plid));
+        std::string plid = std::to_string(stComm._plid);
+
+        bool hasGame = DB.hasOngoingGame(plid); // check if theres an ongoing game
         if (hasGame)
-        { // send text with current game summary
-            DB.getCurrentGameData(std::to_string(stComm._plid), stComm._Fname,
-                                  stComm._Fsize, stComm._Fdata);
-            stComm._status = "ACT";
+        {   // send text with current game summary
+            DB.getCurrentGameData(plid, stComm._Fname, 
+                                    stComm._Fsize, stComm._Fdata);
+            stComm._status = "ACT";                        
             result = "Showing player's ongoing game";
         }
-        else if (DB.hasGames(std::to_string(stComm._plid)))
-        { // send text with most recent game
+        else if (DB.hasGames(plid)) // if no ongoing game, check if there was ever a game
+        {   // send text with most recent game
+            DB.getMostRecentGameData(plid, stComm._Fname, 
+                                    stComm._Fsize, stComm._Fdata);
             stComm._status = "FIN";
             result = "Showing player's most recently finished game. ";
         }
@@ -240,7 +243,7 @@ void ShowTrialsCommand::handle(std::string &args, std::string &response, Server 
 void ScoreboardCommand::handle(std::string &args, std::string &response, Server &receiver)
 {
     //     // TODO check verbose
-    std::cout << args << response << receiver.isverbose();
+    std::cout << args;
 
     std::cout << "ScoreboardCommand" << std::endl;
 
@@ -251,7 +254,7 @@ void ScoreboardCommand::handle(std::string &args, std::string &response, Server 
 
     try
     {
-        int nscores = FindTopScores(&list);
+        int nscores = findTopScores(&list);
         if (!nscores)
         {
             sbComm._status = "EMPTY";

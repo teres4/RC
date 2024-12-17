@@ -172,37 +172,20 @@ void TCPServer(TcpServer &tcpServer, CommandManager &manager, Server &server)
         while (newfd == -1 && errno == EINTR);
         if (newfd == -1) /*error*/
             exit(1);
-        std::cout << "newfd: " << newfd << std::endl;
+
         if ((pid = fork()) == -1) /*error*/
             exit(1);
         else if (pid == 0)
         {
             // child
             {
-
                 close(tcpServer._fd);
-                // int flags = fcntl(newfd, F_GETFL, 0);
-                // if (flags == -1)
-                // {
-                //     perror("fcntl(F_GETFL)");
-                //     close(newfd);
-                //     exit(1);
-                // }
-
-                // if (fcntl(newfd, F_SETFL, flags | O_NONBLOCK) == -1)
-                // {
-                //     perror("fcntl(F_SETFL)");
-                //     close(newfd);
-                //     exit(1);
-                // }
                 n = read(newfd, buffer, 128);
                 if (n == -1) /*error*/
                     exit(1);
                 // add buffer to string
 
                 message.append(buffer, (size_t)n);
-                std::cout << "message: " << message << std::endl;
-                std::cout << "n: " << n << std::endl;
 
                 std::cout << "in tcpserver received: " << message;
                 std::string response = manager.handleCommand(message, server);
@@ -223,10 +206,7 @@ void TCPServer(TcpServer &tcpServer, CommandManager &manager, Server &server)
                 exit(0);
             }
         }
-        // std::cout << "tcp response: " << response << std::endl;
-        // tcpServer.send(response);
-        // std::cout << "Finished sending response " << std::endl;
-        // parent
+        
         do
             ret = close(newfd);
         while ((ret == -1) && (errno = EINTR));

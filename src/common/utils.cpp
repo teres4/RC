@@ -300,7 +300,7 @@ std::string playerDirectory(std::string PLID)
     return PLID;
 }
 
-int FindTopScores(SCORELIST *list)
+int findTopScores(SCORELIST *list)
 {
     struct dirent **filelist;
     int nentries, ifile;
@@ -309,7 +309,8 @@ int FindTopScores(SCORELIST *list)
     char mode[8];
 
     // Scan the directory and sort files alphabetically
-    nentries = scandir("/src/gamedata/SCORES", &filelist, 0, alphasort);
+    std::string path = SCORES_DIR;
+    nentries = scandir(path.c_str(), &filelist, nullptr, alphasort);
 
     // If no entries are found, return 0
     if (nentries <= 0)
@@ -366,34 +367,28 @@ int FindTopScores(SCORELIST *list)
     return ifile;
 }
 
-int FindLastGame(int PLID, char *fname)
+void findLastGame(std::string plid, std::string &pathToLastGame)
 {
-    struct dirent **filelist;
-    int nentries, found;
-    char dirname[20];
+    struct dirent** fileList;
+    int n_entries;
+    bool found = false;
 
-    sprintf(dirname, "GAMES/%d/", PLID);
+    std::string path = GAMES_DIR + plid;
 
-    nentries = scandir(dirname, &filelist, 0, alphasort);
-    found = 0;
-
-    if (nentries <= 0)
-    {
-        return 0;
+    n_entries = scandir(path.c_str(), &fileList, 0, alphasort);
+    if (n_entries <= 0) {
+        throw UnrecoverableError("Failed to scan directory: " + path);
     }
-    else
-    {
-        while (nentries--)
-        {
-            if (filelist[nentries]->d_name[0] != '.' && !found)
-            {
-                sprintf(fname, "GAMES/%d/%s", PLID, filelist[nentries]->d_name);
-                found = 1;
-            }
-            free(filelist[nentries]);
+
+    // Iterate backwards to find the last alphabetical file
+    while (n_entries--) {
+        if (fileList[n_entries]->d_name[0] != '.' && !found){  
+            pathToLastGame = path + "/" + fileList[n_entries]->d_name;
+            found = true;
         }
-        free(filelist);
+        free(fileList[n_entries]); 
     }
 
-    return found;
+    free(fileList); // Free the entire fileList array
+
 }
