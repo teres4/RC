@@ -96,6 +96,12 @@ void StartCommand::handle(std::string &args, std::string &response, Server &rece
         result = "Protocol Error";
     }
     response = startComm.encodeResponse(); // Encode the response
+
+    if (receiver.isverbose())
+    {
+        std::cout << "Start Request by: " << startComm._plid << std::endl;
+    }
+
     return;
 }
 
@@ -132,6 +138,7 @@ void TryCommand::handle(std::string &args, std::string &response, Server &receiv
                 tryComm._status = "ETM";
                 /*reveal secret key*/
                 tryComm._key = DB.getsecretKey(std::to_string(tryComm._plid));
+                tryComm._key = DB.formatSecretKey(tryComm._key);
             }
             else if (DB.isRepeatedTrial(std::to_string(tryComm._plid),
                                         removeSpaces(tryComm._key)))
@@ -160,14 +167,17 @@ void TryCommand::handle(std::string &args, std::string &response, Server &receiv
                         // player wins
                         DB.gameWon(std::to_string(tryComm._plid));
                     }
-                    else if (tryComm._nT == 8)
+                    else if (tryComm._nT == 3)
                     {
                         // end game
                         // player loses
-                        DB.gameLost(std::to_string(tryComm._plid));
+
                         tryComm._status = "ENT";
                         /*reveal secret key*/
+                        // add spaces to key
                         tryComm._key = DB.getsecretKey(std::to_string(tryComm._plid));
+                        tryComm._key = DB.formatSecretKey(tryComm._key);
+                        DB.gameLost(std::to_string(tryComm._plid));
                     }
                 }
                 else if (tryComm._nT == expectedNT - 1)
@@ -192,6 +202,10 @@ void TryCommand::handle(std::string &args, std::string &response, Server &receiv
         result = "Protocol Error";
     }
     response = tryComm.encodeResponse(); // Encode the response
+    if (receiver.isverbose())
+    {
+        std::cout << "Try Request by: " << tryComm._plid << std::endl;
+    }
     return;
 }
 
@@ -212,16 +226,16 @@ void ShowTrialsCommand::handle(std::string &args, std::string &response, Server 
 
         bool hasGame = DB.hasOngoingGame(plid); // check if theres an ongoing game
         if (hasGame)
-        {   // send text with current game summary
-            DB.getCurrentGameData(plid, stComm._Fname, 
-                                    stComm._Fsize, stComm._Fdata);
-            stComm._status = "ACT";                        
+        { // send text with current game summary
+            DB.getCurrentGameData(plid, stComm._Fname,
+                                  stComm._Fsize, stComm._Fdata);
+            stComm._status = "ACT";
             result = "Showing player's ongoing game";
         }
         else if (DB.hasGames(plid)) // if no ongoing game, check if there was ever a game
-        {   // send text with most recent game
-            DB.getMostRecentGameData(plid, stComm._Fname, 
-                                    stComm._Fsize, stComm._Fdata);
+        {                           // send text with most recent game
+            DB.getMostRecentGameData(plid, stComm._Fname,
+                                     stComm._Fsize, stComm._Fdata);
             stComm._status = "FIN";
             result = "Showing player's most recently finished game. ";
         }
@@ -237,17 +251,21 @@ void ShowTrialsCommand::handle(std::string &args, std::string &response, Server 
         result = "Protocol Error";
     }
     response = stComm.encodeResponse(); // Encode the response
+    if (receiver.isverbose())
+    {
+        std::cout << "Try Request by: " << stComm._plid << std::endl;
+    }
     return;
 }
 
 void ScoreboardCommand::handle(std::string &args, std::string &response, Server &receiver)
 {
-        // TODO check verbose
+    // TODO check verbose
     SCORELIST list;
 
     GamedataManager DB = receiver._DB;
     ScoreboardCommunication sbComm;
-    
+
     std::string result;
 
     try
@@ -269,12 +287,16 @@ void ScoreboardCommand::handle(std::string &args, std::string &response, Server 
         }
     }
     catch (ProtocolException &e)
-    {   // If the protocol is not valid, status = "ERR"
+    { // If the protocol is not valid, status = "ERR"
         sbComm._status = "ERR";
         result = "Protocol Error";
     }
 
     response = sbComm.encodeResponse();
+    if (receiver.isverbose())
+    {
+        std::cout << "ScoreBoard Request" << std::endl;
+    }
 
     return;
 }
@@ -313,6 +335,10 @@ void QuitCommand::handle(std::string &args, std::string &response, Server &recei
         result = "Protocol Error";
     }
     response = quitComm.encodeResponse(); // Encode the response
+    if (receiver.isverbose())
+    {
+        std::cout << "Quit Request by: " << quitComm._plid << std::endl;
+    }
     return;
 }
 
@@ -350,6 +376,10 @@ void ExitCommand::handle(std::string &args, std::string &response, Server &recei
         result = "Protocol Error";
     }
     response = exitComm.encodeResponse(); // Encode the response
+    if (receiver.isverbose())
+    {
+        std::cout << "Exit Request by: " << exitComm._plid << std::endl;
+    }
     return;
 }
 
@@ -389,6 +419,10 @@ void DebugCommand::handle(std::string &args, std::string &response, Server &rece
         result = "Protocol Error";
     }
     response = dbgComm.encodeResponse(); // Encode the response
+    if (receiver.isverbose())
+    {
+        std::cout << "Debug Request by: " << dbgComm._plid << std::endl;
+    }
     return;
 }
 

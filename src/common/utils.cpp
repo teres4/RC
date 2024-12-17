@@ -203,7 +203,6 @@ std::string currentDateTimeFN()
     return time_str;
 }
 
-
 std::string truncateDate(std::string datetime)
 {
     // datetime comes in yyyymmdd_hhmmss
@@ -211,7 +210,6 @@ std::string truncateDate(std::string datetime)
 
     return datetime.substr(2, 11);
 }
-
 
 void setup_signal_handlers()
 {
@@ -377,26 +375,28 @@ int findTopScores(SCORELIST *list)
 
 void findLastGame(std::string plid, std::string &pathToLastGame)
 {
-    struct dirent** fileList;
+    struct dirent **fileList;
     int n_entries;
     bool found = false;
 
     std::string path = GAMES_DIR + plid;
 
     n_entries = scandir(path.c_str(), &fileList, 0, alphasort);
-    if (n_entries <= 0) {
+    if (n_entries <= 0)
+    {
         throw UnrecoverableError("Failed to scan directory: " + path);
     }
 
     // Iterate backwards to find the last alphabetical file
-    while (n_entries--) {
-        if (fileList[n_entries]->d_name[0] != '.' && !found){  
+    while (n_entries--)
+    {
+        if (fileList[n_entries]->d_name[0] != '.' && !found)
+        {
             pathToLastGame = path + "/" + fileList[n_entries]->d_name;
             found = true;
         }
-        free(fileList[n_entries]); 
+        free(fileList[n_entries]);
     }
 
     free(fileList); // Free the entire fileList array
-
 }
