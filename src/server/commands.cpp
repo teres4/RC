@@ -59,7 +59,6 @@ void StartCommand::handle(std::string &args, std::string &response, Server &rece
     GamedataManager DB = receiver._DB;
 
     StartCommunication startComm;
-    std::string result;
 
     try
     {
@@ -84,18 +83,13 @@ void StartCommand::handle(std::string &args, std::string &response, Server &rece
             time_t time_s = time(NULL);
             DB.createGame(plid, 'P', startComm._time, current_datetime, time_s);
             startComm._status = "OK";
-            result = "Player started a game. ";
         }
         else
-        {
             startComm._status = "NOK";
-            result = "Player has an ongoing game";
-        }
     }
     catch (ProtocolException &e)
     { // If the protocol is not valid, status = "ERR"
         startComm._status = "ERR";
-        result = "Protocol Error";
     }
     response = startComm.encodeResponse(); // Encode the response
 
@@ -112,7 +106,6 @@ void TryCommand::handle(std::string &args, std::string &response, Server &receiv
     GamedataManager DB = receiver._DB;
 
     TryCommunication tryComm;
-    std::string result;
 
     try
     {
@@ -122,10 +115,8 @@ void TryCommand::handle(std::string &args, std::string &response, Server &receiv
         // check database if player has an ongoing game
         bool hasGame = DB.hasOngoingGame(std::to_string(tryComm._plid));
         if (!hasGame)
-        {
             tryComm._status = "NOK";
-            result = "Player doesnt have ongoing game";
-        }
+        
         else
         {
             if (DB.remainingTime(std::to_string(tryComm._plid)) <= 0)
@@ -139,7 +130,6 @@ void TryCommand::handle(std::string &args, std::string &response, Server &receiv
                                         removeSpaces(tryComm._key)))
             {
                 tryComm._status = "DUP";
-                result = "Repeated trial";
             }
             else
             {
@@ -175,10 +165,7 @@ void TryCommand::handle(std::string &args, std::string &response, Server &receiv
                         /*nothing*/
                     }
                     else
-                    {
                         tryComm._status = "INV";
-                        result = "Invalid nT, not a Dupe";
-                    }
                 }
             }
         }
@@ -186,7 +173,6 @@ void TryCommand::handle(std::string &args, std::string &response, Server &receiv
     catch (ProtocolException &e)
     { // If the protocol is not valid, status = "ERR"
         tryComm._status = "ERR";
-        result = "Protocol Error";
     }
     response = tryComm.encodeResponse(); // Encode the response
     if (receiver.isverbose())
@@ -199,9 +185,7 @@ void TryCommand::handle(std::string &args, std::string &response, Server &receiv
 void ShowTrialsCommand::handle(std::string &args, std::string &response, Server &receiver)
 {
     GamedataManager DB = receiver._DB;
-
     ShowTrialsCommunication stComm;
-    std::string result;
 
     try
     {
@@ -216,25 +200,20 @@ void ShowTrialsCommand::handle(std::string &args, std::string &response, Server 
             DB.getCurrentGameData(plid, stComm._Fname,
                                   stComm._Fsize, stComm._Fdata);
             stComm._status = "ACT";
-            result = "Showing player's ongoing game";
         }
         else if (DB.hasGames(plid)) // if no ongoing game, check if there was ever a game
         {                           // send text with most recent game
             DB.getMostRecentGameData(plid, stComm._Fname,
                                      stComm._Fsize, stComm._Fdata);
             stComm._status = "FIN";
-            result = "Showing player's most recently finished game. ";
         }
         else
-        {
             stComm._status = "NOK";
-            result = "Player has no ongoing game or recently finished games. ";
-        }
+
     }
     catch (ProtocolException &e)
     { // If the protocol is not valid, status = "ERR"
         stComm._status = "ERR";
-        result = "Protocol Error";
     }
     response = stComm.encodeResponse(); // Encode the response
     if (receiver.isverbose())
@@ -251,8 +230,6 @@ void ScoreboardCommand::handle(std::string &args, std::string &response, Server 
     GamedataManager DB = receiver._DB;
     ScoreboardCommunication sbComm;
 
-    std::string result;
-
     try
     {
         StreamMessage reqMessage(args);
@@ -260,23 +237,18 @@ void ScoreboardCommand::handle(std::string &args, std::string &response, Server 
 
         int nscores = findTopScores(&list);
         if (!nscores)
-        {
             sbComm._status = "EMPTY";
-            result = "No scores found";
-        }
+        
         else
         {
             DB.formatScoreboard(&list, sbComm._Fname, sbComm._Fsize, sbComm._Fdata, nscores);
             sbComm._status = "OK";
-            result = "Showing top " + std::to_string(nscores) + " games";
         }
     }
     catch (ProtocolException &e)
     { // If the protocol is not valid, status = "ERR"
         sbComm._status = "ERR";
-        result = "Protocol Error";
     }
-
     response = sbComm.encodeResponse();
     if (receiver.isverbose())
     {
@@ -291,7 +263,6 @@ void QuitCommand::handle(std::string &args, std::string &response, Server &recei
     GamedataManager DB = receiver._DB;
 
     QuitCommunication quitComm;
-    std::string result;
     try
     {
         StreamMessage reqMessage(args);
@@ -305,18 +276,13 @@ void QuitCommand::handle(std::string &args, std::string &response, Server &recei
             DB.quitGame(std::to_string(quitComm._plid));
 
             quitComm._status = "OK"; // Set the status to OK if everything goes right
-            result = "Game has ended sucessfully";
         }
         else
-        {
             quitComm._status = "NOK";
-            result = "Player does not have an ongoing game";
-        }
     }
     catch (ProtocolException &e)
     { // If the protocol is not valid, set the status to ERR
         quitComm._status = "ERR";
-        result = "Protocol Error";
     }
     response = quitComm.encodeResponse(); // Encode the response
     if (receiver.isverbose())
@@ -331,7 +297,7 @@ void ExitCommand::handle(std::string &args, std::string &response, Server &recei
     GamedataManager DB = receiver._DB;
 
     QuitCommunication exitComm;
-    std::string result;
+
     try
     {
         StreamMessage reqMessage(args);
@@ -345,18 +311,13 @@ void ExitCommand::handle(std::string &args, std::string &response, Server &recei
             DB.quitGame(std::to_string(exitComm._plid));
 
             exitComm._status = "OK"; // Set the status to OK if everything goes right
-            result = "Game has ended sucessfully";
         }
         else
-        {
             exitComm._status = "NOK";
-            result = "Player does not have an ongoing game";
-        }
     }
     catch (ProtocolException &e)
     { // If the protocol is not valid, set the status to ERR
         exitComm._status = "ERR";
-        result = "Protocol Error";
     }
     response = exitComm.encodeResponse(); // Encode the response
     if (receiver.isverbose())
@@ -371,7 +332,6 @@ void DebugCommand::handle(std::string &args, std::string &response, Server &rece
     GamedataManager DB = receiver._DB;
 
     DebugCommunication dbgComm;
-    std::string result;
 
     try
     {
@@ -385,28 +345,21 @@ void DebugCommand::handle(std::string &args, std::string &response, Server &rece
         if (!hasGame || (hasGame && DB.gameShouldEnd(plid)))
         {
             if (hasGame && DB.gameShouldEnd(plid))
-            {
+            // Previous game has timed out. Starting a new game.
                 DB.gameTimeout(plid);
-                std::cout << "Previous game has timed out. Starting a new game. " << std::endl;
-            }
 
             std::string current_datetime = currentDateTime();
             time_t time_s = time(NULL);
             DB.createGame(std::to_string(dbgComm._plid), 'D', removeSpaces(dbgComm._key),
                           dbgComm._time, current_datetime, time_s);
             dbgComm._status = "OK";
-            result = "Player does not have an ongoing game";
         }
         else
-        {
             dbgComm._status = "NOK";
-            result = "Player has an ongoing game";
-        }
     }
     catch (ProtocolException &e)
     { // If the protocol is not valid, status = "ERR"
         dbgComm._status = "ERR";
-        result = "Protocol Error";
     }
     response = dbgComm.encodeResponse(); // Encode the response
     if (receiver.isverbose())
