@@ -74,7 +74,8 @@ void StartCommand::handle(std::string &args, std::string &response, Server &rece
         if (!hasGame || (hasGame && DB.gameShouldEnd(plid)))
         {
 
-            if (hasGame && DB.gameShouldEnd(plid)){
+            if (hasGame && DB.gameShouldEnd(plid))
+            {
                 DB.gameTimeout(plid);
                 std::cout << "Previous game has timed out. Starting a new game. " << std::endl;
             }
@@ -129,10 +130,10 @@ void TryCommand::handle(std::string &args, std::string &response, Server &receiv
         {
             if (DB.remainingTime(std::to_string(tryComm._plid)) <= 0)
             {
-                DB.gameTimeout(std::to_string(tryComm._plid));
-                tryComm._status = "ETM";
                 tryComm._key = DB.getsecretKey(std::to_string(tryComm._plid));
                 tryComm._key = DB.formatSecretKey(tryComm._key);
+                DB.gameTimeout(std::to_string(tryComm._plid));
+                tryComm._status = "ETM";
             }
             else if (DB.isRepeatedTrial(std::to_string(tryComm._plid),
                                         removeSpaces(tryComm._key)))
@@ -154,12 +155,12 @@ void TryCommand::handle(std::string &args, std::string &response, Server &receiv
 
                     DB.registerTry(std::to_string(tryComm._plid),
                                    removeSpaces(tryComm._key), tryComm._nB, tryComm._nW);
-                                
+
                     if (tryComm._nB == 4) // end game, player won
                         DB.gameWon(std::to_string(tryComm._plid));
                     else if (tryComm._nT == 8) // end game, player loss
                     {
-                        tryComm._status = "ENT"; 
+                        tryComm._status = "ENT";
                         // reveal secret key
                         tryComm._key = DB.getsecretKey(std::to_string(tryComm._plid));
                         tryComm._key = DB.formatSecretKey(tryComm._key);
@@ -381,8 +382,10 @@ void DebugCommand::handle(std::string &args, std::string &response, Server &rece
         // check database if player has an ongoing game
         bool hasGame = DB.hasOngoingGame(plid);
 
-        if (!hasGame || (hasGame && DB.gameShouldEnd(plid))){
-            if (hasGame && DB.gameShouldEnd(plid)){
+        if (!hasGame || (hasGame && DB.gameShouldEnd(plid)))
+        {
+            if (hasGame && DB.gameShouldEnd(plid))
+            {
                 DB.gameTimeout(plid);
                 std::cout << "Previous game has timed out. Starting a new game. " << std::endl;
             }
@@ -390,7 +393,7 @@ void DebugCommand::handle(std::string &args, std::string &response, Server &rece
             std::string current_datetime = currentDateTime();
             time_t time_s = time(NULL);
             DB.createGame(std::to_string(dbgComm._plid), 'D', removeSpaces(dbgComm._key),
-                        dbgComm._time, current_datetime, time_s);
+                          dbgComm._time, current_datetime, time_s);
             dbgComm._status = "OK";
             result = "Player does not have an ongoing game";
         }
@@ -399,7 +402,6 @@ void DebugCommand::handle(std::string &args, std::string &response, Server &rece
             dbgComm._status = "NOK";
             result = "Player has an ongoing game";
         }
-        
     }
     catch (ProtocolException &e)
     { // If the protocol is not valid, status = "ERR"
