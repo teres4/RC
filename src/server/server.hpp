@@ -9,6 +9,13 @@
 #include "database.hpp"
 
 class Server
+/**
+ * @class Server
+ * @brief Manages server operations and configurations.
+ *
+ * This class is responsible for handling server operations, like starting and managing the TCP UDP servers.
+ *
+ */
 {
 private:
     std::string _gsport = DEFAULT_PORT;
