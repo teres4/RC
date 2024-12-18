@@ -80,13 +80,6 @@ void StartCommand::handle(std::string args, Client &state)
     return;
   }
 
-  if (state._player.activePlayer() && state._player.activeGame())
-  {
-    std::cout << "There's already an active game for player "
-              << state._player.getPlid() << std::endl;
-    return;
-  }
-
   // Get the username and password from the arguments
   std::string PLID = arg_split[0];
   std::string max_playtime = arg_split[1];

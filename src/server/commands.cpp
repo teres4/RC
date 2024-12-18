@@ -74,8 +74,10 @@ void StartCommand::handle(std::string &args, std::string &response, Server &rece
         if (!hasGame || (hasGame && DB.gameShouldEnd(plid)))
         {
 
-            if (hasGame && DB.gameShouldEnd(plid))
+            if (hasGame && DB.gameShouldEnd(plid)){
                 DB.gameTimeout(plid);
+                std::cout << "Previous game has timed out. Starting a new game. " << std::endl;
+            }
 
             std::string current_datetime = currentDateTime();
             time_t time_s = time(NULL);
@@ -374,23 +376,30 @@ void DebugCommand::handle(std::string &args, std::string &response, Server &rece
     {
         StreamMessage reqMessage(args);
         dbgComm.decodeRequest(reqMessage); // Decode the request
+        std::string plid = std::to_string(dbgComm._plid);
 
         // check database if player has an ongoing game
-        bool hasGame = DB.hasOngoingGame(std::to_string(dbgComm._plid));
-        if (hasGame)
+        bool hasGame = DB.hasOngoingGame(plid);
+
+        if (!hasGame || (hasGame && DB.gameShouldEnd(plid))){
+            if (hasGame && DB.gameShouldEnd(plid)){
+                DB.gameTimeout(plid);
+                std::cout << "Previous game has timed out. Starting a new game. " << std::endl;
+            }
+
+            std::string current_datetime = currentDateTime();
+            time_t time_s = time(NULL);
+            DB.createGame(std::to_string(dbgComm._plid), 'D', removeSpaces(dbgComm._key),
+                        dbgComm._time, current_datetime, time_s);
+            dbgComm._status = "OK";
+            result = "Player does not have an ongoing game";
+        }
+        else
         {
             dbgComm._status = "NOK";
             result = "Player has an ongoing game";
         }
-        else
-        {
-            dbgComm._status = "OK";
-            result = "Player does not have an ongoing game";
-
-            std::string current_datetime = currentDateTime();
-            DB.createGame(std::to_string(dbgComm._plid), 'D', removeSpaces(dbgComm._key),
-                          dbgComm._time, current_datetime, time_t(&current_datetime));
-        }
+        
     }
     catch (ProtocolException &e)
     { // If the protocol is not valid, status = "ERR"
