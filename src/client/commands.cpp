@@ -422,6 +422,9 @@ void ScoreboardCommand::handle(std::string args, Client &state)
     std::cout << sbComm._Fdata << std::endl;
     state.writeFile(sbComm._Fname, sbComm._Fdata);
   }
+  else if (sbComm._status == "EMPTY"){
+    std::cout << "The scoreboard is still empty" << std::endl;
+  }
 }
 
 std::vector<std::string> split_command(std::string input)
