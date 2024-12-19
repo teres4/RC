@@ -127,9 +127,11 @@ void UDPServer(UdpServer &udpServer, CommandManager &manager, Server &server)
     {
         std::string message = udpServer.receive();
         std::string response = manager.handleCommand(message, server);
-        
-        if (verbose){
-            std::cout << udpServer.getClientIP() << ":" << udpServer.getClientPort() << std::endl;
+
+        if (verbose)
+        {
+            std::cout << udpServer.getClientIP() << ":" << udpServer.getClientPort() << "\n"
+                      << std::endl;
         }
         udpServer.send(response);
     }
@@ -158,7 +160,7 @@ void TCPServer(TcpServer &tcpServer, CommandManager &manager, Server &server)
 
         if ((pid = fork()) == -1) // error
             exit(1);
-        else if (pid == 0)  // child
+        else if (pid == 0) // child
         {
             {
                 close(tcpServer._fd);
@@ -175,14 +177,15 @@ void TCPServer(TcpServer &tcpServer, CommandManager &manager, Server &server)
                 n = static_cast<ssize_t>(response.size());
                 while (n > 0)
                 {
-                    if ((nw = write(newfd, ptr, (size_t)n)) <= 0) //error
+                    if ((nw = write(newfd, ptr, (size_t)n)) <= 0) // error
                         exit(1);
                     n -= nw;
                     ptr += nw;
                 }
                 if (verbose)
                 {
-                    std::cout << tcpServer.getClientIP() << " : " << tcpServer.getClientPort() << std::endl;
+                    std::cout << tcpServer.getClientIP() << " : " << tcpServer.getClientPort() << "\n"
+                              << std::endl;
                 }
                 close(newfd);
                 exit(0);

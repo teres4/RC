@@ -96,6 +96,7 @@ void StartCommand::handle(std::string &args, std::string &response, Server &rece
     if (receiver.isverbose())
     {
         std::cout << "Start Request by: " << startComm._plid << std::endl;
+        std::cout << "Response: " << response;
     }
 
     return;
@@ -116,7 +117,7 @@ void TryCommand::handle(std::string &args, std::string &response, Server &receiv
         bool hasGame = DB.hasOngoingGame(std::to_string(tryComm._plid));
         if (!hasGame)
             tryComm._status = "NOK";
-        
+
         else
         {
             if (DB.remainingTime(std::to_string(tryComm._plid)) <= 0)
@@ -178,6 +179,7 @@ void TryCommand::handle(std::string &args, std::string &response, Server &receiv
     if (receiver.isverbose())
     {
         std::cout << "Try Request by: " << tryComm._plid << std::endl;
+        std::cout << "Response: " << response;
     }
     return;
 }
@@ -209,7 +211,6 @@ void ShowTrialsCommand::handle(std::string &args, std::string &response, Server 
         }
         else
             stComm._status = "NOK";
-
     }
     catch (ProtocolException &e)
     { // If the protocol is not valid, status = "ERR"
@@ -219,6 +220,7 @@ void ShowTrialsCommand::handle(std::string &args, std::string &response, Server 
     if (receiver.isverbose())
     {
         std::cout << "Show Trials Request by: " << stComm._plid << std::endl;
+        std::cout << "Response: " << response;
     }
     return;
 }
@@ -238,7 +240,7 @@ void ScoreboardCommand::handle(std::string &args, std::string &response, Server 
         int nscores = findTopScores(&list);
         if (!nscores)
             sbComm._status = "EMPTY";
-        
+
         else
         {
             DB.formatScoreboard(&list, sbComm._Fname, sbComm._Fsize, sbComm._Fdata, nscores);
@@ -253,6 +255,7 @@ void ScoreboardCommand::handle(std::string &args, std::string &response, Server 
     if (receiver.isverbose())
     {
         std::cout << "ScoreBoard Request" << std::endl;
+        std::cout << "Response: " << response;
     }
 
     return;
@@ -288,6 +291,7 @@ void QuitCommand::handle(std::string &args, std::string &response, Server &recei
     if (receiver.isverbose())
     {
         std::cout << "Quit Request by: " << quitComm._plid << std::endl;
+        std::cout << "Response: " << response;
     }
     return;
 }
@@ -323,6 +327,7 @@ void ExitCommand::handle(std::string &args, std::string &response, Server &recei
     if (receiver.isverbose())
     {
         std::cout << "Exit Request by: " << exitComm._plid << std::endl;
+        std::cout << "Response: " << response;
     }
     return;
 }
@@ -345,7 +350,7 @@ void DebugCommand::handle(std::string &args, std::string &response, Server &rece
         if (!hasGame || (hasGame && DB.gameShouldEnd(plid)))
         {
             if (hasGame && DB.gameShouldEnd(plid))
-            // Previous game has timed out. Starting a new game.
+                // Previous game has timed out. Starting a new game.
                 DB.gameTimeout(plid);
 
             std::string current_datetime = currentDateTime();
@@ -365,6 +370,7 @@ void DebugCommand::handle(std::string &args, std::string &response, Server &rece
     if (receiver.isverbose())
     {
         std::cout << "Debug Request by: " << dbgComm._plid << std::endl;
+        std::cout << "Response: " << response;
     }
     return;
 }
