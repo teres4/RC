@@ -69,6 +69,14 @@ public:
      * @brief Constructs a SocketException object.
      */
     SocketException() : std::runtime_error("A network error has occurred.") {};
+
+    /**
+     * @brief Destructor that shuts down the program.
+     */
+    ~SocketException() noexcept
+    {
+        exit(EXIT_FAILURE);
+    }
 };
 
 #endif

@@ -26,7 +26,7 @@ void DatabaseManager::createDir(std::string path)
     }
     catch (std::exception &e)
     {
-        std::cerr << "Error: " << e.what() << std::endl;
+        throw UnrecoverableError("Unable to create directory: " + path);
     }
 }
 
@@ -39,7 +39,7 @@ void DatabaseManager::createFile(std::string path)
     { // Check if the directory portion is not empty.
         if (errno != EEXIST)
         {
-            throw UnrecoverableError("Error: Unable to create file");
+            throw UnrecoverableError("Unable to create file: " + path);
         }
     }
 }
@@ -201,7 +201,7 @@ void GamedataManager::gameOver(std::string plid, std::string code)
     }
     catch (std::exception &e)
     {
-        std::cerr << "Error: " << e.what() << std::endl;
+        throw UnrecoverableError("Error moving file: " + src_path + " to " + dest_path);
     }
 }
 
@@ -246,7 +246,7 @@ std::string GamedataManager::getsecretKey(std::string plid)
     std::fstream fileStream;
     if (!openFile(fileStream, path, std::ios::in))
     {
-        throw UnrecoverableError("Error opening file");
+        throw UnrecoverableError("Error opening file: " + path);
     }
 
     std::string line;
@@ -293,7 +293,7 @@ bool GamedataManager::isRepeatedTrial(std::string plid, std::string key)
     std::fstream fileStream;
     if (!openFile(fileStream, path, std::ios::in))
     {
-        throw UnrecoverableError("Error opening file");
+        throw UnrecoverableError("Error opening file: " + path);
     }
 
     std::getline(fileStream, line); // ignore first line
@@ -317,7 +317,7 @@ int GamedataManager::expectedNT(std::string PLID)
     std::fstream fileStream;
     if (!openFile(fileStream, path, std::ios::in))
     {
-        throw UnrecoverableError("Error opening file");
+        throw UnrecoverableError("Error opening file: " + path);
     }
     int i = 0;
     std::getline(fileStream, line); // ignore first line
@@ -339,7 +339,7 @@ long int GamedataManager::getOngoingGameTime(std::string plid)
     std::fstream fileStream;
     if (!openFile(fileStream, path, std::ios::in))
     {
-        throw UnrecoverableError("Error opening file");
+        throw UnrecoverableError("Error opening file: " + path);
     }
 
     std::getline(fileStream, line);
@@ -356,7 +356,7 @@ long int GamedataManager::getOngoingGameTimeLimit(std::string plid)
     std::fstream fileStream;
     if (!openFile(fileStream, path, std::ios::in))
     {
-        throw UnrecoverableError("Error opening file");
+        throw UnrecoverableError("Error opening file: " + path);
     }
 
     std::getline(fileStream, line);
@@ -373,7 +373,7 @@ std::string GamedataManager::ongoingGameMode(std::string plid)
     std::fstream fileStream;
     if (!openFile(fileStream, path, std::ios::in))
     {
-        throw UnrecoverableError("Error opening file");
+        throw UnrecoverableError("Error opening file: " + path);
     }
 
     std::getline(fileStream, line);
