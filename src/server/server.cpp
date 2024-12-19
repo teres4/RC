@@ -20,57 +20,65 @@ extern bool is_exiting;
 
 int main(int argc, char *argv[])
 {
-    setup_signal_handlers();
+    try {
+        setup_signal_handlers();
+        Server server(argc, argv);
 
-    Server server(argc, argv);
+        CommandManager commandManager; // create a new command manager
+        commandManager.registerAllCommands();
 
-    CommandManager commandManager; // create a new command manager
-    commandManager.registerAllCommands();
-
-    while (!is_exiting)
-    {
-        try
+        while (!is_exiting)
         {
-            UdpServer udpServer(server.getPort());
-            TcpServer tcpServer(server.getPort());
-
-            int pid = fork();
-
-            if (pid < 0) // fork failed
-                exit(1);
-
-            else if (pid == 0) // child process
+            try
             {
-                tcpServer.closeServer();
-                UDPServer(udpServer, commandManager, server); // start udp server
+                UdpServer udpServer(server.getPort());
+                TcpServer tcpServer(server.getPort());
+
+                int pid = fork();
+
+                if (pid < 0) // fork failed
+                    exit(1);
+                else if (pid == 0) // child process
+                {
+                    tcpServer.closeServer();
+                    UDPServer(udpServer, commandManager, server); // start udp server
+                }
+                else // parent process
+                {
+                    udpServer.closeServer();
+                    TCPServer(tcpServer, commandManager, server);
+                }
             }
-            else // parent process
+            catch (ProtocolException &e)
             {
-                udpServer.closeServer();
-                TCPServer(tcpServer, commandManager, server);
+                std::cerr << "Error: " << e.what() << std::endl;
+
+            } catch (UnrecoverableError &e) {
+                std::cerr << "Error: " << e.what() << std::endl;
+                is_exiting = true; // Trigger shutdown
+                break;             // Exit loop
+            } catch (SocketException &e){
+                std::cerr << "Error: " << e.what() << std::endl;
+                is_exiting = true; // Trigger shutdown
+                break;             // Exit loop
+            } catch (...) {
+                std::cerr << "Encountered unrecoverable error while running the "
+                            "application. Shutting down..." << std::endl;
+                is_exiting = true; // Trigger shutdown
+                break;             // Exit loop
             }
         }
-        catch (SocketException &e)
-        {
-            std::cerr << "Error: " << e.what() << std::endl;
-        }
-    }
+        // if exiting, finish all games
+        if (is_exiting) 
+            server._DB.quitAllGames();
 
-    // if exiting, finish all games
-    GamedataManager DB;
-    try
-    {
-        DB.quitAllGames();
-    }
-    catch (ProtocolException &e)
-    {
+    } catch (std::exception &e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+        is_exiting = true; // Ensure shutdown if a fatal exception escapes the loop
+    } catch (...) {
         std::cerr << "Encountered unrecoverable error while running the "
-                     "application. Shutting down..."
-                  << std::endl;
-        return EXIT_FAILURE;
+                            "application. Shutting down..." << std::endl;
     }
-    // TODO if catches runtime errors, shut down server
-
     return EXIT_SUCCESS;
 }
 
@@ -127,11 +135,10 @@ void UDPServer(UdpServer &udpServer, CommandManager &manager, Server &server)
     {
         std::string message = udpServer.receive();
         std::string response = manager.handleCommand(message, server);
-
-        if (verbose)
-        {
-            std::cout << udpServer.getClientIP() << ":" << udpServer.getClientPort() << "\n"
-                      << std::endl;
+        
+        if (verbose){
+            std::cout << "Client IP: " << udpServer.getClientIP() << std::endl;
+            std::cout << "Client port: " << udpServer.getClientPort() << std::endl << std::endl;
         }
         udpServer.send(response);
     }
@@ -160,13 +167,14 @@ void TCPServer(TcpServer &tcpServer, CommandManager &manager, Server &server)
 
         if ((pid = fork()) == -1) // error
             exit(1);
-        else if (pid == 0) // child
+        else if (pid == 0)  // child
         {
             {
                 close(tcpServer._fd);
                 n = read(newfd, buffer, 128);
                 if (n == -1) // error
                     exit(1);
+
 
                 // add buffer to string
                 message.append(buffer, (size_t)n);
@@ -177,15 +185,14 @@ void TCPServer(TcpServer &tcpServer, CommandManager &manager, Server &server)
                 n = static_cast<ssize_t>(response.size());
                 while (n > 0)
                 {
-                    if ((nw = write(newfd, ptr, (size_t)n)) <= 0) // error
+                    if ((nw = write(newfd, ptr, (size_t)n)) <= 0) //error
                         exit(1);
                     n -= nw;
                     ptr += nw;
                 }
-                if (verbose)
-                {
-                    std::cout << tcpServer.getClientIP() << " : " << tcpServer.getClientPort() << "\n"
-                              << std::endl;
+                if (verbose){
+                    std::cout << "Client IP: " << tcpServer.getClientIP() << std::endl;
+                    std::cout << "Client port: " << tcpServer.getClientPort() << std::endl << std::endl;
                 }
                 close(newfd);
                 exit(0);

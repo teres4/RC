@@ -21,6 +21,7 @@
 #define RESEND_TRIES 5
 #define TCP_READ_TIMEOUT 30
 #define TCP_WRITE_TIMEOUT 300
+#define SERVER_TIMEOUT 300
 
 #define GAME_FILES_DIR "./src/game_files/"
 #define FILES_DIR "./src/gamedata/"
