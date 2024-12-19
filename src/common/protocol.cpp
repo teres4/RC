@@ -319,7 +319,7 @@ std::string TryCommunication::encodeResponse()
     writeSpace(message);
     writeString(message, _status);
 
-    if (_status == "OK" || _status == "ENT" || _status == "ETM")
+    if (_status == "OK")
     {
         writeSpace(message);
         writeInt(message, _nT);
