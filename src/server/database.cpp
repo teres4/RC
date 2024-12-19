@@ -126,8 +126,9 @@ int DatabaseManager::countLinesInFile(std::fstream &fileStream)
 
 GamedataManager::GamedataManager()
 {
-    createDir(GAMES_DIR);
-    createDir(SCORES_DIR);
+    createDir(GAMEDATA);
+    createDir(GAMES);
+    createDir(SCORES);
 }
 
 bool GamedataManager::hasOngoingGame(std::string plid)
@@ -590,7 +591,7 @@ void GamedataManager::getMostRecentGameData(std::string plid, std::string &fName
         mode = "PLAY";
     else
         mode = "DEBUG";
-        
+
     fdata = "\n\tLast finalized game for player " + plid + '\n';
     fdata += "Game initiated: " + dateTime + " with " + game_duration +
              " seconds to be completed\n";
