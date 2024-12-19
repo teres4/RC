@@ -126,9 +126,9 @@ int DatabaseManager::countLinesInFile(std::fstream &fileStream)
 
 GamedataManager::GamedataManager()
 {
-    createDir(GAMEDATA);
-    createDir(GAMES);
-    createDir(SCORES);
+    createDir(FILES_DIR);
+    createDir(GAMES_DIR);
+    createDir(SCORES_DIR);
 }
 
 bool GamedataManager::hasOngoingGame(std::string plid)

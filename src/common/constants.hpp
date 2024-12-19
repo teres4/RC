@@ -28,10 +28,6 @@
 #define GAMES_DIR "./src/gamedata/GAMES/"
 #define SCORES_DIR "./src/gamedata/SCORES/"
 
-#define GAMEDATA "./src/gamedata"
-#define GAMES "./src/gamedata/GAMES"
-#define SCORES "./src/gamedata/SCORES"
-
 #define WIN_CODE "W"
 #define FAIL_CODE "F"
 #define QUIT_CODE "Q"
