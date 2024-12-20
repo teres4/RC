@@ -347,7 +347,7 @@ void TryCommunication::decodeResponse(MessageSource &message)
     // Read the status, and check if it is one of the options
     _status = readString(message, {"OK", "DUP", "INV", "NOK", "ENT", "ETM", "ERR"});
 
-    if (_status == "OK" || _status == "ENT" || _status == "ETM")
+    if (_status == "OK")
     {
         readSpace(message);
         _nT = readInt(message);
