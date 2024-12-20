@@ -98,7 +98,7 @@ void DatabaseManager::appendToFile(std::string path, std::string content)
         fstream.open(path, std::ios_base::app);
         fstream << content;
     }
-    catch (const std::exception &e)
+    catch (std::exception &e)
     {
         throw UnrecoverableError("Couldn't append to file: " + path + " with content: " + content);
     }

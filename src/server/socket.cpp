@@ -122,48 +122,6 @@ TcpServer::TcpServer(std::string gsport)
     std::cout << "TCP server initialized on port " << gsport << std::endl;
 }
 
-void TcpServer::send(std::string &message)
-{
-    size_t message_size = message.length();
-    size_t total_sent = 0;
-
-    while (total_sent < message_size)
-    {
-        ssize_t sent = write(_clientfd, message.data() + total_sent, message_size - total_sent);
-
-        if (sent < 0)
-        {
-            throw SocketException();
-        }
-        total_sent += (size_t)sent;
-    }
-}
-
-std::string TcpServer::receive()
-{
-    // between the initialization of TcpServer and receive(), there is an accept() call
-    char buffer[BUFFER_SIZE];
-    ssize_t bytes_received = read(_clientfd, buffer, BUFFER_SIZE);
-    if (bytes_received == -1)
-    {
-        throw SocketException();
-    }
-
-    return std::string(buffer, (size_t)bytes_received);
-}
-
-int TcpServer::accept()
-{
-    struct sockaddr_storage client_addr;
-    socklen_t addr_size = sizeof(client_addr);
-
-    int client_fd = ::accept(_fd, (struct sockaddr *)&client_addr, &addr_size);
-    if (client_fd == -1)
-    {
-        throw SocketException();
-    }
-    return client_fd;
-}
 
 std::string TcpServer::getClientIP()
 {
@@ -177,23 +135,17 @@ std::string TcpServer::getClientPort()
     return std::to_string(ntohs(addr->sin_port));
 }
 
-void TcpServer::setClientFd(int fd)
-{
-    _clientfd = fd;
-}
 
 TcpServer::~TcpServer()
 {
     freeaddrinfo(_res); // Free the address info
-    close(_clientfd);
-    close(_fd); // Close the socket
+    close(_fd);         // Close the socket
 }
 
-void TcpServer::closeServer()
-{
-    if (close(_fd) != 0 || close(_clientfd))
-    {
-        if (errno == EBADF) // was already closed
+
+void TcpServer::closeServer() {
+    if (close(_fd) != 0) {
+        if (errno == EBADF)   // was already closed
             return;
         throw SocketException();
     }

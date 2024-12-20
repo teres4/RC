@@ -184,6 +184,18 @@ void TCPServer(TcpServer &tcpServer, CommandManager &manager, Server &server)
         if (newfd == -1) // error
             exit(1);
 
+        struct timeval read_timeout;
+        read_timeout.tv_sec = TCP_READ_TIMEOUT;
+        read_timeout.tv_usec = 0;
+        if (setsockopt(newfd, SOL_SOCKET, SO_RCVTIMEO, &read_timeout, sizeof(read_timeout)) < 0) 
+            throw SocketException();
+
+        struct timeval write_timeout;
+        write_timeout.tv_sec = TCP_WRITE_TIMEOUT;
+        write_timeout.tv_usec = 0;
+        if (setsockopt(newfd, SOL_SOCKET, SO_SNDTIMEO, &write_timeout, sizeof(write_timeout)) < 0) 
+            throw SocketException();
+
         if ((pid = fork()) == -1) // error
             exit(1);
         else if (pid == 0) // child
@@ -225,4 +237,5 @@ void TCPServer(TcpServer &tcpServer, CommandManager &manager, Server &server)
         if (ret == -1) // error
             exit(1);
     }
+
 }

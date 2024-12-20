@@ -24,19 +24,14 @@ public:
     int _fd;                // The file descriptor of the socket
     struct addrinfo _hints; // The address flags
     struct addrinfo *_res;  // The address info
-    int _clientfd;
 
 public:
     TcpServer(std::string gsport);
     ~TcpServer();
-    void send(std::string &message);
-    std::string receive();
     void closeServer();
-    int accept();
 
     std::string getClientIP();
     std::string getClientPort();
-    void setClientFd(int clientFd);
 };
 
 class UdpServer
