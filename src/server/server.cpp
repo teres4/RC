@@ -20,7 +20,8 @@ extern bool is_exiting;
 
 int main(int argc, char *argv[])
 {
-    try {
+    try
+    {
         setup_signal_handlers();
         Server server(argc, argv);
 
@@ -52,32 +53,42 @@ int main(int argc, char *argv[])
             catch (ProtocolException &e)
             {
                 std::cerr << "Error: " << e.what() << std::endl;
-
-            } catch (UnrecoverableError &e) {
+            }
+            catch (UnrecoverableError &e)
+            {
                 std::cerr << "Error: " << e.what() << std::endl;
                 is_exiting = true; // Trigger shutdown
                 break;             // Exit loop
-            } catch (SocketException &e){
+            }
+            catch (SocketException &e)
+            {
                 std::cerr << "Error: " << e.what() << std::endl;
                 is_exiting = true; // Trigger shutdown
                 break;             // Exit loop
-            } catch (...) {
+            }
+            catch (...)
+            {
                 std::cerr << "Encountered unrecoverable error while running the "
-                            "application. Shutting down..." << std::endl;
+                             "application. Shutting down..."
+                          << std::endl;
                 is_exiting = true; // Trigger shutdown
                 break;             // Exit loop
             }
         }
         // if exiting, finish all games
-        if (is_exiting) 
+        if (is_exiting)
             server._DB.quitAllGames();
-
-    } catch (std::exception &e) {
+    }
+    catch (std::exception &e)
+    {
         std::cerr << "Error: " << e.what() << std::endl;
         is_exiting = true; // Ensure shutdown if a fatal exception escapes the loop
-    } catch (...) {
+    }
+    catch (...)
+    {
         std::cerr << "Encountered unrecoverable error while running the "
-                            "application. Shutting down..." << std::endl;
+                     "application. Shutting down..."
+                  << std::endl;
     }
     return EXIT_SUCCESS;
 }
@@ -135,10 +146,12 @@ void UDPServer(UdpServer &udpServer, CommandManager &manager, Server &server)
     {
         std::string message = udpServer.receive();
         std::string response = manager.handleCommand(message, server);
-        
-        if (verbose){
+
+        if (verbose)
+        {
             std::cout << "Client IP: " << udpServer.getClientIP() << std::endl;
-            std::cout << "Client port: " << udpServer.getClientPort() << std::endl << std::endl;
+            std::cout << "Client port: " << udpServer.getClientPort() << std::endl
+                      << std::endl;
         }
         udpServer.send(response);
     }
@@ -161,20 +174,25 @@ void TCPServer(TcpServer &tcpServer, CommandManager &manager, Server &server)
         do
             newfd = accept(tcpServer._fd, (struct sockaddr *)&addr, &addrlen);
 
-        while (newfd == -1 && errno == EINTR);
+        while (newfd == -1 && errno == EINTR && !is_exiting);
+        if (is_exiting)
+        {
+            close(tcpServer._fd);
+            return;
+        }
+
         if (newfd == -1) // error
             exit(1);
 
         if ((pid = fork()) == -1) // error
             exit(1);
-        else if (pid == 0)  // child
+        else if (pid == 0) // child
         {
             {
                 close(tcpServer._fd);
                 n = read(newfd, buffer, 128);
                 if (n == -1) // error
                     exit(1);
-
 
                 // add buffer to string
                 message.append(buffer, (size_t)n);
@@ -185,14 +203,16 @@ void TCPServer(TcpServer &tcpServer, CommandManager &manager, Server &server)
                 n = static_cast<ssize_t>(response.size());
                 while (n > 0)
                 {
-                    if ((nw = write(newfd, ptr, (size_t)n)) <= 0) //error
+                    if ((nw = write(newfd, ptr, (size_t)n)) <= 0) // error
                         exit(1);
                     n -= nw;
                     ptr += nw;
                 }
-                if (verbose){
+                if (verbose)
+                {
                     std::cout << "Client IP: " << tcpServer.getClientIP() << std::endl;
-                    std::cout << "Client port: " << tcpServer.getClientPort() << std::endl << std::endl;
+                    std::cout << "Client port: " << tcpServer.getClientPort() << std::endl
+                              << std::endl;
                 }
                 close(newfd);
                 exit(0);
