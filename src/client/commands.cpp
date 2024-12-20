@@ -25,7 +25,6 @@ void CommandManager::addAllCommands()
   this->addCommand(std::make_shared<DebugCommand>());
 }
 
-
 void CommandManager::waitForCommand(Client &state)
 {
 
@@ -134,7 +133,8 @@ void TryCommand::handle(std::string args, Client &state)
     std::cout << "There's not an active player" << std::endl;
     return;
   }
-  if (!state._player.activeGame()){
+  if (!state._player.activeGame())
+  {
     std::cout << "There's not an active game" << std::endl;
     return;
   }
@@ -165,7 +165,7 @@ void TryCommand::handle(std::string args, Client &state)
 
   state.processRequest(tryComm); // Send the request to the server, receiving its response
 
-  if (tryComm._status == "OK" || tryComm._status == "ENT" || tryComm._status == "ETM")
+  if (tryComm._status == "OK")
   {
     std::cout << "Number of trial: " << state._player.getnT() << std::endl
               << "Number of black: " << tryComm._nB << std::endl
@@ -179,7 +179,6 @@ void TryCommand::handle(std::string args, Client &state)
     }
 
     state._player.increaseNT();
-
   }
   if (tryComm._status == "DUP")
     std::cout << "Duplicate of a previous trial's guess " << std::endl;
@@ -422,7 +421,8 @@ void ScoreboardCommand::handle(std::string args, Client &state)
     std::cout << sbComm._Fdata << std::endl;
     state.writeFile(sbComm._Fname, sbComm._Fdata);
   }
-  else if (sbComm._status == "EMPTY"){
+  else if (sbComm._status == "EMPTY")
+  {
     std::cout << "The scoreboard is still empty" << std::endl;
   }
 }
